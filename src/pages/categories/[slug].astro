@@ -5,92 +5,120 @@ import ToolCard from "../../components/ToolCard.astro";
 import {
   categories,
   getCategoryBySlug,
+  categoryHref,
 } from "../../data/categories";
 import { getToolsByCategory } from "../../data/tools";
 import { site } from "../../data/site";
 import type { Tool } from "../../types/tool";
 
+/** Static paths for the six supported category slugs. */
 export function getStaticPaths() {
   return categories.map((category) => ({
     params: { slug: category.slug },
+    props: { category },
   }));
 }
 
-const { slug } = Astro.params;
-const category = getCategoryBySlug(slug!);
-
-if (!category) {
-  return Astro.redirect("/categories/");
+interface Props {
+  category: NonNullable<ReturnType<typeof getCategoryBySlug>>;
 }
 
-const toolsInCategory: Tool[] = getToolsByCategory(category.id).sort(
+const { category } = Astro.props;
+const { slug } = Astro.params;
+
+// Safety: only known slugs are generated; double-check for typos
+const resolved = getCategoryBySlug(slug ?? "") ?? category;
+
+const toolsInCategory: Tool[] = getToolsByCategory(resolved.id).sort(
   (a, b) => b.scores.overall - a.scores.overall,
 );
 
-const pageTitle = `${category.name} AI agent platforms`;
-const pageDescription = `${category.description} Compare ${toolsInCategory.length} platforms in the ${category.name} category.`;
+const otherCategories = categories.filter((c) => c.slug !== resolved.slug);
+
+const pageTitle = `${resolved.name} AI agent platforms`;
+const pageDescription = `${resolved.description} Compare ${toolsInCategory.length} platforms in the ${resolved.name} category.`;
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  <!-- Header band -->
-  <section class="border-b border-border bg-surface-muted">
-    <div class="container-site py-8 sm:py-10">
+  <!-- Header -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="container-site relative py-10 sm:py-12">
       <Breadcrumb
         items={[
           { label: "Home", href: "/" },
           { label: "Categories", href: "/categories/" },
-          { label: category.name },
+          { label: resolved.name },
         ]}
       />
 
-      <div class="mt-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div
+        class="mt-7 flex flex-col gap-6 sm:mt-8 sm:flex-row sm:items-end sm:justify-between"
+      >
         <div class="max-w-2xl">
           <div class="flex items-center gap-3">
             <span
-              class="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-soft text-sm font-bold text-accent"
+              class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-sm font-bold text-accent ring-1 ring-accent/10"
               aria-hidden="true"
             >
-              {category.icon}
+              {resolved.icon}
             </span>
             <p
-              class="text-xs font-semibold uppercase tracking-[0.14em] text-accent"
+              class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
             >
               Category
             </p>
           </div>
+
           <h1
-            class="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl"
+            class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight"
           >
-            {category.name}
+            {resolved.name}
           </h1>
-          <p class="mt-3 text-base leading-relaxed text-ink-muted sm:text-lg">
-            {category.description}
+          <p
+            class="mt-3 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg"
+          >
+            {resolved.description}
           </p>
         </div>
 
-        <p class="shrink-0 text-sm font-medium tabular-nums text-ink-soft">
-          <span class="text-ink">{toolsInCategory.length}</span>
-          {
-            toolsInCategory.length === 1
-              ? "platform"
-              : "platforms"
-          }
-        </p>
+        <div
+          class="flex shrink-0 flex-col items-start gap-1 rounded-2xl border border-border bg-surface px-5 py-4 shadow-(--shadow-sm) sm:items-end"
+        >
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-ink-soft">
+            Platforms
+          </span>
+          <span class="text-2xl font-bold tabular-nums tracking-tight text-ink">
+            {toolsInCategory.length}
+          </span>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Tool grid + sort -->
   <section class="bg-surface">
-    <div class="container-site py-8 sm:py-10">
+    <div class="container-site section-y">
       <div
-        class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        class="mb-7 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between"
       >
-        <h2 class="text-sm font-semibold text-ink">
-          Platforms in {category.name}
-        </h2>
+        <div>
+          <h2 class="text-lg font-semibold tracking-tight text-ink">
+            Platforms in {resolved.name}
+          </h2>
+          <p class="mt-1 text-sm text-ink-muted">
+            Sorted by score by default. Switch to name anytime.
+          </p>
+        </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2.5">
           <label
             for="sort-tools"
             class="text-sm font-medium text-ink-muted"
@@ -100,7 +128,7 @@ const pageDescription = `${category.description} Compare ${toolsInCategory.lengt
           <select
             id="sort-tools"
             name="sort"
-            class="rounded-lg border border-border bg-surface py-2 pl-3 pr-8 text-sm font-medium text-ink shadow-(--shadow-sm) focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+            class="min-w-[11.5rem] rounded-xl border border-border bg-surface py-2.5 pl-3.5 pr-9 text-sm font-medium text-ink shadow-(--shadow-sm) transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
             data-sort-select
           >
             <option value="score">Score (high → low)</option>
@@ -111,15 +139,20 @@ const pageDescription = `${category.description} Compare ${toolsInCategory.lengt
 
       {
         toolsInCategory.length === 0 ? (
-          <p class="rounded-xl border border-dashed border-border bg-surface-muted px-6 py-12 text-center text-sm text-ink-muted">
-            No platforms in this category yet.{" "}
-            <a href="/categories/" class="font-semibold text-accent hover:text-accent-hover">
+          <div class="empty-panel">
+            <p class="text-base font-semibold text-ink">
+              No platforms in this category yet
+            </p>
+            <p class="mt-2 max-w-sm text-sm text-ink-muted">
+              Check back soon, or explore another category.
+            </p>
+            <a href="/categories/" class="btn-primary mt-6">
               Browse all categories
             </a>
-          </p>
+          </div>
         ) : (
           <div
-            class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            class="grid auto-rows-fr gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
             data-tool-grid
           >
             {toolsInCategory.map((tool) => (
@@ -128,30 +161,72 @@ const pageDescription = `${category.description} Compare ${toolsInCategory.lengt
           </div>
         )
       }
+
+      <!-- Sibling categories for easy navigation -->
+      {
+        otherCategories.length > 0 && (
+          <div class="mt-12 border-t border-border pt-10 sm:mt-14 sm:pt-12">
+            <h2 class="text-sm font-semibold text-ink">Other categories</h2>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              {otherCategories.map((c) => (
+                <li>
+                  <a
+                    href={categoryHref(c)}
+                    class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-muted px-3.5 py-1.5 text-sm font-medium text-ink-muted transition-colors hover:border-accent/30 hover:bg-accent-soft hover:text-accent"
+                  >
+                    <span aria-hidden="true">{c.icon}</span>
+                    {c.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
     </div>
   </section>
 
-  <!-- Implementation CTA -->
-  <section class="border-t border-border bg-accent-soft">
+  <!-- Bottom CTA -->
+  <section class="relative overflow-hidden border-t border-border bg-ink text-accent-fg">
     <div
-      class="container-site flex flex-col items-start gap-5 py-10 sm:flex-row sm:items-center sm:justify-between sm:py-12"
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.22)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="container-site relative flex flex-col items-start gap-6 py-12 sm:flex-row sm:items-center sm:justify-between sm:py-14"
     >
       <div class="max-w-xl">
-        <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">
-          Need help implementing {category.name.toLowerCase()} agents?
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Implementation
+        </p>
+        <h2
+          class="mt-2 text-xl font-bold tracking-tight sm:text-2xl sm:leading-snug"
+        >
+          Need help implementing any of these agents?
         </h2>
-        <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+        <p class="mt-2 text-sm leading-relaxed text-slate-300 sm:text-base">
           We design, build, and ship production AI agent systems — from
-          framework selection through secure deployment and ops.
+          platform selection through secure deployment and ops.
         </p>
       </div>
-      <a
-        href={site.cta.href}
-        class="btn-primary shrink-0 px-5 py-3"
-        rel="noopener noreferrer"
-      >
-        Talk about implementation
-      </a>
+      <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+        <a
+          href={site.cta.href}
+          class="inline-flex items-center justify-center rounded-xl bg-accent px-6 py-3.5 text-sm font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+          rel="noopener noreferrer"
+        >
+          Talk about implementation
+        </a>
+        <a
+          href="/compare/"
+          class="inline-flex items-center justify-center rounded-xl border border-slate-600 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-slate-400 hover:bg-white/5"
+        >
+          Compare platforms
+        </a>
+      </div>
     </div>
   </section>
 </BaseLayout>
@@ -161,7 +236,7 @@ const pageDescription = `${category.description} Compare ${toolsInCategory.lengt
   const grid = document.querySelector<HTMLElement>("[data-tool-grid]");
 
   if (select && grid) {
-    select.addEventListener("change", () => {
+    const sortCards = () => {
       const mode = select.value;
       const cards = Array.from(
         grid.querySelectorAll<HTMLElement>("[data-tool-card]"),
@@ -171,15 +246,14 @@ const pageDescription = `${category.description} Compare ${toolsInCategory.lengt
         if (mode === "name") {
           return (a.dataset.name ?? "").localeCompare(b.dataset.name ?? "");
         }
-        // score: high → low
-        return (
-          Number(b.dataset.score ?? 0) - Number(a.dataset.score ?? 0)
-        );
+        return Number(b.dataset.score ?? 0) - Number(a.dataset.score ?? 0);
       });
 
       for (const card of cards) {
         grid.appendChild(card);
       }
-    });
+    };
+
+    select.addEventListener("change", sortCards);
   }
 </script>

@@ -1,0 +1,512 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import { tools, getSimilarTools } from "../../data/tools";
+import { categoryHref } from "../../data/categories";
+import { site } from "../../data/site";
+import type { Tool, ToolScores } from "../../types/tool";
+
+export function getStaticPaths() {
+  return tools.map((tool) => ({
+    params: { slug: tool.slug },
+    props: { tool },
+  }));
+}
+
+interface Props {
+  tool: Tool;
+}
+
+const { tool } = Astro.props;
+const similar = getSimilarTools(tool, 3);
+
+const scoreDimensions: {
+  key: keyof Omit<ToolScores, "overall">;
+  label: string;
+  hint: string;
+}[] = [
+  {
+    key: "capability",
+    label: "Capability",
+    hint: "Reasoning, tools, memory, autonomy",
+  },
+  {
+    key: "easeOfUse",
+    label: "Ease of use",
+    hint: "Time to a useful first agent",
+  },
+  {
+    key: "integrations",
+    label: "Integrations",
+    hint: "Connectors, APIs, ecosystem",
+  },
+  {
+    key: "enterprise",
+    label: "Enterprise",
+    hint: "Security, admin, compliance",
+  },
+  {
+    key: "developerExperience",
+    label: "Developer experience",
+    hint: "SDKs, docs, observability",
+  },
+  {
+    key: "value",
+    label: "Value",
+    hint: "Price-to-capability fit",
+  },
+];
+
+const featureRows: {
+  key: keyof Tool["features"];
+  label: string;
+  description: string;
+}[] = [
+  {
+    key: "multiAgent",
+    label: "Multi-agent",
+    description: "Coordinate multiple agents or roles",
+  },
+  {
+    key: "openSource",
+    label: "Open source",
+    description: "Source available under an open license",
+  },
+  {
+    key: "selfHost",
+    label: "Self-host",
+    description: "Can run in your own infrastructure",
+  },
+  {
+    key: "mcpSupport",
+    label: "MCP support",
+    description: "Model Context Protocol / tool servers",
+  },
+  {
+    key: "computerUse",
+    label: "Computer use",
+    description: "GUI / browser / desktop control",
+  },
+];
+
+const pricingLabels: Record<Tool["pricing"]["model"], string> = {
+  free: "Free",
+  freemium: "Freemium",
+  paid: "Paid",
+  usage: "Usage-based",
+  enterprise: "Enterprise",
+  "open-source": "Open source",
+};
+
+const initials = tool.name
+  .split(/\s+/)
+  .slice(0, 2)
+  .map((w) => w[0])
+  .join("")
+  .toUpperCase();
+
+const overall = tool.scores.overall.toFixed(1);
+const primaryCategory = tool.categories[0];
+const lastUpdatedLabel = new Date(tool.lastUpdated + "T00:00:00").toLocaleDateString(
+  "en-US",
+  { year: "numeric", month: "short", day: "numeric" },
+);
+
+const pageTitle = `${tool.name} — AI agent platform`;
+const pageDescription = tool.tagline || tool.description.slice(0, 160);
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="container-site relative py-10 sm:py-12">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          {
+            label: primaryCategory ?? "Categories",
+            href: primaryCategory
+              ? categoryHref(primaryCategory)
+              : "/categories/",
+          },
+          { label: tool.name },
+        ]}
+      />
+
+      <div
+        class="mt-7 flex flex-col gap-8 lg:mt-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12"
+      >
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            {
+              tool.categories.map((cat) => (
+                <a
+                  href={categoryHref(cat)}
+                  class="inline-flex rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-ink-muted transition-colors hover:border-accent/30 hover:bg-accent-soft hover:text-accent"
+                >
+                  {cat}
+                </a>
+              ))
+            }
+            {
+              tool.featured && (
+                <span class="inline-flex rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
+                  Featured
+                </span>
+              )
+            }
+          </div>
+
+          <div class="mt-5 flex items-start gap-4">
+            <div
+              class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-border bg-gradient-to-br from-surface to-surface-deep text-base font-bold tracking-tight text-ink-muted shadow-(--shadow-sm) ring-1 ring-black/5 sm:h-16 sm:w-16 sm:text-lg"
+              aria-hidden="true"
+            >
+              {initials}
+            </div>
+            <div class="min-w-0">
+              <h1
+                class="text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight"
+              >
+                {tool.name}
+              </h1>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted sm:text-lg">
+                {tool.tagline}
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-wrap items-center gap-3">
+            <a
+              href={tool.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-primary px-5 py-3"
+            >
+              Visit website
+              <span class="ml-1.5 opacity-80" aria-hidden="true">↗</span>
+            </a>
+            <a href="/compare/" class="btn-secondary px-5 py-3">
+              Compare platforms
+            </a>
+          </div>
+
+          <p class="mt-4 text-xs text-ink-soft">
+            Last updated {lastUpdatedLabel}
+          </p>
+        </div>
+
+        <!-- Big overall score -->
+        <div
+          class="flex w-full shrink-0 flex-col items-center justify-center rounded-2xl border border-border bg-surface px-8 py-7 shadow-(--shadow-md) sm:w-auto sm:min-w-[11.5rem] lg:px-10 lg:py-8"
+          aria-label={`Overall score ${overall} out of 10`}
+        >
+          <span
+            class="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft"
+          >
+            Overall score
+          </span>
+          <span
+            class="mt-2 text-5xl font-bold tabular-nums tracking-tight text-accent sm:text-6xl"
+          >
+            {overall}
+          </span>
+          <span class="mt-1 text-sm font-medium text-ink-muted">out of 10</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main content -->
+  <section class="bg-surface">
+    <div class="container-site section-y">
+      <div class="grid gap-10 lg:grid-cols-12 lg:gap-12">
+        <!-- Left column -->
+        <div class="space-y-10 lg:col-span-7">
+          <!-- Description -->
+          <div>
+            <h2 class="text-lg font-semibold tracking-tight text-ink">
+              Overview
+            </h2>
+            <p class="mt-3 text-base leading-relaxed text-ink-muted">
+              {tool.description}
+            </p>
+          </div>
+
+          <!-- Score breakdown -->
+          <div>
+            <h2 class="text-lg font-semibold tracking-tight text-ink">
+              Score breakdown
+            </h2>
+            <p class="mt-1.5 text-sm text-ink-muted">
+              Editorial scores on a 0–10 scale for six buyer-relevant dimensions.
+            </p>
+
+            <ul class="mt-6 space-y-5">
+              {
+                scoreDimensions.map(({ key, label, hint }) => {
+                  const value = tool.scores[key];
+                  const pct = Math.max(0, Math.min(100, (value / 10) * 100));
+                  return (
+                    <li>
+                      <div class="flex items-end justify-between gap-3">
+                        <div>
+                          <p class="text-sm font-semibold text-ink">{label}</p>
+                          <p class="text-xs text-ink-soft">{hint}</p>
+                        </div>
+                        <span class="text-sm font-bold tabular-nums text-ink">
+                          {value.toFixed(1)}
+                        </span>
+                      </div>
+                      <div
+                        class="mt-2 h-2 overflow-hidden rounded-full bg-surface-deep"
+                        role="meter"
+                        aria-valuenow={value}
+                        aria-valuemin={0}
+                        aria-valuemax={10}
+                        aria-label={`${label}: ${value.toFixed(1)} of 10`}
+                      >
+                        <div
+                          class="h-full rounded-full bg-accent transition-[width] duration-300"
+                          style={`width: ${pct}%`}
+                        />
+                      </div>
+                    </li>
+                  );
+                })
+              }
+            </ul>
+          </div>
+
+          <!-- Best for -->
+          {
+            tool.bestFor.length > 0 && (
+              <div>
+                <h2 class="text-lg font-semibold tracking-tight text-ink">
+                  Best for
+                </h2>
+                <ul class="mt-4 flex flex-wrap gap-2">
+                  {tool.bestFor.map((item) => (
+                    <li>
+                      <span class="inline-flex rounded-full border border-border bg-surface-muted px-3.5 py-1.5 text-sm font-medium text-ink-muted">
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+        </div>
+
+        <!-- Right sidebar -->
+        <aside class="space-y-5 lg:col-span-5">
+          <!-- Features -->
+          <div class="card-surface p-6 sm:p-7">
+            <h2 class="text-base font-semibold tracking-tight text-ink">
+              Key features
+            </h2>
+            <ul class="mt-5 divide-y divide-border">
+              {
+                featureRows.map(({ key, label, description }) => {
+                  const on = tool.features[key];
+                  return (
+                    <li class="flex items-start gap-3 py-3.5 first:pt-0 last:pb-0">
+                      <span
+                        class:list={[
+                          "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+                          on
+                            ? "bg-accent-soft text-accent"
+                            : "bg-surface-deep text-ink-soft",
+                        ]}
+                        aria-hidden="true"
+                      >
+                        {on ? "✓" : "—"}
+                      </span>
+                      <div class="min-w-0">
+                        <p
+                          class:list={[
+                            "text-sm font-semibold",
+                            on ? "text-ink" : "text-ink-soft",
+                          ]}
+                        >
+                          {label}
+                          <span class="sr-only">
+                            {on ? ": yes" : ": no"}
+                          </span>
+                        </p>
+                        <p class="mt-0.5 text-xs leading-relaxed text-ink-soft">
+                          {description}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })
+              }
+            </ul>
+          </div>
+
+          <!-- Pricing -->
+          <div class="card-surface p-6 sm:p-7">
+            <h2 class="text-base font-semibold tracking-tight text-ink">
+              Pricing
+            </h2>
+            <dl class="mt-5 space-y-4">
+              <div>
+                <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                  Model
+                </dt>
+                <dd class="mt-1 text-sm font-semibold text-ink">
+                  {pricingLabels[tool.pricing.model]}
+                </dd>
+              </div>
+              {
+                tool.pricing.startingPrice && (
+                  <div>
+                    <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                      Starting at
+                    </dt>
+                    <dd class="mt-1 text-sm font-semibold text-ink">
+                      {tool.pricing.startingPrice}
+                    </dd>
+                  </div>
+                )
+              }
+              {
+                tool.pricing.notes && (
+                  <div>
+                    <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                      Notes
+                    </dt>
+                    <dd class="mt-1 text-sm leading-relaxed text-ink-muted">
+                      {tool.pricing.notes}
+                    </dd>
+                  </div>
+                )
+              }
+            </dl>
+            <p class="mt-5 text-xs leading-relaxed text-ink-soft">
+              Pricing is indicative and may change. Confirm on the vendor site.
+            </p>
+          </div>
+
+          <!-- Website card -->
+          <div class="card-surface p-6 sm:p-7">
+            <h2 class="text-base font-semibold tracking-tight text-ink">
+              Official site
+            </h2>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+              Open the product page for docs, plans, and the latest releases.
+            </p>
+            <a
+              href={tool.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-secondary mt-5 w-full"
+            >
+              {(() => {
+                try {
+                  return new URL(tool.website).hostname.replace(/^www\./, "");
+                } catch {
+                  return "Visit website";
+                }
+              })()}
+              <span class="ml-1.5" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Similar tools -->
+  {
+    similar.length > 0 && (
+      <section class="border-t border-border bg-surface-muted">
+        <div class="container-site section-y">
+          <div class="mb-8 flex flex-col gap-2 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
+                Related
+              </p>
+              <h2 class="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]">
+                Similar tools
+              </h2>
+              <p class="mt-2 text-sm text-ink-muted sm:text-base">
+                Other platforms in overlapping categories with comparable scores.
+              </p>
+            </div>
+            {primaryCategory && (
+              <a
+                href={categoryHref(primaryCategory)}
+                class="text-sm font-semibold text-accent hover:text-accent-hover"
+              >
+                More in {primaryCategory} →
+              </a>
+            )}
+          </div>
+
+          <div class="grid auto-rows-fr gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+            {similar.map((t) => (
+              <ToolCard tool={t} maxTags={3} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Strong CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Implementation
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Need help implementing {tool.name}?
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Go beyond evaluation — we design, build, and ship production agent
+          systems on platforms like {tool.name}, with governance and ops your
+          team can own.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+        >
+          <a
+            href={site.cta.href}
+            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+            rel="noopener noreferrer"
+          >
+            Talk about implementation
+          </a>
+          <a
+            href={primaryCategory ? categoryHref(primaryCategory) : "/categories/"}
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
+          >
+            Back to category
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

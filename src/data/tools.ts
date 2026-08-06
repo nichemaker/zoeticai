@@ -1158,3 +1158,32 @@ export function getFeaturedTools(limit = 6): Tool[] {
     .sort((a, b) => b.scores.overall - a.scores.overall)
     .slice(0, limit);
 }
+
+/**
+ * Similar tools for detail pages: prefer shared categories, then closest overall score.
+ */
+export function getSimilarTools(tool: Tool, limit = 3): Tool[] {
+  const primary = tool.categories[0];
+  const sameCategory = tools.filter(
+    (t) => t.id !== tool.id && t.categories.includes(primary),
+  );
+
+  const ranked = (sameCategory.length >= limit
+    ? sameCategory
+    : tools.filter((t) => t.id !== tool.id)
+  )
+    .map((t) => {
+      const shared = t.categories.filter((c) =>
+        tool.categories.includes(c),
+      ).length;
+      const scoreDelta = Math.abs(t.scores.overall - tool.scores.overall);
+      return { t, shared, scoreDelta };
+    })
+    .sort((a, b) => {
+      if (b.shared !== a.shared) return b.shared - a.shared;
+      return a.scoreDelta - b.scoreDelta;
+    })
+    .map(({ t }) => t);
+
+  return ranked.slice(0, limit);
+}

@@ -7,7 +7,7 @@
   --color-surface-deep: #f1f5f9;
   --color-ink: #0f172a;
   --color-ink-muted: #475569;
-  --color-ink-soft: #94a3b8;
+  --color-ink-soft: #64748b;
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
   --color-accent: #4f46e5;
@@ -18,9 +18,10 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.05);
-  --shadow-md: 0 4px 12px rgb(15 23 42 / 0.06), 0 1px 3px rgb(15 23 42 / 0.04);
-  --radius-card: 0.75rem;
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 1px rgb(15 23 42 / 0.03);
+  --shadow-md: 0 4px 16px rgb(15 23 42 / 0.07), 0 1px 3px rgb(15 23 42 / 0.04);
+  --shadow-lg: 0 12px 32px rgb(15 23 42 / 0.08), 0 2px 6px rgb(15 23 42 / 0.04);
+  --radius-card: 1rem;
 }
 
 @layer base {
@@ -28,6 +29,7 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
@@ -51,7 +53,7 @@
   }
 
   .section-y {
-    @apply py-12 sm:py-16 lg:py-20;
+    @apply py-14 sm:py-16 lg:py-20;
   }
 
   .link-nav {
@@ -63,18 +65,49 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-fg shadow-(--shadow-sm) transition-colors duration-150 hover:bg-accent-hover;
+    @apply inline-flex items-center justify-center rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-accent-fg shadow-(--shadow-sm) transition-[background-color,box-shadow,transform] duration-150 hover:bg-accent-hover hover:shadow-(--shadow-md) active:scale-[0.98];
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition-colors duration-150 hover:bg-surface-muted hover:border-border-strong;
+    @apply inline-flex items-center justify-center rounded-xl border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-ink shadow-(--shadow-sm) transition-[background-color,border-color,box-shadow,transform] duration-150 hover:border-border-strong hover:bg-surface-muted hover:shadow-(--shadow-md) active:scale-[0.98];
   }
 
   .input-search {
-    @apply w-full rounded-lg border border-border bg-surface-muted py-2 pl-10 pr-3 text-sm text-ink placeholder:text-ink-soft transition-colors duration-150 focus:border-accent focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/20;
+    @apply w-full rounded-xl border border-border bg-surface-muted py-2 pl-10 pr-3 text-sm text-ink placeholder:text-ink-soft transition-colors duration-150 focus:border-accent focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/20;
   }
 
   .card-surface {
     @apply rounded-[var(--radius-card)] border border-border bg-surface shadow-(--shadow-sm);
+  }
+
+  /* Interactive cards — shared hover language (expand tokens; don't @apply other components) */
+  .card-interactive {
+    @apply rounded-[var(--radius-card)] border border-border bg-surface shadow-(--shadow-sm) transition-[border-color,box-shadow,transform] duration-200 ease-out;
+  }
+
+  .card-interactive:hover {
+    border-color: color-mix(in srgb, var(--color-accent) 28%, var(--color-border));
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .score-badge {
+    @apply inline-flex flex-col items-center justify-center rounded-xl border border-accent/15 bg-accent-soft px-2.5 py-1.5 text-accent;
+  }
+
+  .score-badge-value {
+    @apply text-sm font-bold leading-none tabular-nums tracking-tight;
+  }
+
+  .score-badge-label {
+    @apply mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-accent/70;
+  }
+
+  .tag-chip {
+    @apply inline-flex rounded-md border border-border bg-surface-muted px-2 py-0.5 text-[11px] font-medium capitalize text-ink-muted;
+  }
+
+  .empty-panel {
+    @apply flex flex-col items-center justify-center rounded-[var(--radius-card)] border border-dashed border-border-strong bg-surface-muted/80 px-6 py-14 text-center;
   }
 }

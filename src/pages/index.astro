@@ -3,57 +3,117 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import ToolCard from "../components/ToolCard.astro";
 import { site } from "../data/site";
-import { getFeaturedTools, tools } from "../data/tools";
+import {
+  getFeaturedTools,
+  getToolsByOverallScore,
+  tools,
+} from "../data/tools";
 import { getCategoryCounts, categoryHref } from "../data/categories";
 import { latestGuides } from "../data/guides";
 
-const featured = getFeaturedTools(6);
+const featuredRaw = getFeaturedTools(6);
+/** Never leave the featured strip empty — fall back to top-scored tools. */
+const featured =
+  featuredRaw.length > 0 ? featuredRaw : getToolsByOverallScore(6);
+
 const categoryCards = getCategoryCounts();
-const catalogCount = tools.length;
+const catalogCount = tools.length || 0;
+const guideList = latestGuides;
+
+const whyItems = [
+  {
+    title: "Structured scores",
+    body: "Overall rating plus six dimensions — capability, ease of use, integrations, enterprise, DX, and value.",
+  },
+  {
+    title: "Feature-level filters",
+    body: "Multi-agent, open source, self-host, MCP, and computer use flags you can scan at a glance.",
+  },
+  {
+    title: "Buyer-ready categories",
+    body: "Enterprise suites, frameworks, no-code, coding agents, browser control, and workflow automation.",
+  },
+  {
+    title: "Compare-first design",
+    body: "Listings and guides are written to help you shortlist and defend a choice with stakeholders.",
+  },
+];
 ---
 
 <BaseLayout title="Home" description={site.description} isHome>
   <!-- 1. Hero -->
-  <section class="relative overflow-hidden border-b border-border bg-surface-muted">
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
     <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      class="pointer-events-none absolute inset-0"
       aria-hidden="true"
     >
+      <div
+        class="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,_var(--color-accent-soft)_0%,_transparent_60%)]"
+      >
+      </div>
+      <div
+        class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"
+      >
+      </div>
     </div>
+
     <div class="container-site relative section-y">
       <div class="mx-auto max-w-3xl text-center">
-        <p
-          class="text-xs font-semibold uppercase tracking-[0.14em] text-accent"
+        <div
+          class="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent shadow-(--shadow-sm)"
         >
+          <span
+            class="h-1.5 w-1.5 rounded-full bg-accent"
+            aria-hidden="true"
+          ></span>
           AI agent platforms directory
-        </p>
+        </div>
+
         <h1
-          class="mt-4 text-4xl font-bold tracking-tight text-ink sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]"
+          class="mt-6 text-[2.125rem] font-bold tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]"
         >
           Choose AI agent platforms with clarity
         </h1>
+
         <p
-          class="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted sm:text-xl"
+          class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg sm:leading-relaxed"
         >
-          Independent profiles, scores, and comparisons across {catalogCount}+
+          Independent profiles, scores, and comparisons across{" "}
+          <span class="font-semibold text-ink">{catalogCount || "dozens of"}+</span
+          >{" "}
           enterprise suites, frameworks, no-code builders, and coding agents —
           so you can shortlist with confidence.
         </p>
 
         <div
-          class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
+          class="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
         >
-          <a href="/categories/" class="btn-primary px-6 py-3 text-base">
+          <a href="/categories/" class="btn-primary px-7 py-3.5 text-base">
             Browse platforms
           </a>
-          <a href="/compare/" class="btn-secondary px-6 py-3 text-base">
+          <a href="/compare/" class="btn-secondary px-7 py-3.5 text-base">
             Compare tools
           </a>
         </div>
 
-        <p class="mt-6 text-sm text-ink-soft">
-          Free to explore · Updated regularly · Built for buyers &amp; builders
-        </p>
+        <ul
+          class="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-ink-soft"
+        >
+          <li class="inline-flex items-center gap-1.5">
+            <span class="text-accent" aria-hidden="true">✓</span>
+            Free to explore
+          </li>
+          <li class="inline-flex items-center gap-1.5">
+            <span class="text-accent" aria-hidden="true">✓</span>
+            Updated regularly
+          </li>
+          <li class="inline-flex items-center gap-1.5">
+            <span class="text-accent" aria-hidden="true">✓</span>
+            Built for buyers &amp; builders
+          </li>
+        </ul>
       </div>
     </div>
   </section>
@@ -69,18 +129,27 @@ const catalogCount = tools.length;
         linkLabel="View all platforms"
       />
 
-      <!-- Mobile: horizontal scroll · md+: responsive grid -->
-      <div
-        class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none lg:grid-cols-3"
-      >
-        {
-          featured.map((tool) => (
-            <div class="w-[min(100%,18.5rem)] shrink-0 snap-start sm:w-auto sm:shrink">
-              <ToolCard tool={tool} />
-            </div>
-          ))
-        }
-      </div>
+      {
+        featured.length > 0 ? (
+          <div class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-3 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none lg:grid-cols-3">
+            {featured.map((tool) => (
+              <div class="w-[min(100%,19rem)] shrink-0 snap-start sm:w-auto sm:min-w-0 sm:shrink">
+                <ToolCard tool={tool} featured maxTags={4} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div class="empty-panel">
+            <p class="text-base font-semibold text-ink">Featured listings coming soon</p>
+            <p class="mt-2 max-w-sm text-sm text-ink-muted">
+              We are curating standout platforms for this strip.
+            </p>
+            <a href="/categories/" class="btn-primary mt-6">
+              Browse all categories
+            </a>
+          </div>
+        )
+      }
     </div>
   </section>
 
@@ -95,57 +164,69 @@ const catalogCount = tools.length;
         linkLabel="All categories"
       />
 
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          categoryCards.map(({ meta, count }) => (
-            <a
-              href={categoryHref(meta)}
-              class="card-surface group flex flex-col p-6 transition-shadow duration-150 hover:shadow-(--shadow-md)"
-            >
-              <div class="flex items-center justify-between gap-3">
-                <span
-                  class="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-soft text-sm font-bold text-accent"
-                  aria-hidden="true"
-                >
-                  {meta.icon}
-                </span>
-                <span class="text-xs font-medium tabular-nums text-ink-soft">
-                  {count} {count === 1 ? "platform" : "platforms"}
-                </span>
-              </div>
-              <h3
-                class="mt-4 text-lg font-semibold text-ink group-hover:text-accent"
+      {
+        categoryCards.length > 0 ? (
+          <div class="grid auto-rows-fr gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+            {categoryCards.map(({ meta, count }) => (
+              <a
+                href={categoryHref(meta)}
+                class="card-interactive group flex h-full min-h-[11.5rem] flex-col p-6 sm:p-7"
               >
-                {meta.name}
-              </h3>
-              <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
-                {meta.description}
-              </p>
-              <span
-                class="mt-4 text-sm font-semibold text-accent"
-                aria-hidden="true"
-              >
-                Explore →
-              </span>
-            </a>
-          ))
-        }
-      </div>
+                <div class="flex items-start justify-between gap-3">
+                  <span
+                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-sm font-bold text-accent ring-1 ring-accent/10 transition-transform duration-200 group-hover:scale-105"
+                    aria-hidden="true"
+                  >
+                    {meta.icon}
+                  </span>
+                  <span class="rounded-full bg-surface px-2.5 py-1 text-[11px] font-semibold tabular-nums text-ink-soft ring-1 ring-border">
+                    {count} {count === 1 ? "platform" : "platforms"}
+                  </span>
+                </div>
+
+                <h3 class="mt-5 text-lg font-semibold tracking-tight text-ink transition-colors duration-150 group-hover:text-accent">
+                  {meta.name}
+                </h3>
+                <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
+                  {meta.description}
+                </p>
+
+                <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
+                  Explore
+                  <span
+                    class="transition-transform duration-200 group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
+                </span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="empty-panel">
+            <p class="text-base font-semibold text-ink">Categories loading</p>
+            <p class="mt-2 max-w-sm text-sm text-ink-muted">
+              Category navigation will appear here once listings are available.
+            </p>
+          </div>
+        )
+      }
     </div>
   </section>
 
   <!-- 4. Why this directory -->
   <section class="border-b border-border bg-surface">
     <div class="container-site section-y">
-      <div class="grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
-        <div class="lg:col-span-5">
+      <div class="grid items-start gap-10 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-5 lg:sticky lg:top-24">
           <p
-            class="text-xs font-semibold uppercase tracking-[0.14em] text-accent"
+            class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
           >
             Why this directory
           </p>
           <h2
-            class="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl"
+            class="mt-2.5 text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem] sm:leading-tight"
           >
             Built for decisions, not hype
           </h2>
@@ -156,28 +237,19 @@ const catalogCount = tools.length;
           </p>
         </div>
 
-        <ul class="grid gap-5 sm:grid-cols-2 lg:col-span-7">
+        <ul class="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:col-span-7">
           {
-            [
-              {
-                title: "Structured scores",
-                body: "Overall rating plus six dimensions — capability, ease of use, integrations, enterprise, DX, and value.",
-              },
-              {
-                title: "Feature-level filters",
-                body: "Multi-agent, open source, self-host, MCP, and computer use flags you can scan at a glance.",
-              },
-              {
-                title: "Buyer-ready categories",
-                body: "Enterprise suites, frameworks, no-code, coding agents, browser control, and workflow automation.",
-              },
-              {
-                title: "Compare-first design",
-                body: "Listings and guides are written to help you shortlist and defend a choice with stakeholders.",
-              },
-            ].map((item) => (
-              <li class="card-surface p-5">
-                <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+            whyItems.map((item, i) => (
+              <li class="card-interactive p-5 sm:p-6">
+                <span
+                  class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-accent-soft text-xs font-bold tabular-nums text-accent"
+                  aria-hidden="true"
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 class="mt-3.5 text-base font-semibold text-ink">
+                  {item.title}
+                </h3>
                 <p class="mt-2 text-sm leading-relaxed text-ink-muted">
                   {item.body}
                 </p>
@@ -200,64 +272,93 @@ const catalogCount = tools.length;
         linkLabel="All guides"
       />
 
-      <div class="grid gap-4 md:grid-cols-3">
-        {
-          latestGuides.map((guide) => (
-            <article class="card-surface flex h-full flex-col p-6">
-              <div class="flex items-center gap-2 text-xs font-medium text-ink-soft">
-                <span class="text-accent">{guide.category}</span>
-                <span aria-hidden="true">·</span>
-                <time datetime={guide.date}>{guide.readTime} read</time>
-              </div>
-              <h3 class="mt-3 text-lg font-semibold leading-snug text-ink">
-                <a
-                  href={`/guides/${guide.slug}/`}
-                  class="hover:text-accent focus-visible:outline-none"
-                >
-                  {guide.title}
-                </a>
-              </h3>
-              <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
-                {guide.excerpt}
-              </p>
-              <a
-                href={`/guides/${guide.slug}/`}
-                class="mt-4 text-sm font-semibold text-accent hover:text-accent-hover"
-              >
-                Read guide →
-              </a>
-            </article>
-          ))
-        }
-      </div>
+      {
+        guideList.length > 0 ? (
+          <div class="grid auto-rows-fr gap-4 md:grid-cols-3 md:gap-5">
+            {guideList.map((guide) => (
+              <article class="card-interactive group relative flex h-full min-h-[14rem] flex-col p-6 sm:p-7">
+                <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-ink-soft">
+                  <span class="rounded-md bg-accent-soft px-2 py-0.5 text-accent normal-case tracking-normal">
+                    {guide.category}
+                  </span>
+                  <span aria-hidden="true" class="text-border-strong">
+                    ·
+                  </span>
+                  <time datetime={guide.date} class="normal-case tracking-normal">
+                    {guide.readTime} read
+                  </time>
+                </div>
+                <h3 class="mt-4 text-lg font-semibold leading-snug tracking-tight text-ink transition-colors group-hover:text-accent">
+                  <a
+                    href={`/guides/${guide.slug}/`}
+                    class="after:absolute after:inset-0 focus-visible:outline-none"
+                  >
+                    {guide.title}
+                  </a>
+                </h3>
+                <p class="mt-2.5 flex-1 text-sm leading-relaxed text-ink-muted">
+                  {guide.excerpt}
+                </p>
+                <span class="mt-5 text-sm font-semibold text-accent">
+                  Read guide
+                  <span
+                    class="inline-block transition-transform duration-200 group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  >
+                    {" "}
+                    →
+                  </span>
+                </span>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="empty-panel">
+            <p class="text-base font-semibold text-ink">Guides on the way</p>
+            <p class="mt-2 max-w-sm text-sm text-ink-muted">
+              Evaluation playbooks and architecture notes will land here soon.
+            </p>
+          </div>
+        )
+      }
     </div>
   </section>
 
   <!-- 6. Final CTA banner -->
-  <section class="bg-ink text-accent-fg">
-    <div class="container-site section-y">
-      <div
-        class="mx-auto flex max-w-3xl flex-col items-center text-center"
-      >
-        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Implementation
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
           Need production AI agents built?
         </h2>
-        <p class="mt-3 max-w-xl text-base leading-relaxed text-slate-300">
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
           Beyond the directory — partner with a team that designs, ships, and
           operates agent systems for real products and enterprise workflows.
         </p>
         <div
-          class="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center"
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
         >
           <a
             href={site.cta.href}
-            class="inline-flex items-center justify-center rounded-lg bg-accent px-6 py-3 text-base font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
+            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
           >
             Talk to us
           </a>
           <a
             href="/categories/"
-            class="inline-flex items-center justify-center rounded-lg border border-slate-600 bg-transparent px-6 py-3 text-base font-semibold text-white transition-colors hover:border-slate-400 hover:bg-white/5"
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
           >
             Keep browsing
           </a>

@@ -10,56 +10,84 @@ const categoryCards = getCategoryCounts();
   title="Categories"
   description="Browse AI agent platforms by category — enterprise, frameworks, no-code, coding, browser, and workflow."
 >
-  <section class="border-b border-border bg-surface-muted">
-    <div class="container-site py-8 sm:py-10">
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12">
       <Breadcrumb
         items={[
           { label: "Home", href: "/" },
           { label: "Categories" },
         ]}
       />
-      <h1 class="mt-6 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+      <h1
+        class="mt-7 text-3xl font-bold tracking-tight text-ink sm:mt-8 sm:text-4xl sm:leading-tight"
+      >
         Categories
       </h1>
-      <p class="mt-3 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg">
-        Explore the directory by how teams buy and build agent systems.
+      <p
+        class="mt-3 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg"
+      >
+        Explore the directory by how teams buy and build agent systems —
+        enterprise suites, frameworks, no-code builders, coding agents, and
+        more.
       </p>
     </div>
   </section>
 
   <section class="bg-surface">
-    <div class="container-site py-8 sm:py-10">
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          categoryCards.map(({ meta, count }) => (
-            <a
-              href={categoryHref(meta)}
-              class="card-surface group flex flex-col p-6 transition-shadow duration-150 hover:shadow-(--shadow-md)"
-            >
-              <div class="flex items-center justify-between gap-3">
-                <span
-                  class="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-soft text-sm font-bold text-accent"
-                  aria-hidden="true"
-                >
-                  {meta.icon}
+    <div class="container-site section-y">
+      {
+        categoryCards.length > 0 ? (
+          <div class="grid auto-rows-fr gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+            {categoryCards.map(({ meta, count }) => (
+              <a
+                href={categoryHref(meta)}
+                class="card-interactive group flex h-full min-h-[11.5rem] flex-col p-6 sm:p-7"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <span
+                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-sm font-bold text-accent ring-1 ring-accent/10 transition-transform duration-200 group-hover:scale-105"
+                    aria-hidden="true"
+                  >
+                    {meta.icon}
+                  </span>
+                  <span class="rounded-full bg-surface-muted px-2.5 py-1 text-[11px] font-semibold tabular-nums text-ink-soft ring-1 ring-border">
+                    {count} {count === 1 ? "platform" : "platforms"}
+                  </span>
+                </div>
+                <h2 class="mt-5 text-lg font-semibold tracking-tight text-ink transition-colors group-hover:text-accent">
+                  {meta.name}
+                </h2>
+                <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
+                  {meta.description}
+                </p>
+                <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
+                  Explore
+                  <span
+                    class="transition-transform duration-200 group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
                 </span>
-                <span class="text-xs font-medium tabular-nums text-ink-soft">
-                  {count} {count === 1 ? "platform" : "platforms"}
-                </span>
-              </div>
-              <h2 class="mt-4 text-lg font-semibold text-ink group-hover:text-accent">
-                {meta.name}
-              </h2>
-              <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
-                {meta.description}
-              </p>
-              <span class="mt-4 text-sm font-semibold text-accent" aria-hidden="true">
-                Explore →
-              </span>
-            </a>
-          ))
-        }
-      </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div class="empty-panel">
+            <p class="text-base font-semibold text-ink">Categories loading</p>
+            <p class="mt-2 max-w-sm text-sm text-ink-muted">
+              Category navigation will appear here once listings are available.
+            </p>
+          </div>
+        )
+      }
     </div>
   </section>
 </BaseLayout>

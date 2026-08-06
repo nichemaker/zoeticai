@@ -8,9 +8,16 @@ interface Props {
   scrollItem?: boolean;
   /** Max feature/category tags on the card (default 4). */
   maxTags?: number;
+  /** Emphasized score treatment for homepage featured strip */
+  featured?: boolean;
 }
 
-const { tool, scrollItem = false, maxTags = 4 } = Astro.props;
+const {
+  tool,
+  scrollItem = false,
+  maxTags = 4,
+  featured = false,
+} = Astro.props;
 
 const score = tool.scores.overall.toFixed(1);
 
@@ -26,7 +33,9 @@ const tags: string[] = [
   tool.pricing.model.replace(/-/g, " "),
   ...featureTags,
   ...tool.categories,
-].filter((tag, i, arr) => arr.indexOf(tag) === i).slice(0, maxTags);
+]
+  .filter((tag, i, arr) => arr.indexOf(tag) === i)
+  .slice(0, maxTags);
 
 const initials = tool.name
   .split(/\s+/)
@@ -38,70 +47,108 @@ const initials = tool.name
 const secondaryCategory = tool.categories.find(
   (c) => c !== tool.categories[0],
 );
+
+const primaryCategory = tool.categories[0] ?? "Platform";
 ---
 
 <article
   class:list={[
-    "card-surface group relative flex h-full flex-col p-5 transition-shadow duration-150 hover:shadow-(--shadow-md)",
+    "card-interactive group relative flex h-full min-h-[11.5rem] flex-col p-5 sm:p-6",
     scrollItem && "w-[min(100%,18.5rem)] shrink-0 sm:w-72",
+    featured && "min-h-[13.5rem]",
   ]}
   data-tool-card
   data-name={tool.name.toLowerCase()}
   data-score={tool.scores.overall}
 >
-  <div class="flex items-start gap-3">
+  <div class="flex items-start gap-3.5">
     <div
-      class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-muted text-xs font-bold tracking-tight text-ink-muted"
+      class:list={[
+        "flex shrink-0 items-center justify-center rounded-xl border border-border bg-gradient-to-br from-surface-muted to-surface-deep text-xs font-bold tracking-tight text-ink-muted ring-1 ring-black/5",
+        featured ? "h-12 w-12 text-sm" : "h-11 w-11",
+      ]}
       aria-hidden="true"
     >
       {initials}
     </div>
+
     <div class="min-w-0 flex-1">
-      <div class="flex items-start justify-between gap-2">
-        <h3 class="text-base font-semibold leading-snug text-ink">
-          <a
-            href={`/tools/${tool.slug}/`}
-            class="after:absolute after:inset-0 focus-visible:outline-none group-hover:text-accent"
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          {
+            featured && (
+              <p class="mb-1 text-[11px] font-semibold uppercase tracking-wider text-ink-soft">
+                {primaryCategory}
+              </p>
+            )
+          }
+          <h3
+            class:list={[
+              "font-semibold leading-snug text-ink transition-colors duration-150 group-hover:text-accent",
+              featured ? "text-[1.05rem] sm:text-lg" : "text-base",
+            ]}
           >
-            {tool.name}
-          </a>
-        </h3>
-        <span
-          class="inline-flex shrink-0 items-center rounded-md bg-accent-soft px-2 py-0.5 text-xs font-semibold tabular-nums text-accent"
-          title="Overall score out of 10"
-        >
-          {score}
-        </span>
+            <a
+              href={`/tools/${tool.slug}/`}
+              class="after:absolute after:inset-0 focus-visible:outline-none"
+            >
+              {tool.name}
+            </a>
+          </h3>
+        </div>
+
+        <div class="score-badge shrink-0" title="Overall score out of 10">
+          <span class="score-badge-value">{score}</span>
+          <span class="score-badge-label">/ 10</span>
+        </div>
       </div>
-      <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ink-muted">
-        {tool.tagline}
+
+      <p
+        class:list={[
+          "mt-2 text-sm leading-relaxed text-ink-muted",
+          featured ? "line-clamp-3" : "line-clamp-2",
+        ]}
+      >
+        {tool.tagline || "AI agent platform in the directory."}
       </p>
     </div>
   </div>
 
-  <ul class="mt-4 flex flex-wrap gap-1.5">
-    {
-      tags.map((tag) => (
-        <li>
-          <span class="inline-flex rounded-md border border-border bg-surface-muted px-2 py-0.5 text-[11px] font-medium capitalize text-ink-muted">
-            {tag}
-          </span>
-        </li>
-      ))
-    }
-  </ul>
-
   {
-    secondaryCategory && (
-      <p class="relative z-10 mt-auto pt-4 text-xs text-ink-soft">
-        Also in{" "}
-        <a
-          href={categoryHref(secondaryCategory)}
-          class="font-medium text-ink-muted hover:text-accent"
-        >
-          {secondaryCategory}
-        </a>
-      </p>
+    tags.length > 0 && (
+      <ul class="mt-4 flex flex-wrap gap-1.5">
+        {tags.map((tag) => (
+          <li>
+            <span class="tag-chip">{tag}</span>
+          </li>
+        ))}
+      </ul>
     )
   }
+
+  <div
+    class="relative z-10 mt-auto flex items-center justify-between gap-2 pt-4"
+  >
+    {
+      secondaryCategory ? (
+        <p class="text-xs text-ink-soft">
+          Also in{" "}
+          <a
+            href={categoryHref(secondaryCategory)}
+            class="font-medium text-ink-muted transition-colors hover:text-accent"
+          >
+            {secondaryCategory}
+          </a>
+        </p>
+      ) : (
+        <p class="text-xs text-ink-soft">{primaryCategory}</p>
+      )
+    }
+    <span
+      class="text-xs font-semibold text-accent opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+      aria-hidden="true"
+    >
+      View →
+    </span>
+  </div>
 </article>
