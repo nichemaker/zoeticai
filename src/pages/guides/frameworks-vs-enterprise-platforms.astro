@@ -1,0 +1,560 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import { site } from "../../data/site";
+
+const title =
+  "Frameworks vs Enterprise AI Agent Platforms — When to Choose Which";
+const description =
+  "A balanced guide for technical founders and engineering leaders: when to build on LangGraph, CrewAI, and SDKs versus Microsoft Copilot Studio, Salesforce Agentforce, AWS Bedrock Agents, and similar enterprise platforms.";
+const heroImage = "/images/guides/frameworks-vs-enterprise-hero.jpg";
+const published = "2026-04-01";
+const readTime = "10 min";
+
+const frameworkStrengths = [
+  {
+    title: "Control over orchestration",
+    body: "You design graphs, crews, handoffs, retries, and state. That matters when the workflow is the product — not a thin wrapper around a vendor chatbot.",
+  },
+  {
+    title: "Model and infra flexibility",
+    body: "Swap models, run in your VPC, and plug into existing observability. You are not waiting on a platform roadmap for a critical connector shape.",
+  },
+  {
+    title: "Fit for custom multi-step logic",
+    body: "Branching, long-running jobs, human approval nodes, and domain-specific tools are first-class when you own the code.",
+  },
+  {
+    title: "Engineering-native iteration",
+    body: "PRs, tests, eval harnesses, and CI fit how product teams already ship. Quality improves with software discipline, not only admin config.",
+  },
+];
+
+const enterpriseStrengths = [
+  {
+    title: "Governance from day one",
+    body: "SSO, RBAC, audit logs, DLP patterns, and admin policies often ship with the suite — the default expectation for security and IT buyers.",
+  },
+  {
+    title: "Systems of record are native",
+    body: "CRM, ITSM, M365, or cloud IAM are not afterthoughts. Agents that create cases, update opportunities, or call Lambdas under existing trust models win pilots.",
+  },
+  {
+    title: "Faster path for non-platform teams",
+    body: "Business technologists and IT can configure agents without staffing a multi-agent framework team. Time-to-first-agent is often measured in days, not quarters.",
+  },
+  {
+    title: "Vendor support and procurement fit",
+    body: "SLAs, enterprise contracts, and existing MSAs reduce friction. That is a real advantage when legal and risk must sign off before production traffic.",
+  },
+];
+
+const comparisonRows: {
+  dimension: string;
+  frameworks: string;
+  enterprise: string;
+}[] = [
+  {
+    dimension: "Control",
+    frameworks: "High — own graphs, tools, runtime, and failure modes",
+    enterprise: "Medium — strong within vendor primitives; less arbitrary logic",
+  },
+  {
+    dimension: "Speed to first demo",
+    frameworks: "Medium — needs eng setup, env, and basic evals",
+    enterprise: "High — studio UIs and connectors get a path live quickly",
+  },
+  {
+    dimension: "Governance",
+    frameworks: "You build it (or glue it) — SSO, audit, DLP are your job",
+    enterprise: "Usually stronger out of the box for admin and compliance",
+  },
+  {
+    dimension: "Cost shape",
+    frameworks: "Low license cost; higher eng + ops + model spend",
+    enterprise: "Higher platform / seat cost; less custom platform engineering",
+  },
+  {
+    dimension: "Team skill required",
+    frameworks: "Software engineers comfortable with agents, APIs, and ops",
+    enterprise: "Admins + business technologists; eng for deep extensions",
+  },
+  {
+    dimension: "Best workload fit",
+    frameworks: "Custom multi-step products and differentiation in the agent loop",
+    enterprise: "Process agents on top of CRM/ITSM/M365/cloud estates",
+  },
+];
+
+const chooseFrameworks = [
+  "The agent loop is a product differentiator, not a side feature",
+  "You need complex multi-agent or durable workflows with custom state",
+  "You must self-host, multi-cloud, or avoid a single SaaS control plane",
+  "You already have engineers who will own evals, tracing, and incidents",
+  "Connectors you need are custom APIs, not only the vendor’s catalog",
+];
+
+const chooseEnterprise = [
+  "Agents must live inside Salesforce, Microsoft 365, ServiceNow, or AWS with existing IAM",
+  "Security, legal, or IT will not approve a greenfield agent runtime this quarter",
+  "Business teams need to configure and own day-to-day agent behavior",
+  "You want vendor SLAs, support, and a clear admin model more than max flexibility",
+  "The primary value is process automation on systems of record, not novel orchestration",
+];
+
+const hybrids = [
+  {
+    title: "Enterprise for the edge, frameworks for the core",
+    body: "Use Copilot Studio or Agentforce for employee-facing channels and CRM actions. Call your own service (LangGraph / Agents SDK) for multi-step reasoning that the suite cannot express cleanly.",
+  },
+  {
+    title: "Bedrock or Vertex as managed runtime, open code as the brain",
+    body: "Keep orchestration logic in versioned code while using cloud agent/knowledge primitives for retrieval, IAM, and scaling. You own the graph; the cloud owns the boring reliability layer.",
+  },
+  {
+    title: "Coding agents for eng, enterprise agents for ops",
+    body: "Do not force one stack. Cursor or Claude Code for software delivery; ServiceNow or Power Platform for IT/employee workflows. Shared standards (identity, logging, data policy) matter more than a single product.",
+  },
+  {
+    title: "No-code pilots, framework production",
+    body: "Validate a process in n8n/Make quickly, then re-implement critical paths in a framework once volume, risk, or custom tools exceed the visual tool’s ceiling. Kill pilots that never graduate — or never need to.",
+  },
+];
+
+const recommendations = [
+  {
+    step: "1",
+    title: "Name the workload and the system of record",
+    body: "“Customer refund agent on Salesforce” and “internal research crew over private docs” imply different categories before any demo.",
+  },
+  {
+    step: "2",
+    title: "Score control vs governance for that workload",
+    body: "If losing control of the loop kills the product, lean frameworks. If failing an audit kills the company, lean enterprise — unless you can staff governance on a framework.",
+  },
+  {
+    step: "3",
+    title: "Staff the operate model honestly",
+    body: "Frameworks without on-call, evals, and tool ownership fail late. Enterprise platforms without process owners fail as shelfware. Match the tool to who will run it on Friday night.",
+  },
+  {
+    step: "4",
+    title: "Pilot hybrid only with a clear boundary",
+    body: "Write the interface: what the suite owns, what your service owns, how auth and logs cross the boundary. Hybrid without a contract becomes two half-finished systems.",
+  },
+];
+---
+
+<BaseLayout title={title} description={description} ogImage={heroImage}>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12 lg:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "Frameworks vs enterprise" },
+        ]}
+      />
+
+      <div class="mt-8 grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
+        <div class="lg:col-span-6">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+            <span class="rounded-full bg-accent-soft px-3 py-1 text-accent">
+              Strategy
+            </span>
+            <span class="text-ink-soft">
+              <time datetime={published}>Apr 1, 2026</time>
+              <span aria-hidden="true"> · </span>
+              {readTime} read
+            </span>
+          </div>
+
+          <h1
+            class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.35rem]"
+          >
+            Frameworks vs Enterprise AI Agent Platforms — When to Choose Which
+          </h1>
+          <p class="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
+            LangGraph and CrewAI maximize control. Copilot Studio, Agentforce,
+            and Bedrock maximize fit inside the systems you already run. The
+            right answer is a workload decision — not a brand preference.
+          </p>
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a href="#comparison" class="btn-primary">See comparison</a>
+            <a href="/platforms/" class="btn-secondary">Browse platforms</a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6">
+          <figure
+            class="overflow-hidden rounded-2xl border border-border bg-surface shadow-(--shadow-md)"
+          >
+            <img
+              src={heroImage}
+              alt="Split illustration: developer agent frameworks with code and graphs on the left, enterprise platforms with modern buildings on the right"
+              width="1600"
+              height="900"
+              class="h-auto w-full object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- Intro -->
+        <section class="prose-guide">
+          <h2 id="introduction" class="guide-h2">Start with the job, not the logo</h2>
+          <p>
+            By 2026 the market has split into clear lanes. <strong
+              class="font-semibold text-ink">Developer frameworks</strong
+            > (LangGraph, CrewAI, OpenAI Agents SDK, Claude Agent SDK, Pydantic AI,
+            Mastra, and peers) treat agents as software you design and operate. <strong
+              class="font-semibold text-ink">Enterprise platforms</strong
+            > (Microsoft Copilot Studio, Salesforce Agentforce, AWS Bedrock Agents,
+            Google Vertex Agent Builder, ServiceNow AI Agents, and similar) treat
+            agents as managed capabilities on top of cloud, CRM, or ITSM estates.
+          </p>
+          <p>
+            Teams get burned when they compare a framework’s flexibility to an
+            enterprise product’s admin console — or when they expect a suite to
+            behave like a fully custom orchestration engine. This guide keeps
+            both sides honest: what each is good at, where they fail, and when a
+            hybrid is rational.
+          </p>
+          <p>
+            Audience: technical founders, engineering leads, and platform/ops
+            owners who need a defensible choice under real constraints —
+            staffing, security, systems of record, and time-to-value.
+          </p>
+        </section>
+
+        <!-- Frameworks -->
+        <section class="mt-14 sm:mt-16" id="frameworks">
+          <h2 class="guide-h2">
+            What developer frameworks are good at
+          </h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Frameworks shine when the agent’s behavior is part of your product
+            surface area and engineers will own quality end to end.
+          </p>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              frameworkStrengths.map((item) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {item.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            <strong class="font-semibold text-ink">Tradeoffs:</strong> you pay
+            in engineering time, on-call, evaluation harnesses, and
+            security design. License line items look small; total cost of
+            ownership is people + models + the platform you accidentally build.
+          </p>
+          <p class="mt-4 text-sm text-ink-muted">
+            Examples in the directory:{" "}
+            <a href="/categories/frameworks/" class="font-medium text-accent hover:text-accent-hover"
+              >Frameworks category</a
+            >{" "}
+            — LangGraph, CrewAI, OpenAI Agents SDK, Anthropic Claude Agent SDK,
+            and more.
+          </p>
+        </section>
+
+        <!-- Enterprise -->
+        <section class="mt-14 sm:mt-16" id="enterprise">
+          <h2 class="guide-h2">
+            What enterprise platforms are good at
+          </h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Enterprise platforms win when the agent must live inside an existing
+            trust boundary and be operated by more than a few engineers.
+          </p>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              enterpriseStrengths.map((item) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {item.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            <strong class="font-semibold text-ink">Tradeoffs:</strong>{" "}
+            orchestration is constrained by the vendor’s object model. Escaping
+            the happy path often means awkward extensions, higher license cost,
+            or a second system anyway. Portability across clouds and CRMs is
+            rarely the design goal.
+          </p>
+          <p class="mt-4 text-sm text-ink-muted">
+            Examples in the directory:{" "}
+            <a href="/categories/enterprise/" class="font-medium text-accent hover:text-accent-hover"
+              >Enterprise category</a
+            >{" "}
+            — Copilot Studio, Agentforce, Bedrock Agents, Vertex Agent Builder,
+            and peers.
+          </p>
+        </section>
+
+        <!-- Comparison table -->
+        <section class="mt-14 sm:mt-16" id="comparison">
+          <h2 class="guide-h2">Side-by-side comparison</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Relative defaults for a typical mid-market or enterprise team. Your
+            scores will shift with staffing and which system of record you
+            already pay for.
+          </p>
+
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[40rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Dimension</th>
+                  <th class="px-4 py-3 font-semibold">Frameworks</th>
+                  <th class="px-4 py-3 font-semibold">Enterprise platforms</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  comparisonRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.dimension}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.frameworks}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.enterprise}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Decision matrix -->
+        <section class="mt-14 sm:mt-16" id="decision">
+          <h2 class="guide-h2">Decision matrix</h2>
+          <div class="mt-8 grid gap-6 lg:grid-cols-2">
+            <div class="card-surface p-6 sm:p-7">
+              <h3 class="text-lg font-semibold text-accent">
+                Choose frameworks when…
+              </h3>
+              <ul class="mt-4 space-y-3">
+                {
+                  chooseFrameworks.map((item) => (
+                    <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted">
+                      <span
+                        class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                        aria-hidden="true"
+                      >
+                        ✓
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+            <div class="card-surface p-6 sm:p-7">
+              <h3 class="text-lg font-semibold text-accent">
+                Choose enterprise when…
+              </h3>
+              <ul class="mt-4 space-y-3">
+                {
+                  chooseEnterprise.map((item) => (
+                    <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted">
+                      <span
+                        class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                        aria-hidden="true"
+                      >
+                        ✓
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Hybrid -->
+        <section class="mt-14 sm:mt-16" id="hybrid">
+          <h2 class="guide-h2">Hybrid approaches that work in 2026</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Most serious orgs will not run a single agent product. Hybrids work
+            when the boundary is explicit — not when two teams independently
+            invent the same agent twice.
+          </p>
+          <ul class="mt-8 space-y-4">
+            {
+              hybrids.map((h) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{h.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                    {h.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- Final recommendation -->
+        <section class="mt-14 sm:mt-16" id="recommendation">
+          <h2 class="guide-h2">Final recommendation framework</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Use this sequence in planning docs and vendor conversations. It
+            keeps the decision legible to eng, security, and the business.
+          </p>
+          <ol class="mt-8 space-y-4">
+            {
+              recommendations.map((r) => (
+                <li class="flex gap-4 rounded-2xl border border-border bg-surface-muted/50 p-5 sm:p-6">
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-fg"
+                    aria-hidden="true"
+                  >
+                    {r.step}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{r.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {r.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <p class="mt-8 text-base leading-relaxed text-ink-muted">
+            <strong class="font-semibold text-ink">Bottom line:</strong> pick
+            frameworks when you are building agent software; pick enterprise
+            platforms when you are automating work inside a system of record
+            under enterprise constraints. Revisit the choice when either the
+            workload or the operate model changes — not when a keynote slide
+            does.
+          </p>
+          <p class="mt-4 text-base leading-relaxed text-ink-muted">
+            For a full evaluation checklist across autonomy, tools, memory,
+            guardrails, observability, deployment, and TCO, see{" "}
+            <a
+              href="/guides/how-to-evaluate-ai-agent-platforms/"
+              class="font-medium text-accent hover:text-accent-hover"
+            >
+              How to Evaluate AI Agent Platforms in 2026
+            </a>.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <!-- CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Compare options — or design the hybrid
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Browse frameworks and enterprise platforms side by side in the
+          directory. If you need a shortlist and an implementation plan, we help
+          teams ship production agents with clear boundaries and governance.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+        >
+          <a
+            href="/platforms/"
+            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+          >
+            Browse all platforms
+          </a>
+          <a
+            href={site.cta.href}
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
+            rel="noopener noreferrer"
+          >
+            Talk about implementation
+          </a>
+        </div>
+        <p class="mt-6 text-sm text-slate-400">
+          Or jump to{" "}
+          <a href="/categories/frameworks/" class="text-indigo-300 hover:text-white"
+            >Frameworks</a
+          >
+          {" · "}
+          <a href="/categories/enterprise/" class="text-indigo-300 hover:text-white"
+            >Enterprise</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

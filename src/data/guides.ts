@@ -20,20 +20,20 @@ export const latestGuides: GuidePreview[] = [
   },
   {
     slug: "frameworks-vs-enterprise-platforms",
-    title: "Frameworks vs. enterprise platforms",
+    title: "Frameworks vs Enterprise AI Agent Platforms — When to Choose Which",
     excerpt:
       "When to build on LangGraph or CrewAI — and when a managed enterprise stack is the safer bet.",
     category: "Strategy",
-    readTime: "6 min",
-    date: "2026-02-10",
+    readTime: "10 min",
+    date: "2026-04-01",
   },
   {
     slug: "mcp-and-tool-calling-explained",
-    title: "MCP and tool calling, explained",
+    title: "MCP and Tool Calling Explained — Why It Matters for AI Agents",
     excerpt:
       "What Model Context Protocol means for agent interoperability, and which platforms support it today.",
     category: "Technical",
-    readTime: "7 min",
-    date: "2026-01-28",
+    readTime: "11 min",
+    date: "2026-04-01",
   },
 ];
