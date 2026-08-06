@@ -12,7 +12,13 @@
     "astro": "astro",
     "verify:tools": "node scripts/verify-tool-pages.mjs",
     "verify:seo": "node scripts/seo-postbuild.mjs",
-    "deploy": "npm run build && wrangler deploy"
+    "indexnow": "node scripts/indexnow.mjs",
+    "indexnow:guides": "node scripts/indexnow.mjs --preset guides",
+    "indexnow:tools": "node scripts/indexnow.mjs --preset tools",
+    "indexnow:recent": "node scripts/indexnow.mjs --preset recent",
+    "indexnow:sitemap": "node scripts/indexnow.mjs --sitemap",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:notify": "npm run deploy && npm run indexnow:sitemap"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

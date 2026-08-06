@@ -1,43 +1,36 @@
-# Astro Starter Kit: Minimal
+# Zoetic AI — AI Agent Platforms Directory
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Static **Astro + Tailwind** site deployed to **Cloudflare Workers Static Assets**  
+Canonical host: **https://www.zoeticai.com**
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Commands
 
-## 🚀 Project Structure
+| Command | Action |
+| --- | --- |
+| `npm run dev` | Local dev server |
+| `npm run build` | Production build + SEO checks |
+| `npm run preview` | Preview `dist/` |
+| `npm run deploy` | Build and `wrangler deploy` |
+| `npm run deploy:notify` | Deploy, then submit full sitemap to IndexNow |
+| `npm run indexnow -- --url /path/` | Notify IndexNow for one URL |
+| `npm run indexnow:guides` | Submit all guide URLs |
+| `npm run indexnow:tools` | Submit all tool pages |
+| `npm run indexnow:recent` | Guides + key hubs |
+| `npm run indexnow:sitemap` | Submit every sitemap URL |
 
-Inside of your Astro project, you'll see the following folders and files:
+## IndexNow (post-publish)
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+After shipping new guides or tools:
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+1. Deploy so the key file is live: `npm run deploy`
+2. Submit URLs, e.g. `npm run indexnow -- --url /guides/your-slug/`
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Full details: **[docs/INDEXNOW.md](./docs/INDEXNOW.md)**
 
-Any static assets, like images, can be placed in the `public/` directory.
+## SEO artifacts
 
-## 🧞 Commands
+- Sitemap: `/sitemap-index.xml` and alias `/sitemap.xml`
+- Robots: `/robots.txt`
+- IndexNow key: `/{KEY}.txt` (see `scripts/indexnow.config.mjs`)
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Build runs `scripts/seo-postbuild.mjs`, which verifies sitemap coverage (including comparison guides) and the IndexNow key file.
