@@ -1,0 +1,87 @@
+---
+import { footerGroups, site } from "../data/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-auto border-t border-border bg-surface-muted">
+  <!-- CTA band -->
+  <div class="border-b border-border bg-accent-soft">
+    <div
+      class="container-site flex flex-col items-start gap-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:py-10"
+    >
+      <div>
+        <p class="text-base font-semibold text-ink sm:text-lg">
+          {site.cta.label}
+        </p>
+        <p class="mt-1 text-sm text-ink-muted">
+          Talk to a team that ships production-grade AI agents and workflows.
+        </p>
+      </div>
+      <a
+        href={site.cta.href}
+        class="btn-primary shrink-0"
+        rel="noopener noreferrer"
+      >
+        Get in touch
+      </a>
+    </div>
+  </div>
+
+  <div class="container-site py-10 sm:py-12">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Brand -->
+      <div class="sm:col-span-2 lg:col-span-1">
+        <a href="/" class="inline-flex items-center gap-2.5">
+          <span
+            class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-sm font-bold text-accent-fg"
+            aria-hidden="true"
+          >
+            AI
+          </span>
+          <span class="text-base font-semibold text-ink">{site.name}</span>
+        </a>
+        <p class="mt-3 max-w-xs text-sm leading-relaxed text-ink-muted">
+          {site.tagline}
+        </p>
+      </div>
+
+      <!-- Link groups -->
+      {
+        footerGroups.map((group) => (
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+              {group.heading}
+            </p>
+            <ul class="mt-3 space-y-1">
+              {group.links.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="inline-flex min-h-9 items-center text-sm text-ink-muted transition-colors hover:text-ink"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div
+      class="mt-10 flex flex-col gap-3 border-t border-border pt-6 text-xs text-ink-soft sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>&copy; {year} {site.name}. All rights reserved.</p>
+      <p>
+        <a
+          href={`mailto:${site.email}`}
+          class="transition-colors hover:text-ink"
+        >
+          {site.email}
+        </a>
+      </p>
+    </div>
+  </div>
+</footer>

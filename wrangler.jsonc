@@ -1,0 +1,9 @@
+{
+  // Workers + Static Assets (not Cloudflare Pages).
+  "name": "ai-directory",
+  "compatibility_date": "2025-01-01",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash"
+  }
+}

@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+/* Directory site — design tokens */
+@theme {
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-surface-deep: #f1f5f9;
+  --color-ink: #0f172a;
+  --color-ink-muted: #475569;
+  --color-ink-soft: #94a3b8;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-accent: #4f46e5;
+  --color-accent-hover: #4338ca;
+  --color-accent-soft: #eef2ff;
+  --color-accent-fg: #ffffff;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.05);
+  --shadow-md: 0 4px 12px rgb(15 23 42 / 0.06), 0 1px 3px rgb(15 23 42 / 0.04);
+  --radius-card: 0.75rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface text-ink font-sans antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .container-site {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-y {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+
+  .link-nav {
+    @apply text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-ink;
+  }
+
+  .link-nav[aria-current="page"] {
+    @apply text-accent;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-fg shadow-(--shadow-sm) transition-colors duration-150 hover:bg-accent-hover;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition-colors duration-150 hover:bg-surface-muted hover:border-border-strong;
+  }
+
+  .input-search {
+    @apply w-full rounded-lg border border-border bg-surface-muted py-2 pl-10 pr-3 text-sm text-ink placeholder:text-ink-soft transition-colors duration-150 focus:border-accent focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent/20;
+  }
+
+  .card-surface {
+    @apply rounded-[var(--radius-card)] border border-border bg-surface shadow-(--shadow-sm);
+  }
+}
