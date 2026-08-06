@@ -57,13 +57,25 @@ export const footerGroups: FooterGroup[] = [
         label: "Evaluation guide",
       },
       {
+        href: "/guides/ai-agent-platforms-tco-2026/",
+        label: "AI agent platform TCO 2026",
+      },
+      {
         href: "/guides/best-open-source-ai-agent-frameworks-2026/",
         label: "Best OSS frameworks 2026",
+      },
+      {
+        href: "/guides/best-ai-agent-platforms-for-smbs-2026/",
+        label: "Best AI agents for SMBs 2026",
       },
       { href: "/guides/langgraph-vs-crewai/", label: "LangGraph vs CrewAI" },
       {
         href: "/guides/claude-code-vs-cursor/",
         label: "Claude Code vs Cursor",
+      },
+      {
+        href: "/guides/best-ai-coding-agents-2026/",
+        label: "Best AI coding agents 2026",
       },
       {
         href: "/guides/copilot-studio-vs-agentforce/",
@@ -72,6 +84,10 @@ export const footerGroups: FooterGroup[] = [
       {
         href: "/guides/n8n-vs-make-vs-zapier-agents/",
         label: "n8n vs Make vs Zapier Agents",
+      },
+      {
+        href: "/guides/lindy-vs-relevance-ai-vs-dust/",
+        label: "Lindy vs Relevance AI vs Dust",
       },
       {
         href: "/guides/frameworks-vs-enterprise-platforms/",

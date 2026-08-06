@@ -1,0 +1,967 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
+import { site } from "../../data/site";
+import { getToolBySlug } from "../../data/tools";
+
+const title = "Best AI Agent Platforms for SMBs and Startups in 2026";
+const description =
+  "Practical 2026 guide for founders and small teams: SMB-specific evaluation criteria, top AI agent platforms by use case, comparison table, pricing reality, mistakes to avoid, and a simple decision framework.";
+const published = "2026-04-01";
+const readTime = "14 min";
+
+const slugs = [
+  "n8n",
+  "make",
+  "zapier-agents",
+  "lindy",
+  "relevance-ai",
+  "gumloop",
+  "langgraph",
+  "crewai",
+  "openai-agents-sdk",
+  "cursor",
+] as const;
+
+const bySlug = Object.fromEntries(
+  slugs.map((s) => [s, getToolBySlug(s)]),
+) as Record<(typeof slugs)[number], ReturnType<typeof getToolBySlug>>;
+
+function score(slug: (typeof slugs)[number]): string {
+  const t = bySlug[slug];
+  return t ? t.scores.overall.toFixed(1) : "—";
+}
+
+const criteria = [
+  {
+    title: "Speed to value",
+    body: "Can one person ship a useful agent this week — not after a six-month platform program?",
+  },
+  {
+    title: "Pricing predictability",
+    body: "Will a chatty agent or multi-step loop blow the bill? Prefer clear free tiers, ops/task caps you can model, or self-host + API costs you control.",
+  },
+  {
+    title: "Ease of use",
+    body: "Who maintains this when the founder is in sales mode — a visual builder, a no-code agent, or a Python framework?",
+  },
+  {
+    title: "Maintenance burden",
+    body: "Broken zaps, brittle prompts, and orphaned workflows kill small teams. Favor tools you’ll actually open again next month.",
+  },
+  {
+    title: "Multi-agent capability",
+    body: "Do you need real handoffs and crews, or multi-step automation with AI steps? Most SMB “agents” are the latter — buy accordingly.",
+  },
+];
+
+const groups = [
+  {
+    id: "overall",
+    title: "Best overall for most SMBs",
+    pick: "n8n",
+    pickName: "n8n",
+    why: "Balances AI-in-the-loop automation, code escape hatches, and a real self-host option so you aren’t forced into enterprise suites or opaque task meters.",
+    also: [
+      {
+        slug: "make",
+        name: "Make",
+        note: "If pure SaaS visual scenarios fit better than self-host.",
+      },
+      {
+        slug: "zapier-agents",
+        name: "Zapier Agents",
+        note: "If you’re already deep in Zapier and need NL agents over a huge app catalog.",
+      },
+    ],
+  },
+  {
+    id: "no-code",
+    title: "Best no-code options",
+    pick: "make",
+    pickName: "Make",
+    why: "Strong visual multi-step scenarios with AI modules — the usual sweet spot for ops/growth SMBs who won’t maintain a framework.",
+    also: [
+      {
+        slug: "lindy",
+        name: "Lindy",
+        note: "Personal/team agents for email, meetings, and admin work.",
+      },
+      {
+        slug: "relevance-ai",
+        name: "Relevance AI",
+        note: "Visual multi-agent “workforces” for research and GTM experiments.",
+      },
+      {
+        slug: "gumloop",
+        name: "Gumloop",
+        note: "Template-first scraping, enrichment, and content pipelines.",
+      },
+      {
+        slug: "zapier-agents",
+        name: "Zapier Agents",
+        note: "Easiest on-ramp if the team already lives in Zapier.",
+      },
+    ],
+  },
+  {
+    id: "technical",
+    title: "Best for technical founders",
+    pick: "n8n",
+    pickName: "n8n (+ code when needed)",
+    why: "Technical founders usually want control without a 10-person platform team. n8n covers AI workflows; graduate to a framework when the agent is the product.",
+    also: [
+      {
+        slug: "langgraph",
+        name: "LangGraph",
+        note: "When you need durable graphs, state, and production control.",
+      },
+      {
+        slug: "crewai",
+        name: "CrewAI",
+        note: "When role-based multi-agent crews match how you ship work.",
+      },
+      {
+        slug: "openai-agents-sdk",
+        name: "OpenAI Agents SDK",
+        note: "Lightweight if you’re standardized on OpenAI models.",
+      },
+      {
+        slug: "cursor",
+        name: "Cursor",
+        note: "For shipping product code faster — not for customer-facing agents.",
+      },
+    ],
+  },
+  {
+    id: "budget",
+    title: "Best open-source / budget route",
+    pick: "langgraph",
+    pickName: "LangGraph (or CrewAI) + model APIs",
+    why: "Lowest license cost: free frameworks, pay for tokens and your own hosting. Highest skill requirement — only pick this if someone can own it weekly.",
+    also: [
+      {
+        slug: "crewai",
+        name: "CrewAI",
+        note: "Faster multi-agent prototypes with role crews.",
+      },
+      {
+        slug: "n8n",
+        name: "n8n (self-host)",
+        note: "Budget automation path without rewriting everything in Python.",
+      },
+      {
+        slug: "openai-agents-sdk",
+        name: "OpenAI Agents SDK",
+        note: "Thin OSS layer; spend is almost pure API usage.",
+      },
+    ],
+  },
+];
+
+const comparisonRows: {
+  platform: string;
+  slug: (typeof slugs)[number];
+  bestFor: string;
+  skill: string;
+  pricing: string;
+  multi: string;
+}[] = [
+  {
+    platform: "n8n",
+    slug: "n8n",
+    bestFor: "AI workflows + self-host / hybrid code",
+    skill: "Low–med (tech ops)",
+    pricing: "Self-host free; Cloud ~$20+/mo + models",
+    multi: "Agent nodes / multi-step",
+  },
+  {
+    platform: "Make",
+    slug: "make",
+    bestFor: "Visual multi-app scenarios",
+    skill: "Low",
+    pricing: "Free tier; paid ~$9+/mo by ops",
+    multi: "AI steps, not full crews",
+  },
+  {
+    platform: "Zapier Agents",
+    slug: "zapier-agents",
+    bestFor: "NL agents over SaaS catalog",
+    skill: "Lowest",
+    pricing: "Mid tiers+; tasks + agent usage",
+    multi: "Single-agent style goals",
+  },
+  {
+    platform: "Lindy",
+    slug: "lindy",
+    bestFor: "Founder admin agents",
+    skill: "Lowest",
+    pricing: "Often ~$50+/mo class",
+    multi: "Light multi-agent",
+  },
+  {
+    platform: "Relevance AI",
+    slug: "relevance-ai",
+    bestFor: "Visual multi-agent workforces",
+    skill: "Low–med",
+    pricing: "Free/credits; usage scales",
+    multi: "Strong (workforces)",
+  },
+  {
+    platform: "Gumloop",
+    slug: "gumloop",
+    bestFor: "GTM scrape/enrich/content",
+    skill: "Low",
+    pricing: "Credits; watch volume",
+    multi: "Workflow-style",
+  },
+  {
+    platform: "LangGraph",
+    slug: "langgraph",
+    bestFor: "Productized / complex agents",
+    skill: "High",
+    pricing: "OSS free + APIs + eng time",
+    multi: "Excellent (graphs)",
+  },
+  {
+    platform: "CrewAI",
+    slug: "crewai",
+    bestFor: "Role-based multi-agent",
+    skill: "Med–high",
+    pricing: "OSS free; enterprise optional",
+    multi: "Excellent (crews)",
+  },
+];
+
+const profiles: {
+  slug: (typeof slugs)[number];
+  name: string;
+  role: string;
+  body: string;
+  pricing: string;
+  skipIf: string;
+}[] = [
+  {
+    slug: "n8n",
+    name: "n8n",
+    role: "Best default for serious SMB automation",
+    body: "Visual workflows plus AI/agent nodes and code when you need it. Self-host if data residency or cost at volume matters; use Cloud if you want less ops. Directory overall score " +
+      score("n8n") +
+      "/10.",
+    pricing:
+      "Community self-host is free (infra + model APIs). Cloud is execution-based, often starting around the low tens of dollars per month — verify current tiers.",
+    skipIf: "Nobody on the team can handle nodes, JSON, or basic hosting.",
+  },
+  {
+    slug: "make",
+    name: "Make",
+    role: "Best pure-SaaS visual builder for ops",
+    body: "Scenarios map cleanly to how growth and ops people think. AI modules cover classification and generation inside multi-app flows. Score " +
+      score("make") +
+      "/10.",
+    pricing:
+      "Useful free tier; paid plans scale by monthly operations. Complex or chatty AI scenarios burn ops faster than simple zaps.",
+    skipIf: "You need self-host or deep multi-agent graphs.",
+  },
+  {
+    slug: "zapier-agents",
+    name: "Zapier Agents",
+    role: "Best if you’re already on Zapier",
+    body: "Natural-language agents that call Zapier’s massive app catalog. Lowest friction for non-technical operators. Score " +
+      score("zapier-agents") +
+      "/10.",
+    pricing:
+      "Agent access often sits on mid paid tiers; total cost = seats/tasks + agent activity. At high volume, model the task meter honestly.",
+    skipIf: "You need VPC control or custom multi-agent product logic.",
+  },
+  {
+    slug: "lindy",
+    name: "Lindy",
+    role: "Best founder “assistant” style agents",
+    body: "Email, calendar, meetings, and admin loops without becoming an automation engineer. Score " +
+      score("lindy") +
+      "/10.",
+    pricing:
+      "Subscription-style plans; public tiers move often — budget like a serious SaaS seat, not a free hobby tool.",
+    skipIf: "You’re building a product agent for customers, not internal admin.",
+  },
+  {
+    slug: "relevance-ai",
+    name: "Relevance AI",
+    role: "Best no-code multi-agent experiments",
+    body: "Visual multi-agent workforces for research, support, and GTM. Good when you want multi-agent without Python. Score " +
+      score("relevance-ai") +
+      "/10.",
+    pricing:
+      "Free/starter with credits; team cost climbs with usage. Watch credit burn on research loops.",
+    skipIf: "You need open-source, self-host, or embeddable SDKs.",
+  },
+  {
+    slug: "langgraph",
+    name: "LangGraph",
+    role: "Best when the agent is the product",
+    body: "Stateful graphs, checkpoints, HITL — the technical route when control beats templates. Score " +
+      score("langgraph") +
+      "/10. See also " +
+      "LangGraph vs CrewAI.",
+    pricing:
+      "Library free/open source. Real cost is eng time + model APIs (+ optional LangSmith/Platform).",
+    skipIf: "You only need CRM glue or inbox triage this quarter.",
+  },
+  {
+    slug: "crewai",
+    name: "CrewAI",
+    role: "Best budget multi-agent for builders",
+    body: "Role-based crews ship demos and internal research pipelines fast in Python. Score " +
+      score("crewai") +
+      "/10.",
+    pricing:
+      "OSS core free; pay APIs and optional enterprise. Still requires a developer owner.",
+    skipIf: "No one on the team writes or maintains Python agents.",
+  },
+  {
+    slug: "gumloop",
+    name: "Gumloop",
+    role: "Best template-first GTM automation",
+    body: "Scraping, enrichment, content — optimized for speed, not enterprise RPA. Score " +
+      score("gumloop") +
+      "/10.",
+    pricing: "Credit-based; great for experiments, easy to overspend at volume.",
+    skipIf: "You need broad iPaaS-style integration depth.",
+  },
+];
+
+const mistakes = [
+  {
+    title: "Buying enterprise because the logo list is impressive",
+    body: "Copilot Studio and Agentforce are great inside Microsoft/Salesforce estates. For a 12-person startup, they’re often slow and expensive relative to the job.",
+  },
+  {
+    title: "Confusing multi-step automation with multi-agent product architecture",
+    body: "Most SMB wins are “AI step inside a workflow.” You don’t need a graph framework for lead enrichment.",
+  },
+  {
+    title: "Ignoring task/ops/execution math",
+    body: "Chatty agents multiply automation units. Model 3× pilot volume before you standardize.",
+  },
+  {
+    title: "No owner after the demo",
+    body: "If nobody owns prompts, credentials, and failure alerts, the agent dies in week three.",
+  },
+  {
+    title: "Skipping a golden task",
+    body: "Write one real success metric (e.g. “triage support email with 90% correct routing”) before you compare vendors.",
+  },
+  {
+    title: "Underestimating model spend",
+    body: "Platform fees and token fees stack. BYO keys on n8n/frameworks makes that visible — good.",
+  },
+];
+
+const decisionSteps = [
+  {
+    step: "1",
+    title: "Name the job in one sentence",
+    body: "Inbox triage, lead enrichment, support draft, or product agent? Different tools win.",
+  },
+  {
+    step: "2",
+    title: "Name the builder",
+    body: "Non-technical ops → Make / Zapier / Lindy. Technical ops → n8n. Product eng → LangGraph / CrewAI / OpenAI Agents SDK.",
+  },
+  {
+    step: "3",
+    title: "Hard constraints",
+    body: "Must self-host? Lean n8n or frameworks. Must stay pure SaaS? Make/Zapier/Lindy/Relevance.",
+  },
+  {
+    step: "4",
+    title: "Price at 3× pilot volume",
+    body: "Include seats, ops/tasks/executions, and model tokens. Kill options that only win the free tier demo.",
+  },
+  {
+    step: "5",
+    title: "Ship one golden path in two weeks",
+    body: "If you can’t, the platform is wrong for this team — not “not AI enough.”",
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/guides/best-ai-agent-platforms-for-smbs-2026/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    {
+      name: "Best AI agent platforms for SMBs 2026",
+      path: "/guides/best-ai-agent-platforms-for-smbs-2026/",
+    },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="page-hero-glow" aria-hidden="true"></div>
+    <div class="container-site relative py-11 sm:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "Best AI agents for SMBs 2026" },
+        ]}
+      />
+
+      <div class="mt-8 max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span class="pill-accent">Roundup</span>
+          <span class="text-ink-soft">
+            <time datetime={published}>Apr 1, 2026</time>
+            <span aria-hidden="true"> · </span>
+            {readTime} read
+          </span>
+        </div>
+
+        <h1 class="text-page-title mt-4 lg:text-[2.35rem]">
+          Best AI Agent Platforms for SMBs and Startups in 2026
+        </h1>
+        <p class="text-body-lg mt-4">
+          A practical shortlist for founders and small teams — speed, cost you
+          can model, and tools you’ll actually maintain without a dedicated AI
+          org.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#recommendations" class="btn-primary">Top picks</a>
+          <a href="#comparison" class="btn-secondary">Comparison table</a>
+        </div>
+        <p class="mt-6 text-sm text-ink-muted">
+          Related:{" "}
+          <a
+            href="/guides/n8n-vs-make-vs-zapier-agents/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >n8n vs Make vs Zapier Agents</a
+          >
+          {" · "}
+          <a
+            href="/guides/langgraph-vs-crewai/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >LangGraph vs CrewAI</a
+          >
+          {" · "}
+          <a
+            href="/methodology/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Methodology</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- 1. Intro -->
+        <section class="prose-guide">
+          <h2 id="introduction" class="guide-h2">
+            Why most “best AI agent” lists fail SMBs
+          </h2>
+          <p>
+            Generic roundups optimize for enterprise logos, multi-cloud IAM, and
+            “agentic workforce” slides. That is the wrong scorecard if you’re a
+            founder, a five-person ops team, or a technical operator without a
+            platform budget.
+          </p>
+          <p>
+            SMBs lose when they buy tools that need a CoE, a six-figure contract,
+            or three engineers to keep prompts alive. They win when an agent
+            removes a real weekly burden — support triage, lead routing, research
+            drafts, internal admin — with pricing they can forecast and someone
+            who owns the workflow.
+          </p>
+          <p>
+            This guide uses the same directory scores and feature flags we
+            publish on each{" "}
+            <a
+              href="/platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >platform profile</a
+            >, filtered through SMB constraints. For the full rubric, see our{" "}
+            <a
+              href="/methodology/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >methodology</a
+            >{" "}
+            and the broader{" "}
+            <a
+              href="/guides/how-to-evaluate-ai-agent-platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >evaluation guide</a
+            >.
+          </p>
+        </section>
+
+        <!-- 2. Criteria -->
+        <section class="mt-14 sm:mt-16" id="criteria">
+          <h2 class="guide-h2">
+            Evaluation criteria for SMBs and startups
+          </h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Score options against these five — not against “most features” or
+            “largest logo list.”
+          </p>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              criteria.map((c, i) => (
+                <li class="card-surface flex flex-col p-5 sm:p-6">
+                  <span
+                    class="inline-flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] bg-surface-muted text-[11px] font-bold tabular-nums text-ink-soft ring-1 ring-border"
+                    aria-hidden="true"
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 class="mt-3 text-base font-semibold tracking-tight text-ink">
+                    {c.title}
+                  </h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {c.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 3. Recommendations -->
+        <section class="mt-14 sm:mt-16" id="recommendations">
+          <h2 class="guide-h2">Top recommendations by situation</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            One “winner” per lane — then honest runners-up. Open profiles for
+            scores and feature flags.
+          </p>
+
+          <div class="mt-8 space-y-6">
+            {
+              groups.map((g) => {
+                const pickTool = bySlug[g.pick as (typeof slugs)[number]];
+                return (
+                  <div class="card-surface p-5 sm:p-7" id={g.id}>
+                    <p class="eyebrow">{g.title}</p>
+                    <h3 class="mt-2 text-xl font-bold tracking-tight text-ink">
+                      <a
+                        href={`/tools/${g.pick}/`}
+                        class="text-accent hover:text-accent-hover"
+                      >
+                        {g.pickName}
+                      </a>
+                      {pickTool && (
+                        <span class="ml-2 text-sm font-semibold text-ink-soft">
+                          {pickTool.scores.overall.toFixed(1)}/10
+                        </span>
+                      )}
+                    </h3>
+                    <p class="mt-3 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {g.why}
+                    </p>
+                    <ul class="mt-5 space-y-2 border-t border-border pt-4">
+                      {g.also.map((a) => (
+                        <li class="text-sm text-ink-muted">
+                          <a
+                            href={`/tools/${a.slug}/`}
+                            class="font-semibold text-ink hover:text-accent"
+                          >
+                            {a.name}
+                          </a>
+                          <span class="text-ink-soft"> — {a.note}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })
+            }
+          </div>
+
+          <p class="mt-6 text-sm leading-relaxed text-ink-muted">
+            Deep dives:{" "}
+            <a
+              href="/guides/n8n-vs-make-vs-zapier-agents/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >n8n vs Make vs Zapier Agents</a
+            >{" "}
+            for automation agents;{" "}
+            <a
+              href="/guides/langgraph-vs-crewai/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >LangGraph vs CrewAI</a
+            >{" "}
+            for technical multi-agent;{" "}
+            <a
+              href="/guides/best-open-source-ai-agent-frameworks-2026/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >best open-source frameworks</a
+            >{" "}
+            for the budget/code path.
+          </p>
+        </section>
+
+        <!-- 4. Comparison table -->
+        <section class="mt-14 sm:mt-16" id="comparison">
+          <h2 class="guide-h2">Comparison table (SMB lens)</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Pricing is directional for 2026 planning — always confirm on vendor
+            sites. Scores are overall directory ratings.
+          </p>
+          <div class="mt-6 overflow-x-auto rounded-[var(--radius-card)] border border-border">
+            <table class="w-full min-w-[44rem] text-left text-sm">
+              <thead class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Platform</th>
+                  <th class="px-4 py-3 font-semibold">Score</th>
+                  <th class="px-4 py-3 font-semibold">Best for</th>
+                  <th class="px-4 py-3 font-semibold">Skill</th>
+                  <th class="px-4 py-3 font-semibold">Pricing reality</th>
+                  <th class="px-4 py-3 font-semibold">Multi-agent</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  comparisonRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        <a
+                          href={`/tools/${row.slug}/`}
+                          class="hover:text-accent"
+                        >
+                          {row.platform}
+                        </a>
+                      </td>
+                      <td class="px-4 py-3.5 align-top tabular-nums text-ink">
+                        {score(row.slug)}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.bestFor}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.skill}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.pricing}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.multi}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-4 text-sm text-ink-muted">
+            Browse by category:{" "}
+            <a
+              href="/categories/no-code/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >No-Code</a
+            >
+            {" · "}
+            <a
+              href="/categories/workflow/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Workflow</a
+            >
+            {" · "}
+            <a
+              href="/categories/frameworks/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Frameworks</a
+            >
+            {" · "}
+            <a
+              href="/categories/coding/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Coding</a
+            >
+          </p>
+        </section>
+
+        <!-- 5. Profiles -->
+        <section class="mt-14 sm:mt-16" id="profiles">
+          <h2 class="guide-h2">Short profiles (with pricing reality)</h2>
+          <div class="mt-8 space-y-5">
+            {
+              profiles.map((p) => (
+                <article class="card-surface p-5 sm:p-6">
+                  <div class="flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 class="text-lg font-semibold tracking-tight text-ink">
+                      <a
+                        href={`/tools/${p.slug}/`}
+                        class="hover:text-accent"
+                      >
+                        {p.name}
+                      </a>
+                    </h3>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-accent">
+                      {p.role}
+                    </span>
+                  </div>
+                  <p class="mt-3 text-sm leading-relaxed text-ink-muted sm:text-base">
+                    {p.body.includes("LangGraph vs CrewAI") ? (
+                      <>
+                        Stateful graphs, checkpoints, HITL — the technical route
+                        when control beats templates. Score {score("langgraph")}
+                        /10. See also{" "}
+                        <a
+                          href="/guides/langgraph-vs-crewai/"
+                          class="font-semibold text-accent hover:text-accent-hover"
+                        >
+                          LangGraph vs CrewAI
+                        </a>
+                        .
+                      </>
+                    ) : (
+                      p.body
+                    )}
+                  </p>
+                  <dl class="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
+                    <div>
+                      <dt class="eyebrow-muted">Pricing reality</dt>
+                      <dd class="mt-1 text-sm text-ink-muted">{p.pricing}</dd>
+                    </div>
+                    <div>
+                      <dt class="eyebrow-muted">Skip if</dt>
+                      <dd class="mt-1 text-sm text-ink-muted">{p.skipIf}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))
+            }
+          </div>
+        </section>
+
+        <!-- 6. Mistakes -->
+        <section class="mt-14 sm:mt-16" id="mistakes">
+          <h2 class="guide-h2">
+            Common mistakes SMBs make choosing agent platforms
+          </h2>
+          <ul class="mt-8 space-y-4">
+            {
+              mistakes.map((m) => (
+                <li class="card-surface p-5">
+                  <h3 class="text-base font-semibold text-ink">{m.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {m.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            Enterprise suites still matter later — when you’re deep in Microsoft
+            or Salesforce. Until then, see{" "}
+            <a
+              href="/guides/frameworks-vs-enterprise-platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >frameworks vs enterprise platforms</a
+            >{" "}
+            so you don’t overbuy early or underbuy when compliance lands.
+          </p>
+        </section>
+
+        <!-- 7. Decision framework -->
+        <section class="mt-14 sm:mt-16" id="decision">
+          <h2 class="guide-h2">Simple decision framework</h2>
+          <ol class="mt-8 space-y-4">
+            {
+              decisionSteps.map((r) => (
+                <li class="flex gap-4 rounded-[var(--radius-card)] border border-border bg-surface-muted/50 p-5 sm:p-6">
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-accent text-sm font-bold text-accent-fg"
+                    aria-hidden="true"
+                  >
+                    {r.step}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{r.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {r.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+
+          <div
+            class="mt-10 rounded-[var(--radius-card)] border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+          >
+            <p class="eyebrow">Cheat sheet</p>
+            <ul class="mt-4 space-y-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+              <li>
+                <strong class="font-semibold text-ink">Most SMBs:</strong>{" "}
+                <a href="/tools/n8n/" class="font-semibold text-accent hover:text-accent-hover">n8n</a>{" "}
+                or{" "}
+                <a href="/tools/make/" class="font-semibold text-accent hover:text-accent-hover">Make</a>
+              </li>
+              <li>
+                <strong class="font-semibold text-ink">Already on Zapier:</strong>{" "}
+                <a href="/tools/zapier-agents/" class="font-semibold text-accent hover:text-accent-hover">Zapier Agents</a>
+              </li>
+              <li>
+                <strong class="font-semibold text-ink">Founder admin load:</strong>{" "}
+                <a href="/tools/lindy/" class="font-semibold text-accent hover:text-accent-hover">Lindy</a>
+              </li>
+              <li>
+                <strong class="font-semibold text-ink">No-code multi-agent experiments:</strong>{" "}
+                <a href="/tools/relevance-ai/" class="font-semibold text-accent hover:text-accent-hover">Relevance AI</a>
+              </li>
+              <li>
+                <strong class="font-semibold text-ink">Building the product:</strong>{" "}
+                <a href="/tools/langgraph/" class="font-semibold text-accent hover:text-accent-hover">LangGraph</a>
+                {" / "}
+                <a href="/tools/crewai/" class="font-semibold text-accent hover:text-accent-hover">CrewAI</a>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Closing -->
+        <section class="mt-14 sm:mt-16 prose-guide">
+          <h2 class="guide-h2">Bottom line</h2>
+          <p>
+            For SMBs in 2026, the best AI agent platform is the one a real owner
+            can ship and maintain this month — usually{" "}
+            <strong class="font-semibold text-ink">n8n</strong> or{" "}
+            <strong class="font-semibold text-ink">Make</strong> for automation,
+            with frameworks only when the agent <em>is</em> the product. Skip
+            enterprise theater until your systems of record and compliance
+            demand it.
+          </p>
+          <p>
+            Next: open scored profiles, run a two-week golden task, and use{" "}
+            <a
+              href="/guides/n8n-vs-make-vs-zapier-agents/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >n8n vs Make vs Zapier</a
+            >{" "}
+            or{" "}
+            <a
+              href="/guides/langgraph-vs-crewai/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >LangGraph vs CrewAI</a
+            >{" "}
+            when you’re down to two finals.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <GuideExplore
+    slug="best-ai-agent-platforms-for-smbs-2026"
+    categories={["No-Code", "Workflow", "Frameworks"]}
+  />
+
+  <!-- CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(67_56_202_/_0.28)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Compare profiles — then pick one golden task
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Start with{" "}
+          <a href="/tools/n8n/" class="text-indigo-300 hover:text-white">n8n</a>
+          ,{" "}
+          <a href="/tools/make/" class="text-indigo-300 hover:text-white">Make</a>
+          , or the{" "}
+          <a
+            href="/categories/no-code/"
+            class="text-indigo-300 hover:text-white">No-Code category</a
+          >
+          . Score with our{" "}
+          <a href="/methodology/" class="text-indigo-300 hover:text-white"
+            >methodology</a
+          >.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center"
+        >
+          <a
+            href="/tools/n8n/"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-accent px-6 py-3 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
+          >
+            n8n profile
+          </a>
+          <a
+            href="/guides/n8n-vs-make-vs-zapier-agents/"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
+          >
+            n8n vs Make vs Zapier
+          </a>
+          <a
+            href="/platforms/"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
+          >
+            All platforms
+          </a>
+        </div>
+        <p class="mt-6 text-sm text-slate-400">
+          <a href="/contact/" class="text-indigo-300 hover:text-white"
+            >Contact</a
+          >
+          {" · "}
+          <a href={site.cta.href} class="text-indigo-300 hover:text-white"
+            >Implementation</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

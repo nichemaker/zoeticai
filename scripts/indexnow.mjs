@@ -173,6 +173,10 @@ function urlsFromPreset(name) {
       "copilot-studio-vs-agentforce",
       "best-open-source-ai-agent-frameworks-2026",
       "n8n-vs-make-vs-zapier-agents",
+      "best-ai-agent-platforms-for-smbs-2026",
+      "lindy-vs-relevance-ai-vs-dust",
+      "best-ai-coding-agents-2026",
+      "ai-agent-platforms-tco-2026",
     ];
     return [
       `${SITE_ORIGIN}/guides/`,

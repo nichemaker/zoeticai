@@ -1,0 +1,753 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
+import { site } from "../../data/site";
+
+const title = "What AI Agent Platforms Actually Cost in 2026 (A Practical TCO Guide)";
+const description =
+  "Practical 2026 TCO guide for AI agent platforms: full cost stack, no-code vs frameworks vs enterprise vs coding agents, hidden costs, buyer questions, and rough cost reality by company size.";
+const published = "2026-04-01";
+const readTime = "13 min";
+
+const costStack = [
+  {
+    title: "Subscription / seats",
+    body: "Base platform fees — per user, per workspace, or flat team plans. Easy to model; rarely the whole bill.",
+  },
+  {
+    title: "Usage, credits, tasks, ops, executions",
+    body: "Metered units: Zapier tasks, Make operations, n8n executions, Relevance actions, agent “minutes,” ACU-style clouds. Chatty agents multiply these fast.",
+  },
+  {
+    title: "Model / token spend",
+    body: "BYO API keys or included quotas. Multi-step agents burn tokens on planning, tool loops, and retries — not one completion per user click.",
+  },
+  {
+    title: "Infrastructure",
+    body: "Self-host (n8n, frameworks, Dust options): compute, storage, networking, backups, upgrades. Managed SaaS hides this in the subscription.",
+  },
+  {
+    title: "Engineering & builder time",
+    body: "Usually the largest line. Design, prompts, tools, integrations, reviews, and rework. Free OSS is never free labor.",
+  },
+  {
+    title: "Observability & evals",
+    body: "Tracing (e.g. LangSmith-class tools), logging, golden-task evals, staging. Optional until production; then mandatory.",
+  },
+  {
+    title: "Human-in-the-loop",
+    body: "Approvals, escalations, and review queues. High-stakes agents without HITL look cheap until one bad action ships.",
+  },
+  {
+    title: "Failure & opportunity cost",
+    body: "Wrong CRM updates, bad support drafts, broken automations, incident response. Not on the pricing page — still real TCO.",
+  },
+];
+
+const byCategory = [
+  {
+    title: "No-code agent builders",
+    examples: "Lindy, Relevance AI, Dust, Zapier Agents, Make, n8n Cloud",
+    shape:
+      "Predictable seats or opaque credit meters. Free tiers sell the demo; volume and multi-agent loops sell the upgrade.",
+    watch: [
+      "Ops/tasks/actions per AI step (loops × steps × runs)",
+      "Team plan jumps (e.g. multi-agent platforms into mid-hundreds/mo)",
+      "Per-seat knowledge tools (Dust-class) vs flat founder subscriptions (Lindy-class)",
+    ],
+    links: [
+      { href: "/guides/lindy-vs-relevance-ai-vs-dust/#pricing", label: "Lindy vs Relevance vs Dust pricing" },
+      { href: "/guides/n8n-vs-make-vs-zapier-agents/#pricing", label: "n8n vs Make vs Zapier pricing" },
+      { href: "/guides/best-ai-agent-platforms-for-smbs-2026/", label: "SMB platform shortlist" },
+    ],
+  },
+  {
+    title: "Developer frameworks (open-source + managed)",
+    examples: "LangGraph, CrewAI, OpenAI Agents SDK, Pydantic AI + optional managed platforms",
+    shape:
+      "License often $0. Real cost = eng time + model APIs + optional tracing/hosting. Managed layers add seats or usage.",
+    watch: [
+      "Senior eng weeks to first production path",
+      "Token burn on long graphs and retries",
+      "Optional platform/tracing SKUs that become table stakes",
+    ],
+    links: [
+      { href: "/guides/langgraph-vs-crewai/", label: "LangGraph vs CrewAI" },
+      { href: "/guides/best-open-source-ai-agent-frameworks-2026/", label: "Best OSS frameworks 2026" },
+      { href: "/categories/frameworks/", label: "Frameworks category" },
+    ],
+  },
+  {
+    title: "Enterprise platforms",
+    examples: "Copilot Studio, Agentforce, Bedrock Agents, Vertex, ServiceNow, etc.",
+    shape:
+      "Suite licensing, capacity packs, premium connectors, professional services. List prices understate procurement and CoE cost.",
+    watch: [
+      "Whether you already pay for the suite (marginal cost vs greenfield)",
+      "Message/session/capacity overages",
+      "Partner/SI implementation — often larger than software year one",
+    ],
+    links: [
+      { href: "/guides/copilot-studio-vs-agentforce/#pricing", label: "Copilot Studio vs Agentforce (pricing/TCO)" },
+      { href: "/guides/frameworks-vs-enterprise-platforms/", label: "Frameworks vs enterprise" },
+      { href: "/categories/enterprise/", label: "Enterprise category" },
+    ],
+  },
+  {
+    title: "Coding agents",
+    examples: "Cursor, Claude Code, Copilot, Codex, Devin, Cline",
+    shape:
+      "Seats look cheap; heavy agent weeks hit usage caps, Max/API, or cloud agent units. OSS (Cline) shifts cost to model APIs.",
+    watch: [
+      "Pro/Business seat + overage vs pure API",
+      "Double-stacking (Cursor + Copilot + Devin for everyone)",
+      "Review time on autonomous PR pilots — human cost is part of TCO",
+    ],
+    links: [
+      { href: "/guides/best-ai-coding-agents-2026/#pricing", label: "Best coding agents — pricing notes" },
+      { href: "/guides/claude-code-vs-cursor/", label: "Claude Code vs Cursor" },
+      { href: "/categories/coding/", label: "Coding category" },
+    ],
+  },
+];
+
+const hiddenCosts = [
+  {
+    title: "Retry and failure loops",
+    body: "A flaky tool call can re-run the whole agent path — double or triple meter and tokens with no user value.",
+  },
+  {
+    title: "Context stuffing",
+    body: "RAG and “dump the repo/docs” patterns feel free until the context window is the product’s main bill.",
+  },
+  {
+    title: "Connector sprawl",
+    body: "Each SaaS integration is credentials, scopes, breakage on API changes, and someone on-call for auth expiry.",
+  },
+  {
+    title: "Shadow tools",
+    body: "Three no-code agents + two IDEs + a framework experiment = five invoices and zero shared operate model.",
+  },
+  {
+    title: "Compliance drag",
+    body: "DPAs, residency, retention, and audit — legal/time cost before a single production workflow ships.",
+  },
+  {
+    title: "Training and ownership gaps",
+    body: "If only the founder knows the agent, every vacation is an outage. Ownership is a recurring cost.",
+  },
+  {
+    title: "Bad automation at scale",
+    body: "A wrong support reply or CRM write multiplies with volume. Failure cost grows with success metrics.",
+  },
+];
+
+const questions = [
+  {
+    q: "What unit am I billed on — and what multiplies it?",
+    why: "Map one real golden path into ops/tasks/tokens/executions before you sign.",
+  },
+  {
+    q: "What’s included model spend vs BYO?",
+    why: "Included quotas hide burn until you hit overage; BYO makes burn visible but still real.",
+  },
+  {
+    q: "Who builds and who maintains this after week two?",
+    why: "Builder hours × fully loaded rate often dominate SaaS fees for SMBs.",
+  },
+  {
+    q: "What happens at 3× and 10× pilot volume?",
+    why: "Free tiers and demos optimize for week one. Budget for quarter two.",
+  },
+  {
+    q: "Do we need HITL — and who staffs the queue?",
+    why: "Approvers are capacity. Unstaffed HITL is either theater or risk.",
+  },
+  {
+    q: "What is the cost of a wrong action?",
+    why: "If the answer is high, pay for control, logging, and slower autonomy.",
+  },
+  {
+    q: "Are we double-paying for overlapping tools?",
+    why: "Cursor + Copilot + Zapier Agents + n8n can all be rational — or pure waste if roles overlap.",
+  },
+  {
+    q: "Is self-host cheaper after ops labor?",
+    why: "Infra + on-call vs SaaS premium: run the numbers with real salary, not wishful zero ops.",
+  },
+];
+
+const sizeRows: {
+  size: string;
+  pattern: string;
+  rough: string;
+  note: string;
+}[] = [
+  {
+    size: "Solo / 2–10 people",
+    pattern: "1–2 tools: coding agent and/or no-code automation",
+    rough: "Often $20–200/mo software + model overages; time is the real cost",
+    note: "Avoid enterprise suites and multi-agent factories until a job is clear",
+  },
+  {
+    size: "SMB / startup (10–100)",
+    pattern: "Shared automation (n8n/Make/Zapier) + optional no-code agents + team coding seats",
+    rough: "Low hundreds to low thousands $/mo software common; eng time still large",
+    note: "Watch multi-agent credit plans (~$349/mo class) and seat sprawl",
+  },
+  {
+    size: "Mid-market",
+    pattern: "Governed no-code + selective framework for product agents + enterprise coding",
+    rough: "Thousands–tens of thousands $/mo possible with seats + capacity + SI",
+    note: "Procurement and security review become calendar cost",
+  },
+  {
+    size: "Enterprise",
+    pattern: "Suite agents (M365/Salesforce/etc.) + CoE + selective custom frameworks",
+    rough: "Software often not the largest line; services, change management, and risk are",
+    note: "Compare marginal cost of suite agents vs net-new vendors",
+  },
+];
+
+const valueLenses = [
+  {
+    title: "Cost per successful outcome",
+    body: "Price a completed ticket, triaged email, or shipped PR — not cost per seat. Cheap tools with 30% success are expensive.",
+  },
+  {
+    title: "Time-to-value vs peak efficiency",
+    body: "No-code can win year one even if frameworks win year three. Include delay cost of building from scratch.",
+  },
+  {
+    title: "Risk-adjusted cost",
+    body: "A $0 OSS agent with no logging can be the most expensive choice after one incident.",
+  },
+  {
+    title: "Concentration risk",
+    body: "One vendor lock-in is a cost; so is five half-adopted tools. Prefer a small, owned stack.",
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/guides/ai-agent-platforms-tco-2026/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    {
+      name: "AI agent platform TCO 2026",
+      path: "/guides/ai-agent-platforms-tco-2026/",
+    },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="page-hero-glow" aria-hidden="true"></div>
+    <div class="container-site relative py-11 sm:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "AI agent platform TCO 2026" },
+        ]}
+      />
+
+      <div class="mt-8 max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span class="pill-accent">Buying</span>
+          <span class="text-ink-soft">
+            <time datetime={published}>Apr 1, 2026</time>
+            <span aria-hidden="true"> · </span>
+            {readTime} read
+          </span>
+        </div>
+
+        <h1 class="text-page-title mt-4 lg:text-[2.25rem]">
+          What AI Agent Platforms Actually Cost in 2026 (A Practical TCO Guide)
+        </h1>
+        <p class="text-body-lg mt-4">
+          A no-nonsense map of total cost of ownership for AI agents —
+          subscriptions, meters, models, people, and failure — for technical and
+          non-technical buyers who distrust pricing pages.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#cost-stack" class="btn-primary">Full cost stack</a>
+          <a href="#by-size" class="btn-secondary">Cost by company size</a>
+        </div>
+        <p class="mt-6 text-sm text-ink-muted">
+          Related:{" "}
+          <a
+            href="/guides/how-to-evaluate-ai-agent-platforms/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Evaluation guide</a
+          >
+          {" · "}
+          <a
+            href="/methodology/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Methodology</a
+          >
+          {" · "}
+          <a
+            href="/platforms/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >All platforms</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- 1. Intro -->
+        <section class="prose-guide">
+          <h2 id="introduction" class="guide-h2">
+            Why most cost comparisons are incomplete
+          </h2>
+          <p>
+            Vendor pages sell{" "}
+            <strong class="font-semibold text-ink">list price</strong>: $20/seat,
+            free tier, “usage-based.” Real agents cost{" "}
+            <strong class="font-semibold text-ink">meters × loops × people ×
+            mistakes</strong>. Two platforms with the same sticker can diverge by
+            5–10× once multi-step tool use, retries, and human review enter the
+            picture.
+          </p>
+          <p>
+            Incomplete comparisons usually:
+          </p>
+          <ul class="mt-4 list-disc space-y-2 pl-5 text-ink-muted">
+            <li>Compare free tiers as if production runs free forever</li>
+            <li>Ignore model tokens (or assume “included” means unlimited)</li>
+            <li>Omit builder and maintainer hours</li>
+            <li>Skip failure cost and compliance time</li>
+            <li>Treat open-source as $0 without engineering load</li>
+          </ul>
+          <p class="mt-4">
+            This guide is a TCO checklist, not a universal price list. Use it
+            with our{" "}
+            <a
+              href="/methodology/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >scoring methodology</a
+            >{" "}
+            (Value is one of six dimensions) and the pricing sections of our
+            comparison articles linked below.
+          </p>
+        </section>
+
+        <!-- 2. Cost stack -->
+        <section class="mt-14 sm:mt-16" id="cost-stack">
+          <h2 class="guide-h2">The full cost stack of AI agent platforms</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Add every layer that applies. If a line is “N/A,” write zero
+            explicitly — don’t leave it unexamined.
+          </p>
+          <ol class="mt-8 space-y-4">
+            {
+              costStack.map((item, i) => (
+                <li class="flex gap-4 rounded-[var(--radius-card)] border border-border bg-surface-muted/40 p-5 sm:p-6">
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-accent text-sm font-bold text-accent-fg"
+                    aria-hidden="true"
+                  >
+                    {i + 1}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {item.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <p class="mt-6 text-sm text-ink-muted">
+            Rule of thumb: if you only model layers 1–2, you’re shopping
+            marketing. Production TCO almost always needs 3–8.
+          </p>
+        </section>
+
+        <!-- 3. By category -->
+        <section class="mt-14 sm:mt-16" id="by-category">
+          <h2 class="guide-h2">Cost characteristics by category</h2>
+          <div class="mt-8 space-y-6">
+            {
+              byCategory.map((cat) => (
+                <div class="card-surface p-5 sm:p-7">
+                  <h3 class="text-lg font-semibold tracking-tight text-ink">
+                    {cat.title}
+                  </h3>
+                  <p class="mt-1 text-xs font-medium text-ink-soft">
+                    Examples: {cat.examples}
+                  </p>
+                  <p class="mt-3 text-sm leading-relaxed text-ink-muted sm:text-base">
+                    {cat.shape}
+                  </p>
+                  <p class="mt-4 eyebrow-muted">Watch closely</p>
+                  <ul class="mt-2 space-y-1.5">
+                    {cat.watch.map((w) => (
+                      <li class="flex gap-2 text-sm text-ink-muted">
+                        <span class="text-accent" aria-hidden="true">
+                          ·
+                        </span>
+                        <span>{w}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p class="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                    {cat.links.map((l) => (
+                      <a
+                        href={l.href}
+                        class="font-semibold text-accent hover:text-accent-hover"
+                      >
+                        {l.label} →
+                      </a>
+                    ))}
+                  </p>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        <!-- 4. Hidden costs -->
+        <section class="mt-14 sm:mt-16" id="hidden">
+          <h2 class="guide-h2">
+            Hidden costs teams consistently underestimate
+          </h2>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              hiddenCosts.map((h) => (
+                <li class="card-surface p-5">
+                  <h3 class="text-base font-semibold text-ink">{h.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {h.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 5. Questions -->
+        <section class="mt-14 sm:mt-16" id="questions">
+          <h2 class="guide-h2">
+            Practical questions when evaluating total cost
+          </h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Use these in vendor calls and internal reviews. For a broader buying
+            checklist, see{" "}
+            <a
+              href="/guides/how-to-evaluate-ai-agent-platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >how to evaluate AI agent platforms</a
+            >.
+          </p>
+          <ul class="mt-8 space-y-4">
+            {
+              questions.map((item, i) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <p class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                    Q{i + 1}
+                  </p>
+                  <h3 class="mt-1.5 text-base font-semibold text-ink">{item.q}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {item.why}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 6. By size -->
+        <section class="mt-14 sm:mt-16" id="by-size">
+          <h2 class="guide-h2">
+            Rough cost reality by company size / use case
+          </h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Directional ranges for{" "}
+            <strong class="font-semibold text-ink">software + model meters</strong
+            >{" "}
+            in 2026 — not including full engineering payroll unless noted.
+            Your mileage will vary; treat as order-of-magnitude, not quotes.
+          </p>
+          <div class="mt-6 overflow-x-auto rounded-[var(--radius-card)] border border-border">
+            <table class="w-full min-w-[40rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Company size</th>
+                  <th class="px-4 py-3 font-semibold">Typical pattern</th>
+                  <th class="px-4 py-3 font-semibold">Rough software reality</th>
+                  <th class="px-4 py-3 font-semibold">Note</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  sizeRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.size}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.pattern}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.rough}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.note}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-4 text-sm text-ink-muted">
+            Example profiles to sanity-check list prices:{" "}
+            <a href="/tools/n8n/" class="font-semibold text-accent hover:text-accent-hover">n8n</a>
+            ,{" "}
+            <a href="/tools/make/" class="font-semibold text-accent hover:text-accent-hover">Make</a>
+            ,{" "}
+            <a href="/tools/cursor/" class="font-semibold text-accent hover:text-accent-hover">Cursor</a>
+            ,{" "}
+            <a href="/tools/langgraph/" class="font-semibold text-accent hover:text-accent-hover">LangGraph</a>
+            ,{" "}
+            <a href="/tools/microsoft-copilot-studio/" class="font-semibold text-accent hover:text-accent-hover">Copilot Studio</a>
+            ,{" "}
+            <a href="/tools/relevance-ai/" class="font-semibold text-accent hover:text-accent-hover">Relevance AI</a>
+            .
+          </p>
+        </section>
+
+        <!-- 7. Value vs cost -->
+        <section class="mt-14 sm:mt-16" id="value">
+          <h2 class="guide-h2">How to think about value vs cost</h2>
+          <ul class="mt-8 space-y-4">
+            {
+              valueLenses.map((v) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{v.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {v.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+          <div
+            class="mt-8 rounded-[var(--radius-card)] border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+          >
+            <p class="eyebrow">Working rule</p>
+            <p class="mt-3 text-base leading-relaxed text-ink-muted">
+              Prefer the platform that minimizes{" "}
+              <strong class="font-semibold text-ink"
+                >cost per successful, owned outcome</strong
+              >{" "}
+              at 3× pilot volume — including people and risk — not the one with
+              the prettiest free tier. If two options are close on software,
+              choose the one your team will actually maintain.
+            </p>
+          </div>
+        </section>
+
+        <!-- 8. Internal links hub -->
+        <section class="mt-14 sm:mt-16" id="pricing-guides">
+          <h2 class="guide-h2">Pricing deep-dives and related guides</h2>
+          <ul class="mt-6 space-y-3 text-sm sm:text-base">
+            <li>
+              <a
+                href="/guides/n8n-vs-make-vs-zapier-agents/#pricing"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >n8n vs Make vs Zapier Agents — pricing</a
+              >
+              <span class="text-ink-muted">
+                {" "}
+                · automation TCO and scale notes
+              </span>
+            </li>
+            <li>
+              <a
+                href="/guides/lindy-vs-relevance-ai-vs-dust/#pricing"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >Lindy vs Relevance AI vs Dust — pricing</a
+              >
+              <span class="text-ink-muted">
+                {" "}
+                · no-code agent cost structures
+              </span>
+            </li>
+            <li>
+              <a
+                href="/guides/claude-code-vs-cursor/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >Claude Code vs Cursor</a
+              >
+              <span class="text-ink-muted"> · coding agent packaging</span>
+            </li>
+            <li>
+              <a
+                href="/guides/copilot-studio-vs-agentforce/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >Copilot Studio vs Agentforce</a
+              >
+              <span class="text-ink-muted"> · enterprise TCO themes</span>
+            </li>
+            <li>
+              <a
+                href="/guides/best-ai-coding-agents-2026/#pricing"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >Best AI coding agents 2026</a
+              >
+              <span class="text-ink-muted"> · seat vs usage notes</span>
+            </li>
+            <li>
+              <a
+                href="/guides/best-ai-agent-platforms-for-smbs-2026/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >Best platforms for SMBs</a
+              >
+              <span class="text-ink-muted"> · budget-conscious shortlist</span>
+            </li>
+            <li>
+              <a
+                href="/methodology/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >Methodology</a
+              >
+              <span class="text-ink-muted">
+                {" "}
+                · how we score Value and other dimensions
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="mt-14 sm:mt-16 prose-guide">
+          <h2 class="guide-h2">Bottom line</h2>
+          <p>
+            AI agent TCO in 2026 is a{" "}
+            <strong class="font-semibold text-ink">system cost</strong>, not a
+            line item on a pricing page. Model meters at real loop depth, count
+            people, and price failure. Then pick the boring stack your team will
+            own — and re-check the bill at 3× volume before you standardize.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <GuideExplore
+    slug="ai-agent-platforms-tco-2026"
+    categories={["No-Code", "Enterprise", "Frameworks", "Coding"]}
+  />
+
+  <!-- CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(67_56_202_/_0.28)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Score Value honestly — then shortlist
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Use our{" "}
+          <a href="/methodology/" class="text-indigo-300 hover:text-white"
+            >methodology</a
+          >
+          , the{" "}
+          <a
+            href="/guides/how-to-evaluate-ai-agent-platforms/"
+            class="text-indigo-300 hover:text-white">evaluation guide</a
+          >
+          , and{" "}
+          <a href="/platforms/" class="text-indigo-300 hover:text-white"
+            >platform profiles</a
+          >{" "}
+          with pricing notes.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center"
+        >
+          <a
+            href="/platforms/"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-accent px-6 py-3 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
+          >
+            Browse platforms
+          </a>
+          <a
+            href="/guides/how-to-evaluate-ai-agent-platforms/"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
+          >
+            Evaluation guide
+          </a>
+          <a
+            href="/contact/"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
+          >
+            Talk to us
+          </a>
+        </div>
+        <p class="mt-6 text-sm text-slate-400">
+          <a href={site.cta.href} class="text-indigo-300 hover:text-white"
+            >Implementation</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

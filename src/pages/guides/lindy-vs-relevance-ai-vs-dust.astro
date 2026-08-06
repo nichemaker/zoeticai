@@ -1,0 +1,837 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
+import RelatedComparisons from "../../components/RelatedComparisons.astro";
+import { site } from "../../data/site";
+import { getToolBySlug } from "../../data/tools";
+
+const title =
+  "Lindy vs Relevance AI vs Dust in 2026: Which No-Code AI Agent Platform Should You Choose?";
+const description =
+  "Practical 2026 comparison of Lindy, Relevance AI, and Dust for founders and ops teams: agent depth, RAG/knowledge, integrations, collaboration, governance, pricing, and when to choose each.";
+const published = "2026-04-01";
+const readTime = "14 min";
+
+const lindy = getToolBySlug("lindy");
+const relevance = getToolBySlug("relevance-ai");
+const dust = getToolBySlug("dust");
+
+const capabilityRows: {
+  dimension: string;
+  lindy: string;
+  relevance: string;
+  dust: string;
+}[] = [
+  {
+    dimension: "Ease of getting started",
+    lindy: "Fastest for personal/admin agents — describe a job, connect apps",
+    relevance: "Visual workforce builder; short ramp if you think in multi-step agents",
+    dust: "Quick for team spaces + data connections; best when docs already matter",
+  },
+  {
+    dimension: "Agent depth",
+    lindy: "Strong single / few agents for email, meetings, outreach-style work",
+    relevance: "Deepest multi-agent “workforces” of the three",
+    dust: "Assistants + tools over knowledge; multi-agent lighter than Relevance",
+  },
+  {
+    dimension: "Knowledge / RAG",
+    lindy: "Context via connected apps and agent memory — not a knowledge platform first",
+    relevance: "Solid for research agents; knowledge via tools and agent design",
+    dust: "Strongest of three for company knowledge, spaces, and internal RAG-style use",
+  },
+  {
+    dimension: "Integrations",
+    lindy: "Productivity SaaS (email, calendar, CRM-ish) for operator work",
+    relevance: "Tools and actions for research/ops workflows; check catalog for your stack",
+    dust: "Data sources + tools for internal assistants; collab-first, not pure iPaaS",
+  },
+  {
+    dimension: "Team collaboration",
+    lindy: "Usable for small teams; DNA is founder/operator productivity",
+    relevance: "Shared workforces, monitoring, business-user orchestration",
+    dust: "Spaces and shared assistants designed for teams",
+  },
+  {
+    dimension: "Governance & scalability",
+    lindy: "SMB SaaS limits; not enterprise CoE tooling",
+    relevance: "Team/enterprise packaging for multi-agent ops; usage can scale hard",
+    dust: "Better internal governance story; open-source / self-host path available",
+  },
+];
+
+const pricingRows: {
+  platform: string;
+  slug: string;
+  entry: string;
+  model: string;
+  bestFor: string;
+}[] = [
+  {
+    platform: "Lindy",
+    slug: "lindy",
+    entry: "~$49.99/mo",
+    model: "Subscription tiers",
+    bestFor: "Personal productivity agents",
+  },
+  {
+    platform: "Relevance AI",
+    slug: "relevance-ai",
+    entry: "Free → Team ~$349/mo",
+    model: "Actions + credits",
+    bestFor: "Multi-agent business workflows",
+  },
+  {
+    platform: "Dust",
+    slug: "dust",
+    entry: "Free → Pro ~$24–30/seat/mo",
+    model: "Per-seat + credits",
+    bestFor: "Team knowledge & collaboration",
+  },
+];
+
+const chooseLindy = [
+  "You want a personal or founder agent for email, calendar, meetings, and admin loops",
+  "Time-to-first useful agent matters more than multi-agent workforce design",
+  "You’re OK paying a subscription-style seat (~$50/mo class) for operator leverage",
+  "You don’t need a company-wide knowledge workspace as the primary product",
+  "Non-technical setup is a hard requirement",
+];
+
+const chooseRelevance = [
+  "You need multi-agent “workforces” for research, support, or GTM processes",
+  "Ops/GTM owns the system and wants a visual builder without writing Python",
+  "You’re willing to model credit/action usage as volume grows",
+  "Monitoring multi-step agent collaboration is part of the job",
+  "Company knowledge RAG is secondary to process agents",
+];
+
+const chooseDust = [
+  "Internal company knowledge assistants are the main use case",
+  "Teams need shared spaces, tools, and collab around AI answers",
+  "Per-seat pricing fits how you buy software better than flat multi-agent credits",
+  "You may want open-source roots or a self-host option later",
+  "You’re a startup/mid-size product org — not shopping for CRM agent suites",
+];
+
+const outgrown = [
+  {
+    title: "You need durable, code-defined multi-agent products",
+    body: "Customer-facing agents with custom topology, evals, and on-call belong in frameworks — see LangGraph vs CrewAI and the OSS frameworks roundup.",
+  },
+  {
+    title: "You need heavy SaaS-to-SaaS automation at volume",
+    body: "iPaaS-style glue (n8n, Make, Zapier) often wins for ops integrations. Compare n8n vs Make vs Zapier Agents when the job is workflow automation more than “assistant.”",
+  },
+  {
+    title: "Enterprise IAM, residency, and suite lock-in dominate",
+    body: "Microsoft Copilot Studio, Salesforce Agentforce, and cloud agent builders fit governed estates — not these three no-code tools.",
+  },
+];
+
+const decisionSteps = [
+  {
+    step: "1",
+    title: "Name the primary job",
+    body: "Personal admin → Lindy. Multi-agent process → Relevance AI. Company knowledge → Dust.",
+  },
+  {
+    step: "2",
+    title: "Name who builds and who uses",
+    body: "Solo founder → Lindy. Ops/GTM team designing workforces → Relevance. Cross-functional internal users → Dust.",
+  },
+  {
+    step: "3",
+    title: "Check knowledge vs action weight",
+    body: "Heavy document/RAG needs favor Dust. Heavy tool-using multi-step agents favor Relevance. App-connected personal loops favor Lindy.",
+  },
+  {
+    step: "4",
+    title: "Model 2026 pricing honestly",
+    body: "Lindy subscription ~$50/mo class. Relevance free → Team ~$349/mo + credits. Dust free → Pro ~$24–30/seat + credits. Price at real seats and usage.",
+  },
+  {
+    step: "5",
+    title: "Know the exit ramp",
+    body: "If you outgrow no-code, move to n8n/Make for automation or frameworks for product agents — don’t force-fit forever.",
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/guides/lindy-vs-relevance-ai-vs-dust/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    {
+      name: "Lindy vs Relevance AI vs Dust",
+      path: "/guides/lindy-vs-relevance-ai-vs-dust/",
+    },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="page-hero-glow" aria-hidden="true"></div>
+    <div class="container-site relative py-11 sm:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "Lindy vs Relevance AI vs Dust" },
+        ]}
+      />
+
+      <div class="mt-8 max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span class="pill-accent">Comparison</span>
+          <span class="text-ink-soft">
+            <time datetime={published}>Apr 1, 2026</time>
+            <span aria-hidden="true"> · </span>
+            {readTime} read
+          </span>
+        </div>
+
+        <h1 class="text-page-title mt-4 lg:text-[2.25rem]">
+          Lindy vs Relevance AI vs Dust in 2026: Which No-Code AI Agent Platform
+          Should You Choose?
+        </h1>
+        <p class="text-body-lg mt-4">
+          Three popular no-code agent platforms founders keep comparing — for
+          personal productivity, multi-agent workforces, and team knowledge.
+          This guide is practical, not hype.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#verdict" class="btn-primary">Quick verdict</a>
+          <a href="#pricing" class="btn-secondary">Pricing</a>
+        </div>
+        <p class="mt-6 text-sm text-ink-muted">
+          Profiles:{" "}
+          <a
+            href="/tools/lindy/"
+            class="font-semibold text-accent hover:text-accent-hover">Lindy</a
+          >
+          {
+            lindy && (
+              <span class="text-ink-soft">
+                {" "}
+                ({lindy.scores.overall.toFixed(1)})
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/tools/relevance-ai/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Relevance AI</a
+          >
+          {
+            relevance && (
+              <span class="text-ink-soft">
+                {" "}
+                ({relevance.scores.overall.toFixed(1)})
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/tools/dust/"
+            class="font-semibold text-accent hover:text-accent-hover">Dust</a
+          >
+          {
+            dust && (
+              <span class="text-ink-soft">
+                {" "}
+                ({dust.scores.overall.toFixed(1)})
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/categories/no-code/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >No-Code</a
+          >
+          {" · "}
+          <a
+            href="/methodology/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Methodology</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- 1. Intro -->
+        <section class="prose-guide">
+          <h2 id="introduction" class="guide-h2">
+            Why these three platforms keep coming up in 2026
+          </h2>
+          <p>
+            Founders and ops teams who don’t want to stand up{" "}
+            <a
+              href="/categories/frameworks/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >agent frameworks</a
+            >{" "}
+            still need real leverage: inbox triage, research loops, support
+            drafts, and answers grounded in company docs. In 2026,{" "}
+            <strong class="font-semibold text-ink">Lindy</strong>,{" "}
+            <strong class="font-semibold text-ink">Relevance AI</strong>, and{" "}
+            <strong class="font-semibold text-ink">Dust</strong> show up in the
+            same shortlists because they all promise no-code or low-code agents —
+            but they optimize for different jobs.
+          </p>
+          <p>
+            Confusing them is expensive. You don’t want a multi-agent workforce
+            platform for calendar triage, or a personal assistant product as your
+            only knowledge layer. This comparison is for people who will{" "}
+            <em>own</em> the tool next quarter — not for enterprise RFP theater.
+          </p>
+          <p>
+            Scores below are directory overall ratings from our{" "}
+            <a
+              href="/methodology/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >methodology</a
+            >. Pricing is approximate for 2026 planning — always verify on vendor
+            sites.
+          </p>
+        </section>
+
+        <!-- 2. Verdict -->
+        <section class="mt-12 sm:mt-14" id="verdict">
+          <div
+            class="rounded-[var(--radius-card)] border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+          >
+            <p class="eyebrow">Quick verdict</p>
+            <h2 class="mt-2 text-xl font-bold tracking-tight text-ink sm:text-2xl">
+              Match the job: personal, workforce, or knowledge
+            </h2>
+            <div class="mt-5 grid gap-4 sm:grid-cols-3">
+              <div class="rounded-[var(--radius-lg)] border border-border bg-surface p-4">
+                <h3 class="text-sm font-semibold text-ink">
+                  <a href="/tools/lindy/" class="hover:text-accent">Lindy</a>
+                  {
+                    lindy && (
+                      <span class="ml-1 font-normal text-ink-soft">
+                        {lindy.scores.overall.toFixed(1)}
+                      </span>
+                    )
+                  }
+                </h3>
+                <p class="mt-2 text-xs leading-relaxed text-ink-muted sm:text-sm">
+                  Best for founder and operator agents — email, meetings, and
+                  everyday admin without designing a workforce.
+                </p>
+              </div>
+              <div class="rounded-[var(--radius-lg)] border border-border bg-surface p-4">
+                <h3 class="text-sm font-semibold text-ink">
+                  <a href="/tools/relevance-ai/" class="hover:text-accent"
+                    >Relevance AI</a
+                  >
+                  {
+                    relevance && (
+                      <span class="ml-1 font-normal text-ink-soft">
+                        {relevance.scores.overall.toFixed(1)}
+                      </span>
+                    )
+                  }
+                </h3>
+                <p class="mt-2 text-xs leading-relaxed text-ink-muted sm:text-sm">
+                  Best for multi-agent business workflows — research, support,
+                  and GTM processes with a visual builder.
+                </p>
+              </div>
+              <div class="rounded-[var(--radius-lg)] border border-border bg-surface p-4">
+                <h3 class="text-sm font-semibold text-ink">
+                  <a href="/tools/dust/" class="hover:text-accent">Dust</a>
+                  {
+                    dust && (
+                      <span class="ml-1 font-normal text-ink-soft">
+                        {dust.scores.overall.toFixed(1)}
+                      </span>
+                    )
+                  }
+                </h3>
+                <p class="mt-2 text-xs leading-relaxed text-ink-muted sm:text-sm">
+                  Best for team knowledge assistants — shared spaces, tools, and
+                  collaboration over company data.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Positioning -->
+        <section class="mt-14 sm:mt-16" id="positioning">
+          <h2 class="guide-h2">Core positioning difference</h2>
+          <div class="mt-6 grid gap-4">
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">
+                <a href="/tools/lindy/" class="hover:text-accent-hover"
+                  >Lindy</a
+                >
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                <strong class="font-semibold text-ink">Personal / operator agents.</strong
+                >{" "}
+                Natural-language setup for inbox, calendar, meetings, and
+                multi-step office tasks. Optimizes for individual leverage, not
+                for building a multi-agent ops center or a company wiki with RAG.
+              </p>
+            </div>
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">
+                <a href="/tools/relevance-ai/" class="hover:text-accent-hover"
+                  >Relevance AI</a
+                >
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                <strong class="font-semibold text-ink">Multi-agent workforces.</strong
+                >{" "}
+                Visual design of agents that collaborate on research, support,
+                and operational processes. Optimizes for business-user
+                orchestration and monitoring — not for personal calendar admin
+                alone.
+              </p>
+            </div>
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">
+                <a href="/tools/dust/" class="hover:text-accent-hover">Dust</a>
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                <strong class="font-semibold text-ink"
+                  >Team knowledge + tools.</strong
+                >{" "}
+                Internal assistants over company data with spaces, collaboration,
+                and optional self-host/open-source roots. Optimizes for “answers
+                and workflows on our docs,” not pure GTM multi-agent factories.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Detailed comparison -->
+        <section class="mt-14 sm:mt-16" id="comparison">
+          <h2 class="guide-h2">Detailed comparison</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Six dimensions that actually matter when you shortlist for a small
+            team.
+          </p>
+          <div class="mt-6 overflow-x-auto rounded-[var(--radius-card)] border border-border">
+            <table class="w-full min-w-[48rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Dimension</th>
+                  <th class="px-4 py-3 font-semibold">Lindy</th>
+                  <th class="px-4 py-3 font-semibold">Relevance AI</th>
+                  <th class="px-4 py-3 font-semibold">Dust</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  capabilityRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.dimension}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.lindy}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.relevance}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.dust}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-4 text-sm text-ink-muted">
+            Directory overall scores: Lindy{" "}
+            <strong class="text-ink"
+              >{lindy?.scores.overall.toFixed(1) ?? "—"}</strong
+            >, Relevance AI{" "}
+            <strong class="text-ink"
+              >{relevance?.scores.overall.toFixed(1) ?? "—"}</strong
+            >, Dust{" "}
+            <strong class="text-ink"
+              >{dust?.scores.overall.toFixed(1) ?? "—"}</strong
+            >. See each{" "}
+            <a
+              href="/categories/no-code/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >No-Code</a
+            >{" "}
+            listing for full dimension scores.
+          </p>
+        </section>
+
+        <!-- 5. Pricing -->
+        <section class="mt-14 sm:mt-16" id="pricing">
+          <h2 class="guide-h2">Pricing comparison (approx. 2026)</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Treat this as a{" "}
+            <strong class="font-semibold text-ink">cost-structure map</strong>.
+            Vendors change free caps, credits, and seat bundles often — confirm
+            on lindy.ai, relevanceai.com, and dust.tt before you budget.
+          </p>
+          <div class="mt-6 overflow-x-auto rounded-[var(--radius-card)] border border-border">
+            <table class="w-full min-w-[36rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Platform</th>
+                  <th class="px-4 py-3 font-semibold">Entry pricing (approx)</th>
+                  <th class="px-4 py-3 font-semibold">Model</th>
+                  <th class="px-4 py-3 font-semibold">Best for</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  pricingRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        <a
+                          href={`/tools/${row.slug}/`}
+                          class="hover:text-accent"
+                        >
+                          {row.platform}
+                        </a>
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.entry}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.model}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.bestFor}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+          <ul class="mt-6 space-y-3 text-sm leading-relaxed text-ink-muted sm:text-base">
+            <li>
+              <strong class="font-semibold text-ink">Lindy:</strong> Subscription
+              tiers around <strong class="text-ink">~$49.99/mo</strong> entry for
+              personal productivity agents — relatively predictable if usage
+              stays within plan.
+            </li>
+            <li>
+              <strong class="font-semibold text-ink">Relevance AI:</strong> Free
+              to start; Team often lands near{" "}
+              <strong class="text-ink">~$349/mo</strong> with actions/credits
+              that scale with multi-agent volume.
+            </li>
+            <li>
+              <strong class="font-semibold text-ink">Dust:</strong> Free tier;
+              Pro commonly about{" "}
+              <strong class="text-ink">$24–30 per seat per month</strong> plus
+              credits — better when many teammates need access.
+            </li>
+          </ul>
+        </section>
+
+        <!-- 6–8 Choose -->
+        <section class="mt-14 sm:mt-16" id="choose-lindy">
+          <h2 class="guide-h2">Choose Lindy if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseLindy.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5">
+            <a
+              href="/tools/lindy/"
+              class="text-sm font-semibold text-accent hover:text-accent-hover"
+              >Lindy platform profile →</a
+            >
+          </p>
+        </section>
+
+        <section class="mt-14 sm:mt-16" id="choose-relevance">
+          <h2 class="guide-h2">Choose Relevance AI if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseRelevance.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5">
+            <a
+              href="/tools/relevance-ai/"
+              class="text-sm font-semibold text-accent hover:text-accent-hover"
+              >Relevance AI platform profile →</a
+            >
+          </p>
+        </section>
+
+        <section class="mt-14 sm:mt-16" id="choose-dust">
+          <h2 class="guide-h2">Choose Dust if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseDust.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5">
+            <a
+              href="/tools/dust/"
+              class="text-sm font-semibold text-accent hover:text-accent-hover"
+              >Dust platform profile →</a
+            >
+          </p>
+        </section>
+
+        <!-- 9. When not enough -->
+        <section class="mt-14 sm:mt-16" id="outgrown">
+          <h2 class="guide-h2">When these tools are no longer enough</h2>
+          <ul class="mt-8 space-y-4">
+            {
+              outgrown.map((item) => (
+                <li class="card-surface p-5">
+                  <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {item.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            Practical next reads:{" "}
+            <a
+              href="/guides/n8n-vs-make-vs-zapier-agents/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >n8n vs Make vs Zapier Agents</a
+            >
+            ,{" "}
+            <a
+              href="/guides/langgraph-vs-crewai/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >LangGraph vs CrewAI</a
+            >
+            ,{" "}
+            <a
+              href="/guides/best-ai-agent-platforms-for-smbs-2026/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >best platforms for SMBs</a
+            >
+            , and{" "}
+            <a
+              href="/guides/how-to-evaluate-ai-agent-platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >how to evaluate platforms</a
+            >.
+          </p>
+        </section>
+
+        <!-- 10. Decision framework -->
+        <section class="mt-14 sm:mt-16" id="decision">
+          <h2 class="guide-h2">Final recommendation framework</h2>
+          <ol class="mt-8 space-y-4">
+            {
+              decisionSteps.map((r) => (
+                <li class="flex gap-4 rounded-[var(--radius-card)] border border-border bg-surface-muted/50 p-5 sm:p-6">
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-accent text-sm font-bold text-accent-fg"
+                    aria-hidden="true"
+                  >
+                    {r.step}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{r.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {r.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <p class="mt-8 text-base leading-relaxed text-ink-muted">
+            <strong class="font-semibold text-ink">Bottom line:</strong>{" "}
+            <a
+              href="/tools/lindy/"
+              class="font-semibold text-accent hover:text-accent-hover">Lindy</a
+            >{" "}
+            for personal productivity agents;{" "}
+            <a
+              href="/tools/relevance-ai/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Relevance AI</a
+            >{" "}
+            for multi-agent business workflows;{" "}
+            <a
+              href="/tools/dust/"
+              class="font-semibold text-accent hover:text-accent-hover">Dust</a
+            >{" "}
+            for team knowledge and collaboration. Don’t buy multi-agent complexity
+            for a calendar problem — or a personal agent for a company wiki.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <div class="bg-surface">
+    <div class="container-site pb-4">
+      <div class="mx-auto max-w-3xl">
+        <RelatedComparisons
+          slug="lindy-vs-relevance-ai-vs-dust"
+          categories={["No-Code"]}
+        />
+      </div>
+    </div>
+  </div>
+
+  <GuideExplore
+    slug="lindy-vs-relevance-ai-vs-dust"
+    categories={["No-Code", "Workflow"]}
+  />
+
+  <!-- CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(67_56_202_/_0.28)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Open profiles — then run one golden task
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Compare scored listings in the{" "}
+          <a
+            href="/categories/no-code/"
+            class="text-indigo-300 hover:text-white">No-Code category</a
+          >, and use our{" "}
+          <a href="/methodology/" class="text-indigo-300 hover:text-white"
+            >methodology</a
+          >{" "}
+          when you score ease of use and value.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center"
+        >
+          <a
+            href="/tools/lindy/"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-accent px-6 py-3 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
+          >
+            Lindy profile
+          </a>
+          <a
+            href="/tools/relevance-ai/"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
+          >
+            Relevance AI profile
+          </a>
+          <a
+            href="/tools/dust/"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
+          >
+            Dust profile
+          </a>
+        </div>
+        <p class="mt-6 text-sm text-slate-400">
+          <a
+            href="/guides/n8n-vs-make-vs-zapier-agents/"
+            class="text-indigo-300 hover:text-white"
+            >n8n vs Make vs Zapier</a
+          >
+          {" · "}
+          <a href={site.cta.href} class="text-indigo-300 hover:text-white"
+            >Implementation</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

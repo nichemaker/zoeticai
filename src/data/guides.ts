@@ -86,6 +86,44 @@ export const latestGuides: GuidePreview[] = [
     readTime: "15 min",
     date: "2026-04-01",
   },
+  {
+    slug: "best-ai-agent-platforms-for-smbs-2026",
+    title: "Best AI Agent Platforms for SMBs and Startups in 2026",
+    excerpt:
+      "Founder-friendly shortlist: SMB evaluation criteria, no-code vs technical picks, comparison table, pricing reality, and a simple decision framework.",
+    category: "Roundup",
+    readTime: "14 min",
+    date: "2026-04-01",
+  },
+  {
+    slug: "lindy-vs-relevance-ai-vs-dust",
+    title:
+      "Lindy vs Relevance AI vs Dust in 2026: Which No-Code AI Agent Platform Should You Choose?",
+    excerpt:
+      "No-code agent platforms compared — personal productivity vs multi-agent workforces vs team knowledge, with pricing and a clear pick framework.",
+    category: "Comparison",
+    readTime: "14 min",
+    date: "2026-04-01",
+  },
+  {
+    slug: "best-ai-coding-agents-2026",
+    title: "Best AI Coding Agents in 2026",
+    excerpt:
+      "Developer-focused roundup: IDE, CLI, cloud, and open-source coding agents — ranked picks, comparison table, and who should use what.",
+    category: "Roundup",
+    readTime: "14 min",
+    date: "2026-04-01",
+  },
+  {
+    slug: "ai-agent-platforms-tco-2026",
+    title:
+      "What AI Agent Platforms Actually Cost in 2026 (A Practical TCO Guide)",
+    excerpt:
+      "Full cost stack beyond list price — meters, models, people, hidden costs, and rough TCO reality by company size.",
+    category: "Buying",
+    readTime: "13 min",
+    date: "2026-04-01",
+  },
 ];
 
 export function guideHref(slug: string): string {
@@ -102,6 +140,7 @@ export const comparisonGuideSlugs = [
   "claude-code-vs-cursor",
   "copilot-studio-vs-agentforce",
   "n8n-vs-make-vs-zapier-agents",
+  "lindy-vs-relevance-ai-vs-dust",
 ] as const;
 
 export type ComparisonGuideSlug = (typeof comparisonGuideSlugs)[number];
@@ -113,6 +152,7 @@ export const comparisonLinkLabels: Record<ComparisonGuideSlug, string> = {
   "copilot-studio-vs-agentforce":
     "Copilot Studio vs Agentforce comparison",
   "n8n-vs-make-vs-zapier-agents": "n8n vs Make vs Zapier Agents comparison",
+  "lindy-vs-relevance-ai-vs-dust": "Lindy vs Relevance AI vs Dust comparison",
 };
 
 export function isComparisonGuide(slug: string): slug is ComparisonGuideSlug {
@@ -147,6 +187,9 @@ export function getPrimaryComparisonForTool(
     n8n: "n8n-vs-make-vs-zapier-agents",
     make: "n8n-vs-make-vs-zapier-agents",
     "zapier-agents": "n8n-vs-make-vs-zapier-agents",
+    lindy: "lindy-vs-relevance-ai-vs-dust",
+    "relevance-ai": "lindy-vs-relevance-ai-vs-dust",
+    dust: "lindy-vs-relevance-ai-vs-dust",
   };
   const slug = map[toolSlug];
   return slug ? getGuideBySlug(slug) : undefined;
@@ -182,6 +225,11 @@ export const comparisonToolProfiles: Record<
     { slug: "make", label: "Make platform profile" },
     { slug: "zapier-agents", label: "Zapier Agents platform profile" },
   ],
+  "lindy-vs-relevance-ai-vs-dust": [
+    { slug: "lindy", label: "Lindy platform profile" },
+    { slug: "relevance-ai", label: "Relevance AI platform profile" },
+    { slug: "dust", label: "Dust platform profile" },
+  ],
 };
 
 /** Methodology is not a guide slug but is core trust content. */
@@ -205,6 +253,7 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
   if (primary) add(primary.slug);
 
   add("how-to-evaluate-ai-agent-platforms");
+  add("ai-agent-platforms-tco-2026");
 
   const cats = tool.categories;
   if (cats.includes("Frameworks") || cats.includes("Enterprise")) {
@@ -214,11 +263,15 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
   if (cats.includes("Frameworks")) {
     add("langgraph-vs-crewai");
     add("best-open-source-ai-agent-frameworks-2026");
+    add("best-ai-agent-platforms-for-smbs-2026");
   }
   if (tool.features.openSource && cats.includes("Frameworks")) {
     add("best-open-source-ai-agent-frameworks-2026");
   }
-  if (cats.includes("Coding")) add("claude-code-vs-cursor");
+  if (cats.includes("Coding")) {
+    add("claude-code-vs-cursor");
+    add("best-ai-coding-agents-2026");
+  }
   if (
     tool.features.mcpSupport ||
     tool.features.computerUse ||
@@ -228,7 +281,9 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
     add("mcp-and-tool-calling-explained");
   }
   if (cats.includes("No-Code") || cats.includes("Workflow")) {
+    add("best-ai-agent-platforms-for-smbs-2026");
     add("n8n-vs-make-vs-zapier-agents");
+    add("lindy-vs-relevance-ai-vs-dust");
     add("frameworks-vs-enterprise-platforms");
   }
 
@@ -246,32 +301,43 @@ export function getRelatedGuidesForCategory(
   const byCat: Record<ToolCategory, string[]> = {
     Enterprise: [
       "copilot-studio-vs-agentforce",
+      "ai-agent-platforms-tco-2026",
       "frameworks-vs-enterprise-platforms",
       "how-to-evaluate-ai-agent-platforms",
     ],
     Frameworks: [
       "best-open-source-ai-agent-frameworks-2026",
       "langgraph-vs-crewai",
+      "ai-agent-platforms-tco-2026",
+      "best-ai-agent-platforms-for-smbs-2026",
       "frameworks-vs-enterprise-platforms",
       "mcp-and-tool-calling-explained",
       "how-to-evaluate-ai-agent-platforms",
     ],
     "No-Code": [
+      "lindy-vs-relevance-ai-vs-dust",
+      "ai-agent-platforms-tco-2026",
+      "best-ai-agent-platforms-for-smbs-2026",
       "n8n-vs-make-vs-zapier-agents",
       "how-to-evaluate-ai-agent-platforms",
       "frameworks-vs-enterprise-platforms",
     ],
     Coding: [
+      "best-ai-coding-agents-2026",
       "claude-code-vs-cursor",
+      "ai-agent-platforms-tco-2026",
       "mcp-and-tool-calling-explained",
       "how-to-evaluate-ai-agent-platforms",
     ],
     Browser: [
       "mcp-and-tool-calling-explained",
+      "ai-agent-platforms-tco-2026",
       "how-to-evaluate-ai-agent-platforms",
     ],
     Workflow: [
+      "best-ai-agent-platforms-for-smbs-2026",
       "n8n-vs-make-vs-zapier-agents",
+      "ai-agent-platforms-tco-2026",
       "how-to-evaluate-ai-agent-platforms",
       "frameworks-vs-enterprise-platforms",
     ],
@@ -342,5 +408,43 @@ export const guideExampleTools: Record<
   "n8n-vs-make-vs-zapier-agents": {
     label: "Compare these workflow automation platforms",
     slugs: ["n8n", "make", "zapier-agents"],
+  },
+  "best-ai-agent-platforms-for-smbs-2026": {
+    label: "SMB-friendly platforms in this roundup",
+    slugs: [
+      "n8n",
+      "make",
+      "zapier-agents",
+      "lindy",
+      "relevance-ai",
+      "langgraph",
+      "crewai",
+    ],
+  },
+  "lindy-vs-relevance-ai-vs-dust": {
+    label: "Compare these no-code agent platforms",
+    slugs: ["lindy", "relevance-ai", "dust"],
+  },
+  "best-ai-coding-agents-2026": {
+    label: "Coding agents in this roundup",
+    slugs: [
+      "cursor",
+      "claude-code",
+      "github-copilot-agents",
+      "cline",
+      "openai-codex",
+      "devin",
+    ],
+  },
+  "ai-agent-platforms-tco-2026": {
+    label: "Example platforms when modeling TCO",
+    slugs: [
+      "n8n",
+      "make",
+      "cursor",
+      "langgraph",
+      "microsoft-copilot-studio",
+      "relevance-ai",
+    ],
   },
 };
