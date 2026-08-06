@@ -56,6 +56,10 @@ export const footerGroups: FooterGroup[] = [
         href: "/guides/how-to-evaluate-ai-agent-platforms/",
         label: "Evaluation guide",
       },
+      {
+        href: "/guides/best-open-source-ai-agent-frameworks-2026/",
+        label: "Best OSS frameworks 2026",
+      },
       { href: "/guides/langgraph-vs-crewai/", label: "LangGraph vs CrewAI" },
       {
         href: "/guides/claude-code-vs-cursor/",
@@ -64,6 +68,10 @@ export const footerGroups: FooterGroup[] = [
       {
         href: "/guides/copilot-studio-vs-agentforce/",
         label: "Copilot Studio vs Agentforce",
+      },
+      {
+        href: "/guides/n8n-vs-make-vs-zapier-agents/",
+        label: "n8n vs Make vs Zapier Agents",
       },
       {
         href: "/guides/frameworks-vs-enterprise-platforms/",

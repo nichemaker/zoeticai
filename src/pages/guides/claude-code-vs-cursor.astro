@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import GuideExplore from "../../components/GuideExplore.astro";
+import RelatedComparisons from "../../components/RelatedComparisons.astro";
 import { site } from "../../data/site";
 import { getToolBySlug } from "../../data/tools";
 
@@ -809,6 +810,17 @@ const decisionSteps = [
       </div>
     </div>
   </article>
+
+  <div class="bg-surface">
+    <div class="container-site pb-4">
+      <div class="mx-auto max-w-3xl">
+        <RelatedComparisons
+          slug="claude-code-vs-cursor"
+          categories={["Coding"]}
+        />
+      </div>
+    </div>
+  </div>
 
   <GuideExplore
     slug="claude-code-vs-cursor"

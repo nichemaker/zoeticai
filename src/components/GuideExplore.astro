@@ -8,6 +8,8 @@ import {
   guideHref,
   latestGuides,
   methodologyLink,
+  isComparisonGuide,
+  comparisonLinkLabel,
 } from "../data/guides";
 import { categoryHref } from "../data/categories";
 import type { ToolCategory } from "../types/tool";
@@ -109,7 +111,10 @@ const otherGuides = latestGuides.filter((g) => g.slug !== slug);
                     href={guideHref(g.slug)}
                     class="font-medium text-ink-muted hover:text-accent"
                   >
-                    {g.title} →
+                    {isComparisonGuide(g.slug)
+                      ? comparisonLinkLabel(g.slug)
+                      : g.title}{" "}
+                    →
                   </a>
                 </li>
               ))

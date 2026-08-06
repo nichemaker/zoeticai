@@ -14,8 +14,11 @@ import {
 import { categoryHref } from "../../data/categories";
 import {
   getRelatedGuidesForTool,
+  getPrimaryComparisonForTool,
   guideHref,
+  comparisonLinkLabel,
   methodologyLink,
+  isComparisonGuide,
 } from "../../data/guides";
 import RelatedLinks from "../../components/RelatedLinks.astro";
 import { site } from "../../data/site";
@@ -48,17 +51,31 @@ if (!tool) {
 
 const similar = getSimilarTools(tool, 4);
 const relatedGuides = getRelatedGuidesForTool(tool);
+const primaryComparison = getPrimaryComparisonForTool(tool.slug);
 const relatedReading = [
+  ...(primaryComparison
+    ? [
+        {
+          href: guideHref(primaryComparison.slug),
+          title: comparisonLinkLabel(primaryComparison.slug),
+          excerpt: primaryComparison.excerpt,
+        },
+      ]
+    : []),
   {
     href: methodologyLink.href,
     title: methodologyLink.title,
     excerpt: methodologyLink.excerpt,
   },
-  ...relatedGuides.map((g) => ({
-    href: guideHref(g.slug),
-    title: g.title,
-    excerpt: g.excerpt,
-  })),
+  ...relatedGuides
+    .filter((g) => g.slug !== primaryComparison?.slug)
+    .map((g) => ({
+      href: guideHref(g.slug),
+      title: isComparisonGuide(g.slug)
+        ? comparisonLinkLabel(g.slug)
+        : g.title,
+      excerpt: g.excerpt,
+    })),
 ];
 
 const scoreDimensions: {
@@ -464,7 +481,11 @@ const toolBreadcrumbs = [
           </div>
 
           <RelatedLinks
-            title="Guides & methodology"
+            title={
+              primaryComparison
+                ? "Comparisons & guides"
+                : "Guides & methodology"
+            }
             eyebrow="Learn more"
             links={relatedReading}
           />

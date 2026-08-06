@@ -1,0 +1,903 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
+import RelatedComparisons from "../../components/RelatedComparisons.astro";
+import { site } from "../../data/site";
+import { getToolBySlug } from "../../data/tools";
+
+const title =
+  "n8n vs Make vs Zapier Agents in 2026: Which Is Best for AI Agents?";
+const description =
+  "Practical 2026 comparison of n8n, Make, and Zapier Agents for real AI automations: agent capabilities, ease of use, integrations, self-hosting, pricing, TCO, and when to choose each.";
+const published = "2026-04-01";
+const readTime = "15 min";
+
+const n8n = getToolBySlug("n8n");
+const make = getToolBySlug("make");
+const zapier = getToolBySlug("zapier-agents");
+
+const agentRows: {
+  dimension: string;
+  n8n: string;
+  make: string;
+  zapier: string;
+}[] = [
+  {
+    dimension: "Agent model",
+    n8n: "AI/agent nodes inside workflows; hybrid low-code + code",
+    make: "AI modules and agent-like steps inside scenarios",
+    zapier: "Natural-language Agents that call Zapier app actions",
+  },
+  {
+    dimension: "Memory / state",
+    n8n: "Workflow state + data stores; design long-running carefully",
+    make: "Scenario data + data stores; visual run history strong",
+    zapier: "Conversation/task memory tied to Agents product limits",
+  },
+  {
+    dimension: "Tool use",
+    n8n: "Nodes, HTTP, code, MCP-oriented tooling in ecosystem",
+    make: "Huge connector catalog + AI steps; less raw code default",
+    zapier: "Largest SaaS action catalog; agent chooses actions/Zaps",
+  },
+  {
+    dimension: "Multi-agent",
+    n8n: "Possible via multi-node/agent patterns; more builder-designed",
+    make: "Limited vs frameworks; multi-step more than multi-agent crews",
+    zapier: "Not a graph multi-agent framework; single-agent-style goals",
+  },
+  {
+    dimension: "Flexibility",
+    n8n: "Highest (self-host, code nodes, custom logic)",
+    make: "High visual flexibility; middling code escape hatches",
+    zapier: "High app breadth; lower deep control / self-host",
+  },
+  {
+    dimension: "Observability",
+    n8n: "Execution logs; strong when self-hosted into your stack",
+    make: "Excellent visual run debugging for scenarios",
+    zapier: "Zap/Agent history in product; less infra-level control",
+  },
+];
+
+const pricingRows: {
+  aspect: string;
+  n8n: string;
+  make: string;
+  zapier: string;
+}[] = [
+  {
+    aspect: "Free / entry",
+    n8n: "Self-host community free; Cloud has free/trial limits then paid",
+    make: "Free tier with monthly ops cap; good for light personal/SMB",
+    zapier: "Free Zapier tier limited; Agents need higher plan access often",
+  },
+  {
+    aspect: "Entry paid (approx. 2026)",
+    n8n: "Cloud often from ~$20+/mo depending on executions",
+    make: "Core from ~$9–10+/mo (ops-based); scales by operations",
+    zapier: "Professional/Team plans commonly tens of USD/user or task-based; Agents may require mid tiers+",
+  },
+  {
+    aspect: "How cost scales",
+    n8n: "Executions (Cloud) or infra (self-host) + model API spend",
+    make: "Operations volume — complex scenarios burn ops faster",
+    zapier: "Tasks + agent activity + seats; high-volume SaaS glue adds up",
+  },
+  {
+    aspect: "Heavy production volume",
+    n8n: "Self-host can be cheapest at scale if you can run K8s/ops",
+    make: "Ops packs rise; still SaaS-managed convenience cost",
+    zapier: "Often the premium for breadth; enterprise quotes for large orgs",
+  },
+  {
+    aspect: "AI model costs",
+    n8n: "Usually BYO keys / nodes — tokens billed by model vendor",
+    make: "AI modules may include or pass through usage — check plan",
+    zapier: "Agent usage limits on plan; models may be included/metered",
+  },
+  {
+    aspect: "Best pricing fit",
+    n8n: "Technical teams OK self-hosting or paying for Cloud executions",
+    make: "Visual builders who outgrew free ops but want SaaS simplicity",
+    zapier: "Teams already on Zapier who want agents without new vendors",
+  },
+];
+
+const chooseZapier = [
+  "You already live in Zapier and need agents that call the same app catalog",
+  "Non-technical operators must describe goals in natural language",
+  "Time-to-agent matters more than self-host or deep code control",
+  "Your automations are SaaS-to-SaaS, not heavy on-prem data planes",
+  "You accept Zapier’s packaging and limits as the operate model",
+];
+
+const chooseMake = [
+  "You think in visual multi-step scenarios and need strong run debugging",
+  "You want more scenario complexity than basic zaps without full self-host",
+  "Ops/growth teams own automation and prefer Make’s canvas model",
+  "Connector breadth + AI modules cover most agent-like steps you need",
+  "You’re fine with SaaS (no hard self-host requirement)",
+];
+
+const chooseN8n = [
+  "Self-hosting or data residency is a hard requirement",
+  "You need code nodes + visual flows in one product",
+  "Technical ops/platform teams will own the runtime",
+  "You want fair-code/source availability and MCP-oriented extension paths",
+  "You’re building “real” AI-in-the-loop automations that may grow complex",
+];
+
+const combineCases = [
+  {
+    title: "Zapier for edge SaaS, n8n for core",
+    body: "Keep long-tail app glue on Zapier; run sensitive or high-volume AI workflows on self-hosted n8n.",
+  },
+  {
+    title: "Make for business-owned flows, n8n for eng-owned",
+    body: "Growth/ops scenarios in Make; platform team owns n8n for data-heavy or custom-code paths.",
+  },
+  {
+    title: "Don’t triple-stack without a reason",
+    body: "Three automation platforms means three admin models and three invoices. Split by risk and ownership, not by habit.",
+  },
+];
+
+const decisionSteps = [
+  {
+    step: "1",
+    title: "Decide data control first",
+    body: "If self-host/VPC is mandatory, n8n leads. If pure SaaS is fine, Make and Zapier compete on UX and catalog.",
+  },
+  {
+    step: "2",
+    title: "Name the builder",
+    body: "Citizen automator → Zapier or Make. Technical operator → n8n or Make. Platform eng → n8n (or a code framework).",
+  },
+  {
+    step: "3",
+    title: "Name the agent job",
+    body: "Natural-language agent over SaaS actions → Zapier Agents. Multi-step visual AI scenarios → Make. Hybrid AI + code + control → n8n.",
+  },
+  {
+    step: "4",
+    title: "Model volume honestly",
+    body: "Count monthly ops/tasks/executions and AI calls. Price at 3× pilot volume before you standardize.",
+  },
+  {
+    step: "5",
+    title: "Know when to leave no-code",
+    body: "If you need durable multi-agent graphs and custom runtimes, graduate to frameworks — see open-source and LangGraph vs CrewAI guides.",
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/guides/n8n-vs-make-vs-zapier-agents/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    {
+      name: "n8n vs Make vs Zapier Agents",
+      path: "/guides/n8n-vs-make-vs-zapier-agents/",
+    },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12 lg:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "n8n vs Make vs Zapier Agents" },
+        ]}
+      />
+
+      <div class="mt-8 max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span class="rounded-full bg-accent-soft px-3 py-1 text-accent">
+            Comparison
+          </span>
+          <span class="text-ink-soft">
+            <time datetime={published}>Apr 1, 2026</time>
+            <span aria-hidden="true"> · </span>
+            {readTime} read
+          </span>
+        </div>
+
+        <h1
+          class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.25rem]"
+        >
+          n8n vs Make vs Zapier Agents in 2026: Which Is Best for AI Agents?
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
+          Three automation platforms everyone already knows — now with agent
+          features. This guide is for teams building real AI-in-the-loop
+          workflows, not only three-step zaps.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#verdict" class="btn-primary">Quick verdict</a>
+          <a href="#pricing" class="btn-secondary">Pricing</a>
+        </div>
+        <p class="mt-6 text-sm text-ink-muted">
+          Profiles:{" "}
+          <a
+            href="/tools/n8n/"
+            class="font-semibold text-accent hover:text-accent-hover">n8n</a
+          >
+          {
+            n8n && (
+              <span class="text-ink-soft">
+                {" "}
+                ({n8n.scores.overall.toFixed(1)})
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/tools/make/"
+            class="font-semibold text-accent hover:text-accent-hover">Make</a
+          >
+          {
+            make && (
+              <span class="text-ink-soft">
+                {" "}
+                ({make.scores.overall.toFixed(1)})
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/tools/zapier-agents/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Zapier Agents</a
+          >
+          {
+            zapier && (
+              <span class="text-ink-soft">
+                {" "}
+                ({zapier.scores.overall.toFixed(1)})
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/categories/workflow/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Workflow</a
+          >
+          {" · "}
+          <a
+            href="/methodology/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Methodology</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- 1. Intro -->
+        <section class="prose-guide">
+          <h2 id="introduction" class="guide-h2">
+            How the landscape changed once all three added agent capabilities
+          </h2>
+          <p>
+            For years the choice was simple: Zapier for the fastest SaaS glue,
+            Make for visual complexity, n8n when you wanted self-host or code.
+            In 2026 each product ships{" "}
+            <strong class="font-semibold text-ink">agent-shaped features</strong> —
+            natural-language goals, AI steps, or agent nodes that call tools and
+            multi-step flows.
+          </p>
+          <p>
+            That blurs marketing slides. It does not blur the underlying
+            products. Zapier Agents still win on app breadth and ease. Make still
+            wins on scenario canvas depth for many ops teams. n8n still wins on
+            control, self-host, and hybrid code. If you evaluate them only as
+            “who has an Agents button,” you will pick the wrong operate model.
+          </p>
+          <p>
+            This comparison is for technical operators and founders building
+            automations that include real AI decisions — classification, drafting,
+            tool-using steps — not only if-this-then-that.
+          </p>
+        </section>
+
+        <!-- 2. Verdict -->
+        <section class="mt-12 sm:mt-14" id="verdict">
+          <div
+            class="rounded-2xl border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+          >
+            <p
+              class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
+            >
+              Quick verdict
+            </p>
+            <h2
+              class="mt-2 text-xl font-bold tracking-tight text-ink sm:text-2xl"
+            >
+              Match the builder and the control requirement
+            </h2>
+            <div class="mt-5 grid gap-4 sm:grid-cols-3">
+              <div class="rounded-xl border border-border bg-surface p-4">
+                <h3 class="text-sm font-semibold text-ink">Zapier Agents</h3>
+                <p class="mt-2 text-xs leading-relaxed text-ink-muted sm:text-sm">
+                  Best for non-technical teams already on Zapier who want
+                  natural-language agents over a huge SaaS catalog.
+                </p>
+              </div>
+              <div class="rounded-xl border border-border bg-surface p-4">
+                <h3 class="text-sm font-semibold text-ink">Make</h3>
+                <p class="mt-2 text-xs leading-relaxed text-ink-muted sm:text-sm">
+                  Best for visual multi-step scenarios with AI modules when SaaS
+                  is fine and you want stronger flow design than basic zaps.
+                </p>
+              </div>
+              <div class="rounded-xl border border-border bg-surface p-4">
+                <h3 class="text-sm font-semibold text-ink">n8n</h3>
+                <p class="mt-2 text-xs leading-relaxed text-ink-muted sm:text-sm">
+                  Best for technical teams needing self-host, code nodes, and
+                  serious AI-in-the-loop automation with data control.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Positioning -->
+        <section class="mt-14 sm:mt-16" id="positioning">
+          <h2 class="guide-h2">Core positioning of each platform</h2>
+          <div class="mt-6 grid gap-4">
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">
+                <a href="/tools/zapier-agents/" class="hover:text-accent-hover"
+                  >Zapier Agents</a
+                >
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                Natural-language agents on top of Zapier’s app ecosystem. The
+                product bet is breadth and accessibility — not self-host graphs
+                or deep multi-agent frameworks.
+              </p>
+            </div>
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">
+                <a href="/tools/make/" class="hover:text-accent-hover">Make</a>
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                Visual scenario automation with AI steps. The bet is powerful
+                canvases for multi-app flows that ops teams can still own.
+              </p>
+            </div>
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">
+                <a href="/tools/n8n/" class="hover:text-accent-hover">n8n</a>
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                Fair-code automation with AI/agent nodes, code escape hatches,
+                and real self-hosting. The bet is control without jumping
+                straight to a full agent framework.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Agent capabilities -->
+        <section class="mt-14 sm:mt-16" id="agent-capabilities">
+          <h2 class="guide-h2">
+            Detailed comparison of AI agent capabilities
+          </h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            None of these replace{" "}
+            <a
+              href="/guides/best-open-source-ai-agent-frameworks-2026/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >open-source agent frameworks</a
+            >{" "}
+            for custom multi-agent products. They compete as{" "}
+            <em>automation platforms with agent features</em>.
+          </p>
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[48rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Dimension</th>
+                  <th class="px-4 py-3 font-semibold">n8n</th>
+                  <th class="px-4 py-3 font-semibold">Make</th>
+                  <th class="px-4 py-3 font-semibold">Zapier Agents</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  agentRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.dimension}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.n8n}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.make}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.zapier}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-4 text-sm leading-relaxed text-ink-muted">
+            Directory scores (overall): n8n{" "}
+            <strong class="text-ink">{n8n?.scores.overall.toFixed(1) ?? "—"}</strong
+            >, Make{" "}
+            <strong class="text-ink">{make?.scores.overall.toFixed(1) ?? "—"}</strong
+            >, Zapier Agents{" "}
+            <strong class="text-ink"
+              >{zapier?.scores.overall.toFixed(1) ?? "—"}</strong
+            >{" "}
+            — see{" "}
+            <a
+              href="/methodology/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >methodology</a
+            >.
+          </p>
+        </section>
+
+        <!-- 5. Ease of use -->
+        <section class="mt-14 sm:mt-16" id="ease-of-use">
+          <h2 class="guide-h2">Ease of use and learning curve</h2>
+          <div
+            class="mt-4 space-y-4 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem]"
+          >
+            <p>
+              <strong class="font-semibold text-ink">Zapier Agents</strong> is
+              usually the easiest on-ramp: describe a goal, connect apps, stay
+              in a familiar account. Depth shows up later as limits and
+              debugging less “workflow-native” than a canvas.
+            </p>
+            <p>
+              <strong class="font-semibold text-ink">Make</strong> asks you to
+              learn scenarios and modules. Once fluent, complex multi-step flows
+              are more legible than a pile of linear zaps. Steeper than Zapier
+              for beginners; rewarding for ops builders.
+            </p>
+            <p>
+              <strong class="font-semibold text-ink">n8n</strong> is easiest for
+              people who already think in nodes and JSON. Non-technical users can
+              succeed, but the ceiling (and expectation) is more technical —
+              especially self-host.
+            </p>
+          </div>
+        </section>
+
+        <!-- 6. Integrations -->
+        <section class="mt-14 sm:mt-16" id="integrations">
+          <h2 class="guide-h2">Integrations and ecosystem strength</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            <strong class="font-semibold text-ink">Zapier</strong> still leads
+            raw SaaS catalog breadth — Agents inherit that advantage.{" "}
+            <strong class="font-semibold text-ink">Make</strong> is close enough
+            for most SMB/mid-market stacks and strong for multi-step mapping.{" "}
+            <strong class="font-semibold text-ink">n8n</strong> has a large node
+            library plus HTTP/code for anything missing; ecosystem is
+            community- and self-host-heavy rather than “every consumer SaaS
+            OAuth in one click” at Zapier scale.
+          </p>
+          <p class="mt-4 text-base leading-relaxed text-ink-muted">
+            For MCP and portable tool servers beyond these platforms, see{" "}
+            <a
+              href="/guides/mcp-and-tool-calling-explained/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >MCP and tool calling explained</a
+            >.
+          </p>
+        </section>
+
+        <!-- 7. Self-hosting -->
+        <section class="mt-14 sm:mt-16" id="self-hosting">
+          <h2 class="guide-h2">Self-hosting and data control</h2>
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[36rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Platform</th>
+                  <th class="px-4 py-3 font-semibold">Self-host</th>
+                  <th class="px-4 py-3 font-semibold">Data control note</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface text-ink-muted">
+                <tr>
+                  <td class="px-4 py-3 font-semibold text-ink">n8n</td>
+                  <td class="px-4 py-3">Yes (first-class)</td>
+                  <td class="px-4 py-3">
+                    Strongest option here for residency and private networks
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-semibold text-ink">Make</td>
+                  <td class="px-4 py-3">No (SaaS)</td>
+                  <td class="px-4 py-3">
+                    Vendor-hosted; enterprise terms and regions via sales
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-semibold text-ink">Zapier Agents</td>
+                  <td class="px-4 py-3">No (SaaS)</td>
+                  <td class="px-4 py-3">
+                    Vendor-hosted; rely on Zapier trust/compliance packaging
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-4 text-base leading-relaxed text-ink-muted">
+            If legal says “customer data cannot leave our VPC,” n8n is the only
+            serious candidate of the three — or you leave this category for
+            frameworks and enterprise suites.
+          </p>
+        </section>
+
+        <!-- 8. Pricing -->
+        <section class="mt-14 sm:mt-16" id="pricing">
+          <h2 class="guide-h2">Pricing comparison (2026)</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Automation vendors change tiers, free caps, and agent packaging
+            often. Treat this as a{" "}
+            <strong class="font-semibold text-ink">cost-structure map</strong>.
+            Always verify on n8n.io, make.com, and zapier.com before you budget.
+          </p>
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[48rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Pricing aspect</th>
+                  <th class="px-4 py-3 font-semibold">n8n</th>
+                  <th class="px-4 py-3 font-semibold">Make</th>
+                  <th class="px-4 py-3 font-semibold">Zapier Agents</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  pricingRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.aspect}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.n8n}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.make}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.zapier}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 9. TCO -->
+        <section class="mt-14 sm:mt-16" id="tco">
+          <h2 class="guide-h2">
+            Total cost of ownership at higher volumes
+          </h2>
+          <ul class="mt-6 space-y-4">
+            {
+              [
+                {
+                  title: "Metered automation units",
+                  body: "Ops (Make), tasks (Zapier), executions (n8n Cloud) all punish chatty AI loops. Design fewer, better steps.",
+                },
+                {
+                  title: "Model spend",
+                  body: "AI steps add vendor or BYO token cost on top of automation plans. Attribute both lines in finance reviews.",
+                },
+                {
+                  title: "Self-host is not free",
+                  body: "n8n self-host trades SaaS fees for infra, upgrades, backups, and on-call. Still often wins at high volume.",
+                },
+                {
+                  title: "Builder time",
+                  body: "The largest TCO is usually humans maintaining brittle automations. Prefer platforms your team will actually own.",
+                },
+                {
+                  title: "Failure cost",
+                  body: "Missed CRM updates and duplicate messages are TCO. Observability and retries matter more as volume grows.",
+                },
+              ].map((item) => (
+                <li class="card-surface p-5">
+                  <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {item.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 10–12 Choose sections -->
+        <section class="mt-14 sm:mt-16" id="choose-zapier">
+          <h2 class="guide-h2">Choose Zapier if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseZapier.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-4 text-sm">
+            <a
+              href="/tools/zapier-agents/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Zapier Agents platform profile →</a
+            >
+          </p>
+        </section>
+
+        <section class="mt-14 sm:mt-16" id="choose-make">
+          <h2 class="guide-h2">Choose Make if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseMake.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-4 text-sm">
+            <a
+              href="/tools/make/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Make platform profile →</a
+            >
+          </p>
+        </section>
+
+        <section class="mt-14 sm:mt-16" id="choose-n8n">
+          <h2 class="guide-h2">Choose n8n if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseN8n.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-4 text-sm">
+            <a
+              href="/tools/n8n/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >n8n platform profile →</a
+            >
+          </p>
+        </section>
+
+        <!-- 13. Combining -->
+        <section class="mt-14 sm:mt-16" id="combine">
+          <h2 class="guide-h2">When combining tools makes sense</h2>
+          <ul class="mt-6 space-y-4">
+            {
+              combineCases.map((c) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{c.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {c.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 14. Decision framework -->
+        <section class="mt-14 sm:mt-16" id="decision">
+          <h2 class="guide-h2">Final recommendation framework</h2>
+          <ol class="mt-8 space-y-4">
+            {
+              decisionSteps.map((r) => (
+                <li class="flex gap-4 rounded-2xl border border-border bg-surface-muted/50 p-5 sm:p-6">
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-fg"
+                    aria-hidden="true"
+                  >
+                    {r.step}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{r.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {r.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <p class="mt-8 text-base leading-relaxed text-ink-muted">
+            <strong class="font-semibold text-ink">Bottom line:</strong> Zapier
+            Agents for accessible SaaS agents; Make for visual multi-step AI
+            scenarios on SaaS; n8n for control, self-host, and technical
+            AI-in-the-loop automation. When you outgrow all three, move to
+            frameworks — start with the{" "}
+            <a
+              href="/guides/best-open-source-ai-agent-frameworks-2026/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >best open-source AI agent frameworks in 2026</a
+            >{" "}
+            and the{" "}
+            <a
+              href="/guides/langgraph-vs-crewai/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >LangGraph vs CrewAI comparison</a
+            >.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <div class="bg-surface">
+    <div class="container-site pb-4">
+      <div class="mx-auto max-w-3xl">
+        <RelatedComparisons
+          slug="n8n-vs-make-vs-zapier-agents"
+          categories={["Workflow", "No-Code"]}
+        />
+      </div>
+    </div>
+  </div>
+
+  <GuideExplore
+    slug="n8n-vs-make-vs-zapier-agents"
+    categories={["Workflow", "No-Code"]}
+  />
+
+  <!-- CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Compare profiles — then pick an operate model
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Open the three listings, browse the{" "}
+          <a
+            href="/categories/workflow/"
+            class="text-indigo-300 hover:text-white">Workflow category</a
+          >, and use our{" "}
+          <a href="/methodology/" class="text-indigo-300 hover:text-white"
+            >methodology</a
+          >{" "}
+          when you score ease of use, integrations, and value.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center"
+        >
+          <a
+            href="/tools/n8n/"
+            class="inline-flex items-center justify-center rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
+          >
+            n8n profile
+          </a>
+          <a
+            href="/tools/make/"
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-slate-400 hover:bg-white/5"
+          >
+            Make profile
+          </a>
+          <a
+            href="/tools/zapier-agents/"
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-slate-400 hover:bg-white/5"
+          >
+            Zapier Agents profile
+          </a>
+        </div>
+        <p class="mt-6 text-sm text-slate-400">
+          <a href="/contact/" class="text-indigo-300 hover:text-white"
+            >Contact</a
+          >
+          {" · "}
+          <a href={site.cta.href} class="text-indigo-300 hover:text-white"
+            >Implementation</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

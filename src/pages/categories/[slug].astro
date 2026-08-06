@@ -12,6 +12,8 @@ import {
   getRelatedGuidesForCategory,
   guideHref,
   methodologyLink,
+  isComparisonGuide,
+  comparisonLinkLabel,
 } from "../../data/guides";
 import RelatedLinks from "../../components/RelatedLinks.astro";
 import { site } from "../../data/site";
@@ -48,16 +50,18 @@ const relatedLinks = [
     title: "All AI agent platforms",
     excerpt: "Filter the full catalog by category, features, pricing, and score.",
   },
+  ...relatedGuides.map((g) => ({
+    href: guideHref(g.slug),
+    title: isComparisonGuide(g.slug)
+      ? comparisonLinkLabel(g.slug)
+      : g.title,
+    excerpt: g.excerpt,
+  })),
   {
     href: methodologyLink.href,
     title: methodologyLink.title,
     excerpt: methodologyLink.excerpt,
   },
-  ...relatedGuides.map((g) => ({
-    href: guideHref(g.slug),
-    title: g.title,
-    excerpt: g.excerpt,
-  })),
 ];
 
 const pageTitle = `${resolved.name} AI Agent Platforms`;
@@ -230,7 +234,7 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
 
   <RelatedLinks
     variant="section"
-    eyebrow="Guides"
+    eyebrow="Guides & comparisons"
     title={`Helpful reading for ${resolved.name}`}
     links={relatedLinks}
   />
