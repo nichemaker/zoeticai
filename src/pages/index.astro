@@ -54,27 +54,18 @@ const whyItems = [
   isHome
 >
   <!-- 1. Hero -->
-  <section
-    class="relative overflow-hidden border-b border-border bg-surface-muted"
-  >
+  <section class="page-hero">
+    <div class="page-hero-glow" aria-hidden="true"></div>
     <div
-      class="pointer-events-none absolute inset-0"
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"
       aria-hidden="true"
     >
-      <div
-        class="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,_var(--color-accent-soft)_0%,_transparent_60%)]"
-      >
-      </div>
-      <div
-        class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"
-      >
-      </div>
     </div>
 
     <div class="container-site relative section-y">
       <div class="mx-auto max-w-3xl text-center">
         <div
-          class="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent shadow-(--shadow-sm)"
+          class="inline-flex items-center gap-2 rounded-full border border-border/90 bg-surface/90 px-3.5 py-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-accent shadow-(--shadow-xs)"
         >
           <span
             class="h-1.5 w-1.5 rounded-full bg-accent"
@@ -83,51 +74,69 @@ const whyItems = [
           AI agent platforms directory
         </div>
 
-        <h1
-          class="mt-6 text-[2.125rem] font-bold tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]"
-        >
+        <h1 class="text-display mt-7">
           Choose AI agent platforms with clarity
         </h1>
 
-        <p
-          class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg sm:leading-relaxed"
-        >
+        <p class="text-body-lg mx-auto mt-5 max-w-2xl">
           Independent profiles, scores, and comparisons across{" "}
-          <span class="font-semibold text-ink">{catalogCount || "dozens of"}+</span
+          <span class="font-semibold text-ink"
+            >{catalogCount || "dozens of"}+</span
           >{" "}
           enterprise suites, frameworks, no-code builders, and coding agents —
           so you can shortlist with confidence.
         </p>
 
         <div
-          class="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
+          class="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
         >
-          <a href="/platforms/" class="btn-primary px-7 py-3.5 text-base">
+          <a href="/platforms/" class="btn-primary px-7 py-3 text-[0.9375rem]">
             Browse platforms
           </a>
-          <a href="/guides/how-to-evaluate-ai-agent-platforms/" class="btn-secondary px-7 py-3.5 text-base">
+          <a
+            href="/guides/how-to-evaluate-ai-agent-platforms/"
+            class="btn-secondary px-7 py-3 text-[0.9375rem]"
+          >
             Evaluation guide
           </a>
         </div>
 
         <ul
-          class="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-ink-soft"
+          class="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-sm text-ink-soft"
         >
           <li>
-            <a href="/methodology/" class="inline-flex items-center gap-1.5 transition-colors hover:text-ink">
-              <span class="text-accent" aria-hidden="true">✓</span>
+            <a
+              href="/methodology/"
+              class="inline-flex items-center gap-2 transition-colors hover:text-ink"
+            >
+              <span
+                class="flex h-4 w-4 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                aria-hidden="true">✓</span
+              >
               Transparent methodology
             </a>
           </li>
           <li>
-            <a href="/about/" class="inline-flex items-center gap-1.5 transition-colors hover:text-ink">
-              <span class="text-accent" aria-hidden="true">✓</span>
+            <a
+              href="/about/"
+              class="inline-flex items-center gap-2 transition-colors hover:text-ink"
+            >
+              <span
+                class="flex h-4 w-4 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                aria-hidden="true">✓</span
+              >
               About Zoetic AI
             </a>
           </li>
           <li>
-            <a href="/guides/" class="inline-flex items-center gap-1.5 transition-colors hover:text-ink">
-              <span class="text-accent" aria-hidden="true">✓</span>
+            <a
+              href="/guides/"
+              class="inline-flex items-center gap-2 transition-colors hover:text-ink"
+            >
+              <span
+                class="flex h-4 w-4 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                aria-hidden="true">✓</span
+              >
               Practical guides
             </a>
           </li>
@@ -149,7 +158,7 @@ const whyItems = [
 
       {
         featured.length > 0 ? (
-          <div class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-3 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none lg:grid-cols-3">
+          <div class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-3 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none lg:grid-cols-3 lg:gap-6">
             {featured.map((tool) => (
               <div class="w-[min(100%,19rem)] shrink-0 snap-start sm:w-auto sm:min-w-0 sm:shrink">
                 <ToolCard tool={tool} featured maxTags={4} />
@@ -158,7 +167,9 @@ const whyItems = [
           </div>
         ) : (
           <div class="empty-panel">
-            <p class="text-base font-semibold text-ink">Featured listings coming soon</p>
+            <p class="text-base font-semibold text-ink">
+              Featured listings coming soon
+            </p>
             <p class="mt-2 max-w-sm text-sm text-ink-muted">
               We are curating standout platforms for this strip.
             </p>
@@ -184,15 +195,15 @@ const whyItems = [
 
       {
         categoryCards.length > 0 ? (
-          <div class="grid auto-rows-fr gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+          <div class="grid auto-rows-fr gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
             {categoryCards.map(({ meta, count }) => (
               <a
                 href={categoryHref(meta)}
-                class="card-interactive group flex h-full min-h-[11.5rem] flex-col p-6 sm:p-7"
+                class="card-interactive group flex h-full min-h-[12rem] flex-col p-6 sm:p-7"
               >
                 <div class="flex items-start justify-between gap-3">
                   <span
-                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-sm font-bold text-accent ring-1 ring-accent/10 transition-transform duration-200 group-hover:scale-105"
+                    class="flex h-11 w-11 items-center justify-center rounded-[var(--radius-lg)] bg-accent-soft text-sm font-bold text-accent ring-1 ring-accent/10"
                     aria-hidden="true"
                   >
                     {meta.icon}
@@ -209,10 +220,10 @@ const whyItems = [
                   {meta.description}
                 </p>
 
-                <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
+                <span class="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
                   Explore
                   <span
-                    class="transition-transform duration-200 group-hover:translate-x-0.5"
+                    class="transition-transform duration-200 ease-[var(--ease-out-soft)] group-hover:translate-x-0.5"
                     aria-hidden="true"
                   >
                     →
@@ -236,16 +247,10 @@ const whyItems = [
   <!-- 4. Why this directory -->
   <section class="border-b border-border bg-surface">
     <div class="container-site section-y">
-      <div class="grid items-start gap-10 lg:grid-cols-12 lg:gap-16">
+      <div class="grid items-start gap-12 lg:grid-cols-12 lg:gap-16">
         <div class="lg:col-span-5 lg:sticky lg:top-24">
-          <p
-            class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
-          >
-            Why this directory
-          </p>
-          <h2
-            class="mt-2.5 text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem] sm:leading-tight"
-          >
+          <p class="eyebrow">Why this directory</p>
+          <h2 class="text-section-title mt-2.5">
             Built for decisions, not hype
           </h2>
           <p class="mt-4 text-base leading-relaxed text-ink-muted">
@@ -253,7 +258,7 @@ const whyItems = [
             actually buy and ship — with comparable scores, clear features, and
             honest positioning — so you spend less time on vendor theater.
           </p>
-          <p class="mt-4 text-sm text-ink-muted">
+          <p class="mt-5 text-sm text-ink-muted">
             Read{" "}
             <a
               href="/about/"
@@ -274,12 +279,12 @@ const whyItems = [
             whyItems.map((item, i) => (
               <li class="card-interactive relative flex flex-col p-5 sm:p-6">
                 <span
-                  class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-accent-soft text-xs font-bold tabular-nums text-accent"
+                  class="inline-flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] bg-surface-muted text-[11px] font-bold tabular-nums text-ink-soft ring-1 ring-border"
                   aria-hidden="true"
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <h3 class="mt-3.5 text-base font-semibold text-ink">
+                <h3 class="mt-4 text-base font-semibold tracking-tight text-ink">
                   {item.title}
                 </h3>
                 <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
@@ -287,7 +292,7 @@ const whyItems = [
                 </p>
                 <a
                   href={item.href}
-                  class="relative z-10 mt-3 text-sm font-semibold text-accent hover:text-accent-hover"
+                  class="relative z-10 mt-4 text-sm font-semibold text-accent hover:text-accent-hover"
                 >
                   {item.linkLabel} →
                 </a>
@@ -312,17 +317,17 @@ const whyItems = [
 
       {
         guideList.length > 0 ? (
-          <div class="grid auto-rows-fr gap-4 md:grid-cols-3 md:gap-5">
+          <div class="grid auto-rows-fr gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6">
             {guideList.map((guide) => (
-              <article class="card-interactive group relative flex h-full min-h-[14rem] flex-col p-6 sm:p-7">
-                <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-ink-soft">
-                  <span class="rounded-md bg-accent-soft px-2 py-0.5 text-accent normal-case tracking-normal">
+              <article class="card-interactive group relative flex h-full min-h-[13.5rem] flex-col p-6 sm:p-7">
+                <div class="flex flex-wrap items-center gap-2 text-[11px] font-medium text-ink-soft">
+                  <span class="pill-accent normal-case tracking-normal">
                     {guide.category}
                   </span>
                   <span aria-hidden="true" class="text-border-strong">
                     ·
                   </span>
-                  <time datetime={guide.date} class="normal-case tracking-normal">
+                  <time datetime={guide.date} class="tracking-normal">
                     {guide.readTime} read
                   </time>
                 </div>
@@ -340,7 +345,7 @@ const whyItems = [
                 <span class="mt-5 text-sm font-semibold text-accent">
                   Read guide
                   <span
-                    class="inline-block transition-transform duration-200 group-hover:translate-x-0.5"
+                    class="inline-block transition-transform duration-200 ease-[var(--ease-out-soft)] group-hover:translate-x-0.5"
                     aria-hidden="true"
                   >
                     {" "}
@@ -365,15 +370,13 @@ const whyItems = [
   <!-- 6. Final CTA banner -->
   <section class="relative overflow-hidden bg-ink text-accent-fg">
     <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(67_56_202_/_0.28)_0%,_transparent_55%)]"
       aria-hidden="true"
     >
     </div>
     <div class="container-site relative section-y">
       <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <p
-          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
-        >
+        <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-indigo-300">
           Implementation
         </p>
         <h2
@@ -386,17 +389,17 @@ const whyItems = [
           operates agent systems for real products and enterprise workflows.
         </p>
         <div
-          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+          class="mt-10 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
         >
           <a
             href={site.cta.href}
-            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-accent px-7 py-3.5 text-[0.9375rem] font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-200 hover:bg-accent-hover active:translate-y-px"
           >
             Talk to us
           </a>
           <a
             href="/contact/"
-            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
+            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 bg-transparent px-7 py-3.5 text-[0.9375rem] font-semibold text-white transition-colors duration-150 hover:border-white/30 hover:bg-white/5"
           >
             Contact us
           </a>

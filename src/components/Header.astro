@@ -10,33 +10,37 @@ function isCurrent(href: string) {
 }
 ---
 
-<header class="sticky top-0 z-50 border-b border-border bg-surface/95">
+<header
+  class="sticky top-0 z-50 border-b border-border/80 bg-surface/80 backdrop-blur-xl backdrop-saturate-150"
+>
   <div class="container-site">
-    <div class="flex h-16 items-center gap-3 sm:h-[4.25rem] sm:gap-6">
-      <!-- Logo placeholder -->
+    <div class="flex h-[3.75rem] items-center gap-3 sm:h-16 sm:gap-8">
+      <!-- Logo -->
       <a
         href="/"
-        class="flex shrink-0 items-center gap-2.5"
+        class="group flex shrink-0 items-center gap-2.5"
         aria-label={`${site.name} home`}
       >
         <span
-          class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-sm font-bold text-accent-fg"
+          class="flex h-8 w-8 items-center justify-center rounded-[0.625rem] bg-accent text-[0.7rem] font-bold tracking-wide text-accent-fg shadow-(--shadow-xs) transition-transform duration-200 group-hover:scale-[1.03]"
           aria-hidden="true"
         >
           AI
         </span>
-        <span class="hidden text-base font-semibold tracking-tight text-ink sm:inline">
+        <span
+          class="hidden text-[0.9375rem] font-semibold tracking-tight text-ink sm:inline"
+        >
           {site.name}
         </span>
       </a>
 
       <!-- Desktop nav -->
-      <nav class="hidden items-center gap-1 md:flex" aria-label="Primary">
+      <nav class="hidden items-center gap-0.5 md:flex" aria-label="Primary">
         {
           primaryNav.map((link) => (
             <a
               href={link.href}
-              class="link-nav rounded-md px-3 py-2"
+              class="link-nav"
               aria-current={isCurrent(link.href) ? "page" : undefined}
             >
               {link.label}
@@ -50,37 +54,37 @@ function isCurrent(href: string) {
         action="/platforms/"
         method="get"
         role="search"
-        class="ml-auto hidden min-w-0 flex-1 max-w-xs sm:block lg:max-w-sm"
+        class="ml-auto hidden min-w-0 flex-1 max-w-[16rem] sm:block lg:max-w-xs"
       >
         <label for="header-search" class="sr-only">Search directory</label>
         <div class="relative">
           <svg
-            class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft"
+            class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-soft"
             viewBox="0 0 20 20"
             fill="none"
             stroke="currentColor"
             stroke-width="1.75"
             aria-hidden="true"
           >
-            <circle cx="8.5" cy="8.5" r="5.5" />
-            <path d="M13 13l3.5 3.5" stroke-linecap="round" />
+            <circle cx="8.5" cy="8.5" r="5.5"></circle>
+            <path d="M13 13l3.5 3.5" stroke-linecap="round"></path>
           </svg>
           <input
             id="header-search"
             type="search"
             name="q"
-            placeholder="Search agents & tools…"
-            class="input-search"
+            placeholder="Search platforms…"
+            class="input-search py-2 text-[0.8125rem]"
             autocomplete="off"
           />
         </div>
       </form>
 
       <!-- Mobile: search icon + menu toggle -->
-      <div class="ml-auto flex items-center gap-1 sm:ml-0">
+      <div class="ml-auto flex items-center gap-0.5 sm:ml-0">
         <a
           href="/platforms/"
-          class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink-muted hover:bg-surface-muted hover:text-ink sm:hidden"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink sm:hidden"
           aria-label="Search platforms"
         >
           <svg
@@ -91,14 +95,14 @@ function isCurrent(href: string) {
             stroke-width="1.75"
             aria-hidden="true"
           >
-            <circle cx="8.5" cy="8.5" r="5.5" />
-            <path d="M13 13l3.5 3.5" stroke-linecap="round" />
+            <circle cx="8.5" cy="8.5" r="5.5"></circle>
+            <path d="M13 13l3.5 3.5" stroke-linecap="round"></path>
           </svg>
         </a>
 
         <button
           type="button"
-          class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-ink md:hidden"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] text-ink transition-colors hover:bg-surface-muted md:hidden"
           aria-expanded="false"
           aria-controls="mobile-nav"
           data-menu-toggle
@@ -113,7 +117,7 @@ function isCurrent(href: string) {
             aria-hidden="true"
             data-icon-menu
           >
-            <path d="M3 5h14M3 10h14M3 15h14" stroke-linecap="round" />
+            <path d="M3 5h14M3 10h14M3 15h14" stroke-linecap="round"></path>
           </svg>
           <svg
             class="hidden h-5 w-5"
@@ -124,7 +128,7 @@ function isCurrent(href: string) {
             aria-hidden="true"
             data-icon-close
           >
-            <path d="M5 5l10 10M15 5L5 15" stroke-linecap="round" />
+            <path d="M5 5l10 10M15 5L5 15" stroke-linecap="round"></path>
           </svg>
         </button>
       </div>
@@ -134,43 +138,53 @@ function isCurrent(href: string) {
   <!-- Mobile nav panel -->
   <nav
     id="mobile-nav"
-    class="hidden border-t border-border bg-surface md:hidden"
+    class="hidden border-t border-border/80 bg-surface/95 backdrop-blur-xl md:hidden"
     aria-label="Mobile"
     data-mobile-nav
   >
     <div class="container-site py-3">
-      <form action="/platforms/" method="get" role="search" class="mb-3 sm:hidden">
+      <form
+        action="/platforms/"
+        method="get"
+        role="search"
+        class="mb-3 sm:hidden"
+      >
         <label for="mobile-search" class="sr-only">Search directory</label>
         <div class="relative">
           <svg
-            class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft"
+            class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-soft"
             viewBox="0 0 20 20"
             fill="none"
             stroke="currentColor"
             stroke-width="1.75"
             aria-hidden="true"
           >
-            <circle cx="8.5" cy="8.5" r="5.5" />
-            <path d="M13 13l3.5 3.5" stroke-linecap="round" />
+            <circle cx="8.5" cy="8.5" r="5.5"></circle>
+            <path d="M13 13l3.5 3.5" stroke-linecap="round"></path>
           </svg>
           <input
             id="mobile-search"
             type="search"
             name="q"
-            placeholder="Search agents & tools…"
-            class="input-search"
+            placeholder="Search platforms…"
+            class="input-search py-2.5"
             autocomplete="off"
           />
         </div>
       </form>
 
-      <ul class="flex flex-col gap-0.5">
+      <ul class="flex flex-col gap-0.5 pb-1">
         {
           primaryNav.map((link) => (
             <li>
               <a
                 href={link.href}
-                class="block rounded-lg px-3 py-2.5 text-sm font-medium text-ink-muted hover:bg-surface-muted hover:text-ink"
+                class:list={[
+                  "block rounded-[var(--radius-md)] px-3 py-2.5 text-sm font-medium transition-colors",
+                  isCurrent(link.href)
+                    ? "bg-surface-muted text-ink"
+                    : "text-ink-muted hover:bg-surface-muted hover:text-ink",
+                ]}
                 aria-current={isCurrent(link.href) ? "page" : undefined}
               >
                 {link.label}

@@ -11,7 +11,7 @@ interface Props {
 const { items } = Astro.props;
 ---
 
-<nav aria-label="Breadcrumb" class="text-sm">
+<nav aria-label="Breadcrumb" class="text-[0.8125rem]">
   <ol class="flex flex-wrap items-center gap-1.5 text-ink-soft">
     {
       items.map((item, index) => {
@@ -19,7 +19,7 @@ const { items } = Astro.props;
         return (
           <li class="flex items-center gap-1.5">
             {index > 0 && (
-              <span class="text-ink-soft/80" aria-hidden="true">
+              <span class="select-none text-ink-soft/70" aria-hidden="true">
                 /
               </span>
             )}

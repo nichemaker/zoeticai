@@ -26,27 +26,23 @@ const {
     (variant === "section" ? (
       <section class="border-t border-border bg-surface-muted">
         <div class="container-site section-y">
-          {eyebrow && (
-            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
-              {eyebrow}
-            </p>
-          )}
+          {eyebrow && <p class="eyebrow">{eyebrow}</p>}
           <h2
             class:list={[
-              "text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]",
-              eyebrow && "mt-2",
+              "text-section-title",
+              eyebrow && "mt-2.5",
             ]}
           >
             {title}
           </h2>
-          <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
             {links.map((link) => (
               <li>
                 <a
                   href={link.href}
                   class="card-interactive group flex h-full flex-col p-5 sm:p-6"
                 >
-                  <span class="text-base font-semibold text-ink transition-colors group-hover:text-accent">
+                  <span class="text-base font-semibold tracking-tight text-ink transition-colors group-hover:text-accent">
                     {link.title}
                   </span>
                   {link.excerpt && (
@@ -64,12 +60,8 @@ const {
         </div>
       </section>
     ) : (
-      <div class="rounded-2xl border border-border bg-surface-muted/50 p-5 sm:p-6">
-        {eyebrow && (
-          <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">
-            {eyebrow}
-          </p>
-        )}
+      <div class="card-surface bg-surface-muted/40 p-5 sm:p-6">
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
         <h2
           class:list={[
             "text-base font-semibold tracking-tight text-ink",
