@@ -1,0 +1,901 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
+import { site } from "../../data/site";
+import { getToolBySlug } from "../../data/tools";
+
+const title =
+  "Claude Code vs Cursor in 2026: Which AI Coding Agent Should You Use?";
+const description =
+  "A practical comparison of Claude Code and Cursor for developers and eng teams: workflow, autonomy, codebase context, multi-file refactors, speed, ecosystem, pricing, and when to use each — or both.";
+const published = "2026-04-01";
+const readTime = "13 min";
+
+const claudeCode = getToolBySlug("claude-code");
+const cursor = getToolBySlug("cursor");
+
+const comparisonRows: {
+  dimension: string;
+  cursor: string;
+  claudeCode: string;
+}[] = [
+  {
+    dimension: "Daily workflow",
+    cursor:
+      "Full IDE (VS Code–based): Tab, chat, Composer/agent while you stay in the editor.",
+    claudeCode:
+      "Terminal-native agent: plan, edit, run commands from the CLI — less IDE chrome, more shell flow.",
+  },
+  {
+    dimension: "Autonomy",
+    cursor:
+      "Strong agent modes for multi-file work; still oriented around interactive IDE sessions.",
+    claudeCode:
+      "High autonomy for repo-wide tasks and scripted workflows; MCP extends what it can run.",
+  },
+  {
+    dimension: "Codebase / context",
+    cursor:
+      "Indexing + IDE context for the open project; excellent for day-to-day product code.",
+    claudeCode:
+      "Leans on Claude long-context + repo exploration; strong for large multi-file reasoning passes.",
+  },
+  {
+    dimension: "Multi-file refactors",
+    cursor:
+      "Composer/agent designed for coordinated edits without leaving the editor.",
+    claudeCode:
+      "Natural fit for ambitious cross-repo changes and migrations when you trust the CLI loop.",
+  },
+  {
+    dimension: "Speed / DX",
+    cursor:
+      "Lowest friction for most app engineers: open project, type, accept, ship.",
+    claudeCode:
+      "Fast for CLI-first workflows; slower adoption if your team lives only in a GUI IDE.",
+  },
+  {
+    dimension: "Ecosystem",
+    cursor:
+      "VS Code extension ecosystem habits, model flexibility, team/admin options on paid plans.",
+    claudeCode:
+      "Anthropic/Claude stack, MCP tooling, tight fit if you already standardize on Claude.",
+  },
+  {
+    dimension: "Pricing / value",
+    cursor:
+      "Freemium; Pro ~$20/mo common for heavy use; Business for teams.",
+    claudeCode:
+      "Typically Claude subscription (Pro/Max) or API usage — cost tracks Claude packaging.",
+  },
+];
+
+/** 2026 pricing map — approximate public list signals; verify on official sites. */
+const pricingRows: {
+  aspect: string;
+  cursor: string;
+  claudeCode: string;
+}[] = [
+  {
+    aspect: "Free / entry",
+    cursor:
+      "Hobby free tier with limited fast requests / agent usage. Good for evaluation, not unlimited agent mode.",
+    claudeCode:
+      "No forever-free full agent product in most regions. Entry is usually Claude Free chat only — not full Claude Code power.",
+  },
+  {
+    aspect: "Individual Pro",
+    cursor:
+      "Pro commonly listed around ~$20/user/mo (USD). Higher limits for Tab, chat, and agent/Composer usage.",
+    claudeCode:
+      "Access typically via Claude Pro (~$20/user/mo list historically) or higher Max tiers where offered. Confirm Code inclusion for your plan/region.",
+  },
+  {
+    aspect: "Heavy individual usage",
+    cursor:
+      "Pro may still rate-limit peak agent days. Some users add usage packs or upgrade paths — watch monthly caps.",
+    claudeCode:
+      "Max / higher Claude tiers or API pay-as-you-go for sustained agent runs. Token-heavy refactors can exceed flat-seat expectations.",
+  },
+  {
+    aspect: "Team / Business",
+    cursor:
+      "Business / Teams plans (often ~$30–40/user/mo list range historically) with admin, SSO options varying by tier. Verify current seats.",
+    claudeCode:
+      "Claude Team / Enterprise packaging for orgs; admin and data controls on higher tiers. Coding agent access depends on org SKU.",
+  },
+  {
+    aspect: "Enterprise",
+    cursor:
+      "Enterprise contracts for security reviews, larger fleets, custom terms. Sales-led; not self-serve list only.",
+    claudeCode:
+      "Anthropic Enterprise / API commitments for volume, SSO, and compliance needs. Quote-based at scale.",
+  },
+  {
+    aspect: "What drives the bill",
+    cursor:
+      "Seats first; agent/Composer intensity second. Model choice on some plans can change effective cost.",
+    claudeCode:
+      "Claude plan tier or API tokens first; long multi-file agent sessions burn more than short Tab-like edits.",
+  },
+  {
+    aspect: "Cost character (honest)",
+    cursor:
+      "Predictable per-seat for IDE-wide rollouts. Spikes when the whole team runs agent mode all day.",
+    claudeCode:
+      "Cheap if you already pay for Claude and use Code modestly. Expensive if every eng runs long autonomous jobs without caps.",
+  },
+  {
+    aspect: "Best pricing fit",
+    cursor:
+      "Orgs standardizing one AI IDE seat for most engineers.",
+    claudeCode:
+      "Teams already on Claude subscriptions, or power users who need CLI agents more than IDE seats.",
+  },
+];
+
+const chooseCursor = [
+  "You want AI inside a full editor for every PR, not only big agent runs",
+  "Your team already thinks in VS Code–style workflows (files, tabs, inline accept)",
+  "Day-to-day feature work and multi-file Composer sessions are the main job",
+  "You need flexible model choice and familiar IDE ergonomics for mixed seniority teams",
+  "Enterprise buyers want seat-based team plans with admin-friendly packaging",
+  "You care about time-to-first-edit more than terminal purity",
+];
+
+const chooseClaudeCode = [
+  "You live in the terminal and want an agent that plans, edits, and runs commands there",
+  "Large refactors, migrations, and multi-file Claude reasoning are the bulk of the value",
+  "You already pay for Claude Pro/Max or API and want that model as the coding agent",
+  "MCP-based tool extension is part of your workflow design",
+  "You prefer less IDE lock-in and more scriptable agent sessions",
+  "CLI-first senior engineers will own the tool more than junior IDE-only users",
+];
+
+const bothCases = [
+  {
+    title: "Cursor for daily product work",
+    body: "Keep Cursor as the default IDE for features, reviews, and pair-programming-style edits. Fast feedback, low context switch.",
+  },
+  {
+    title: "Claude Code for heavy lifts",
+    body: "Spin up Claude Code for repo-wide refactors, dependency upgrades, or multi-hour agent tasks that are awkward inside a GUI session.",
+  },
+  {
+    title: "Shared standards, two surfaces",
+    body: "Agree on branch rules, test commands, and secret handling once. Both tools should obey the same lint/test gate — the surface (IDE vs CLI) can differ.",
+  },
+  {
+    title: "Cost control",
+    body: "Seat + usage can stack if everyone runs both at max. Assign default tool by role or task type so you are not double-paying without double value.",
+  },
+];
+
+const decisionSteps = [
+  {
+    step: "1",
+    title: "Map the work",
+    body: "Is 80% of value inline IDE assistance, or large autonomous coding runs? That single answer eliminates most noise.",
+  },
+  {
+    step: "2",
+    title: "Map the team",
+    body: "GUI-first product teams converge on Cursor. CLI-first platform/backend teams often prefer Claude Code — or both.",
+  },
+  {
+    step: "3",
+    title: "Map the model budget",
+    body: "If you are already all-in on Claude subscriptions, Claude Code is a natural fit. If you want model flexibility in-editor, Cursor is easier.",
+  },
+  {
+    step: "4",
+    title: "Run the same three tasks",
+    body: "Small feature, multi-file refactor, and a failing test fix. Measure human review time and rework — not demo wow.",
+  },
+  {
+    step: "5",
+    title: "Decide defaults, not religions",
+    body: "Pick a default tool for the org, document exceptions, and revisit quarterly as pricing and agent quality move.",
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/guides/claude-code-vs-cursor/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    { name: "Claude Code vs Cursor", path: "/guides/claude-code-vs-cursor/" },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12 lg:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "Claude Code vs Cursor" },
+        ]}
+      />
+
+      <div class="mt-8 max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span class="rounded-full bg-accent-soft px-3 py-1 text-accent">
+            Comparison
+          </span>
+          <span class="text-ink-soft">
+            <time datetime={published}>Apr 1, 2026</time>
+            <span aria-hidden="true"> · </span>
+            {readTime} read
+          </span>
+        </div>
+
+        <h1
+          class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.35rem]"
+        >
+          Claude Code vs Cursor in 2026: Which AI Coding Agent Should You Use?
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
+          Two of the most common AI coding agents on engineering teams — one
+          lives in your IDE, the other in your terminal. Pick for how you
+          actually ship code, not for the loudest demo.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#verdict" class="btn-primary">Quick verdict</a>
+          <a href="#pricing" class="btn-secondary">Pricing</a>
+          <a href="/categories/coding/" class="btn-secondary">Coding agents</a>
+        </div>
+        <p class="mt-6 text-sm text-ink-muted">
+          Profiles:{" "}
+          <a
+            href="/tools/cursor/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Cursor</a
+          >
+          {
+            cursor && (
+              <span class="text-ink-soft">
+                {" "}
+                ({cursor.scores.overall.toFixed(1)}/10)
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/tools/claude-code/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Claude Code</a
+          >
+          {
+            claudeCode && (
+              <span class="text-ink-soft">
+                {" "}
+                ({claudeCode.scores.overall.toFixed(1)}/10)
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/methodology/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Methodology</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- 1. Intro -->
+        <section class="prose-guide">
+          <h2 id="introduction" class="guide-h2">
+            Why this comparison matters right now
+          </h2>
+          <p>
+            In 2026, “AI coding” is no longer autocomplete alone. Teams choose
+            agents that edit many files, run tests, and carry multi-step tasks —
+            and they pay real seat and usage costs to do it. Two products show
+            up in almost every shortlist:{" "}
+            <a
+              href="/tools/cursor/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Cursor</a
+            >{" "}
+            and{" "}
+            <a
+              href="/tools/claude-code/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Claude Code</a
+            >.
+          </p>
+          <p>
+            Cursor is an AI-native IDE for the daily loop. Claude Code is a
+            terminal-native agent optimized for Claude-powered planning and
+            multi-file execution. Confusing them leads to bad rollouts: buying
+            an IDE for people who only want CLI agents, or forcing terminal
+            workflows on a GUI-first product org.
+          </p>
+          <p>
+            This guide is for developers and engineering leads who need a
+            practical default — and a clear story for when the other tool still
+            makes sense.
+          </p>
+        </section>
+
+        <!-- 2. Verdict -->
+        <section class="mt-12 sm:mt-14" id="verdict">
+          <div
+            class="rounded-2xl border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+          >
+            <p
+              class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
+            >
+              Quick verdict
+            </p>
+            <h2
+              class="mt-2 text-xl font-bold tracking-tight text-ink sm:text-2xl"
+            >
+              Match the surface to the work
+            </h2>
+            <div class="mt-5 grid gap-5 sm:grid-cols-2">
+              <div class="rounded-xl border border-border bg-surface p-5">
+                <h3 class="text-base font-semibold text-ink">Cursor is best for</h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                  Product engineers who want AI inside a full editor every day —
+                  Tab, chat, multi-file agent modes, and low friction from idea
+                  to commit.
+                </p>
+              </div>
+              <div class="rounded-xl border border-border bg-surface p-5">
+                <h3 class="text-base font-semibold text-ink">
+                  Claude Code is best for
+                </h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                  CLI-first developers and teams that want Claude to plan and
+                  execute large multi-file changes, migrations, and tool-using
+                  agent sessions from the terminal.
+                </p>
+              </div>
+            </div>
+            <p class="mt-5 text-sm leading-relaxed text-ink-muted">
+              Neither replaces code review, tests, or branch policy. Scores and
+              flags in our directory follow the{" "}
+              <a
+                href="/methodology/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >published methodology</a
+              >.
+            </p>
+          </div>
+        </section>
+
+        <!-- 3. Philosophy -->
+        <section class="mt-14 sm:mt-16" id="philosophy">
+          <h2 class="guide-h2">Core philosophy difference</h2>
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">Cursor</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                <strong class="font-semibold text-ink">AI lives in the IDE.</strong
+                >{" "}
+                The unit of work is still “open the project and ship a change,”
+                with agents, completion, and chat as first-class editor
+                features. Context is what you have open and indexed.
+              </p>
+            </div>
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">Claude Code</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                <strong class="font-semibold text-ink">AI lives in the agent loop.</strong
+                >{" "}
+                The unit of work is a task: plan, edit files, run commands,
+                iterate. The terminal is the control surface; the IDE is
+                optional.
+              </p>
+            </div>
+          </div>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            If your mental model is “smarter VS Code,” start with Cursor. If it
+            is “delegate a coding agent from the shell,” start with Claude Code.
+            Fighting that grain is how teams underuse both.
+          </p>
+        </section>
+
+        <!-- 4. Detailed comparison -->
+        <section class="mt-14 sm:mt-16" id="comparison">
+          <h2 class="guide-h2">Detailed comparison</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Dimensions that show up in real rollouts — not feature bingo.
+          </p>
+
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[42rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Area</th>
+                  <th class="px-4 py-3 font-semibold">Cursor</th>
+                  <th class="px-4 py-3 font-semibold">Claude Code</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  comparisonRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.dimension}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.cursor}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.claudeCode}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-10 space-y-8">
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                User experience and daily workflow
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Cursor wins the “open laptop, ship ticket” loop: navigation,
+                diffs, and AI in one place. Claude Code wins when the session
+                is the agent — fewer panels, more command-driven work. Measure
+                context switches for your team, not preference polls on Twitter.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Autonomy and agentic capabilities
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Both can do multi-step coding agents. Cursor’s agent modes are
+                built for interactive IDE control. Claude Code is comfortable
+                running longer plan/edit/run loops, especially with MCP tools.
+                Higher autonomy always means tighter review — autonomy without
+                tests is just faster breakage.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Codebase understanding and long-context handling
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Cursor relies on project indexing and editor context for
+                day-to-day accuracy. Claude Code leans on Claude’s long-context
+                strengths and exploration patterns for wide changes. For huge
+                monorepos, try both on the same refactor before you standardize.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Multi-file edits and large refactors
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Cursor Composer/agent is strong for coordinated multi-file
+                feature work while you watch the diff. Claude Code is often the
+                better “leave it running on a migration” tool. Neither excuses
+                skipping CI.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Speed and developer experience
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                For most application engineers, Cursor feels faster because the
+                AI is where the code already is. Claude Code feels faster for
+                people who already script their environment. DX is a people
+                fit, not a universal ranking.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Ecosystem and integrations
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Cursor inherits IDE habits and team packaging. Claude Code sits
+                in the Anthropic/Claude and MCP world. If you need portable
+                tools across agents, read{" "}
+                <a
+                  href="/guides/mcp-and-tool-calling-explained/"
+                  class="font-semibold text-accent hover:text-accent-hover"
+                  >MCP and tool calling explained</a
+                >.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Pricing and value
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Cursor is usually easier to budget as seats. Claude Code is
+                usually easier if Claude is already a line item — and easier to
+                overrun with long agent sessions. See the full pricing table
+                below, then confirm on the official sites.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Pricing -->
+        <section class="mt-14 sm:mt-16" id="pricing">
+          <h2 class="guide-h2">Pricing comparison (2026)</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Consumer and team AI pricing moves often (tiers, rate limits, regional
+            availability). Numbers below are{" "}
+            <strong class="font-semibold text-ink"
+              >approximate public list signals for planning</strong
+            >
+            — not a quote.{" "}
+            <strong class="font-semibold text-ink"
+              >Verify on cursor.com and Anthropic’s pricing pages</strong
+            >{" "}
+            before you buy or roll out.
+          </p>
+
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[44rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Plan / scenario</th>
+                  <th class="px-4 py-3 font-semibold">Cursor</th>
+                  <th class="px-4 py-3 font-semibold">Claude Code</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  pricingRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.aspect}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.cursor}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.claudeCode}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            class="mt-6 rounded-2xl border border-border bg-surface-muted/60 p-5 sm:p-6"
+          >
+            <p class="text-sm leading-relaxed text-ink-muted sm:text-base">
+              <strong class="font-semibold text-ink">Fair comparison tip:</strong
+              >{" "}
+              Price a 10-person team for two weeks of real work (features + one
+              refactor), not day-one list price. Include both seats and any API
+              overage. Running both tools for everyone is often the silent cost
+              spike. Profiles:{" "}
+              <a
+                href="/tools/cursor/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >Cursor</a
+              >
+              {" · "}
+              <a
+                href="/tools/claude-code/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >Claude Code</a
+              >.
+            </p>
+          </div>
+        </section>
+
+        <!-- Scores snapshot -->
+        {
+          cursor && claudeCode && (
+            <section class="mt-14 sm:mt-16" id="scores">
+              <h2 class="guide-h2">Directory scores (editorial snapshot)</h2>
+              <p class="mt-3 text-base leading-relaxed text-ink-muted">
+                From our{" "}
+                <a
+                  href="/methodology/"
+                  class="font-semibold text-accent hover:text-accent-hover"
+                >
+                  methodology
+                </a>
+                — a structured second opinion, not a lab benchmark.
+              </p>
+              <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+                <table class="w-full min-w-[32rem] text-left text-sm">
+                  <thead class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                    <tr>
+                      <th class="px-4 py-3 font-semibold">Metric</th>
+                      <th class="px-4 py-3 font-semibold">Cursor</th>
+                      <th class="px-4 py-3 font-semibold">Claude Code</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border bg-surface text-ink-muted">
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-ink">Overall</td>
+                      <td class="px-4 py-3 tabular-nums font-semibold text-ink">
+                        {cursor.scores.overall.toFixed(1)}
+                      </td>
+                      <td class="px-4 py-3 tabular-nums font-semibold text-ink">
+                        {claudeCode.scores.overall.toFixed(1)}
+                      </td>
+                    </tr>
+                    {(
+                      [
+                        ["Capability", "capability"],
+                        ["Ease of use", "easeOfUse"],
+                        ["Integrations", "integrations"],
+                        ["Enterprise", "enterprise"],
+                        ["Developer experience", "developerExperience"],
+                        ["Value", "value"],
+                      ] as const
+                    ).map(([label, key]) => (
+                      <tr>
+                        <td class="px-4 py-3 font-medium text-ink">{label}</td>
+                        <td class="px-4 py-3 tabular-nums">
+                          {cursor.scores[key].toFixed(1)}
+                        </td>
+                        <td class="px-4 py-3 tabular-nums">
+                          {claudeCode.scores[key].toFixed(1)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )
+        }
+
+        <!-- 5. Choose Cursor -->
+        <section class="mt-14 sm:mt-16" id="choose-cursor">
+          <h2 class="guide-h2">Choose Cursor if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseCursor.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5 text-sm text-ink-muted">
+            Full listing:{" "}
+            <a
+              href="/tools/cursor/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Cursor platform profile</a
+            >
+            {" · "}
+            <a
+              href="/categories/coding/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Coding category</a
+            >
+          </p>
+        </section>
+
+        <!-- 6. Choose Claude Code -->
+        <section class="mt-14 sm:mt-16" id="choose-claude-code">
+          <h2 class="guide-h2">Choose Claude Code if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseClaudeCode.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5 text-sm text-ink-muted">
+            Full listing:{" "}
+            <a
+              href="/tools/claude-code/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Claude Code platform profile</a
+            >
+            {" · "}
+            <a
+              href="/categories/coding/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Coding category</a
+            >
+          </p>
+        </section>
+
+        <!-- 7. Both -->
+        <section class="mt-14 sm:mt-16" id="both">
+          <h2 class="guide-h2">Can teams use both effectively?</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Yes — if defaults are clear. No — if everyone runs both at max
+            spend with no review standard.
+          </p>
+          <ul class="mt-8 space-y-4">
+            {
+              bothCases.map((h) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{h.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                    {h.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            For broader agent evaluation beyond coding tools, see{" "}
+            <a
+              href="/guides/how-to-evaluate-ai-agent-platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >How to Evaluate AI Agent Platforms in 2026</a
+            >.
+          </p>
+        </section>
+
+        <!-- 8. Decision framework -->
+        <section class="mt-14 sm:mt-16" id="decision">
+          <h2 class="guide-h2">Final recommendation framework</h2>
+          <ol class="mt-8 space-y-4">
+            {
+              decisionSteps.map((r) => (
+                <li class="flex gap-4 rounded-2xl border border-border bg-surface-muted/50 p-5 sm:p-6">
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-fg"
+                    aria-hidden="true"
+                  >
+                    {r.step}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{r.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {r.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <p class="mt-8 text-base leading-relaxed text-ink-muted">
+            <strong class="font-semibold text-ink">Bottom line:</strong> Cursor
+            is the default AI coding IDE for most product teams. Claude Code is
+            the default terminal coding agent for Claude-centric, CLI-first
+            workflows. Many strong orgs run Cursor daily and Claude Code for
+            heavy lifts — with one review bar for both.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <GuideExplore
+    slug="claude-code-vs-cursor"
+    categories={["Coding", "Frameworks"]}
+  />
+
+  <!-- CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Compare profiles — then pick a default
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Open the Cursor and Claude Code listings, scan the{" "}
+          <a href="/categories/coding/" class="text-indigo-300 hover:text-white"
+            >Coding category</a
+          >, and use our{" "}
+          <a href="/methodology/" class="text-indigo-300 hover:text-white"
+            >methodology</a
+          >{" "}
+          when you score other agents.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+        >
+          <a
+            href="/tools/cursor/"
+            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+          >
+            Cursor profile
+          </a>
+          <a
+            href="/tools/claude-code/"
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
+          >
+            Claude Code profile
+          </a>
+        </div>
+        <p class="mt-6 text-sm text-slate-400">
+          <a href="/contact/" class="text-indigo-300 hover:text-white"
+            >Contact</a
+          >
+          {" · "}
+          <a href={site.cta.href} class="text-indigo-300 hover:text-white"
+            >Implementation</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

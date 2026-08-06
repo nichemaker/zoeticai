@@ -58,6 +58,14 @@ export const footerGroups: FooterGroup[] = [
       },
       { href: "/guides/langgraph-vs-crewai/", label: "LangGraph vs CrewAI" },
       {
+        href: "/guides/claude-code-vs-cursor/",
+        label: "Claude Code vs Cursor",
+      },
+      {
+        href: "/guides/copilot-studio-vs-agentforce/",
+        label: "Copilot Studio vs Agentforce",
+      },
+      {
         href: "/guides/frameworks-vs-enterprise-platforms/",
         label: "Frameworks vs enterprise",
       },

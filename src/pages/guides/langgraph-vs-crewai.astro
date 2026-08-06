@@ -64,6 +64,64 @@ const comparisonRows: {
   },
 ];
 
+/** 2026 pricing map — approximate public packaging; always verify on vendor sites. */
+const pricingRows: {
+  aspect: string;
+  langgraph: string;
+  crewai: string;
+}[] = [
+  {
+    aspect: "Open-source core",
+    langgraph: "Free (MIT-style OSS library). You pay model APIs + your infra.",
+    crewai: "Free open-source framework for local/self-hosted use. You pay model APIs + infra.",
+  },
+  {
+    aspect: "What you always pay separately",
+    langgraph: "LLM tokens (OpenAI, Anthropic, etc.), hosting, vector DBs, engineering time.",
+    crewai: "LLM tokens, hosting, tools, engineering time — same pattern as most OSS agent stacks.",
+  },
+  {
+    aspect: "Managed observability",
+    langgraph:
+      "LangSmith: free tier for light use; Team often ~$39+/seat/mo (verify current). Usage overages possible.",
+    crewai:
+      "Built-in/community tracing options; enterprise buyers usually add their own APM or vendor ops tooling.",
+  },
+  {
+    aspect: "Managed / cloud runtime",
+    langgraph:
+      "LangGraph Platform / Cloud: paid deploy, scale, and ops features. Quote-based for serious production; not a free forever host.",
+    crewai:
+      "CrewAI Enterprise / cloud: paid collaboration, deploy, and governance. Pricing typically sales-led for teams.",
+  },
+  {
+    aspect: "Entry for a solo / prototype",
+    langgraph: "≈ $0 framework + model spend only (often tens of USD/mo if light).",
+    crewai: "≈ $0 framework + model spend only (similar token profile for comparable workloads).",
+  },
+  {
+    aspect: "Small team (5–15 eng)",
+    langgraph:
+      "OSS free + models + optional LangSmith seats + optional Platform. Budget models + seats first; Platform when you need managed graph ops.",
+    crewai:
+      "OSS free + models + optional Enterprise when you outgrow scripts. Model bill usually dominates until Enterprise is added.",
+  },
+  {
+    aspect: "Enterprise / regulated",
+    langgraph:
+      "Platform + LangSmith (or self-host stack) + SSO/support contracts. Expect multi-line commercial quotes.",
+    crewai:
+      "Enterprise SKU + support; still bring your own models unless bundled. Expect commercial negotiation.",
+  },
+  {
+    aspect: "Cost character (honest)",
+    langgraph:
+      "Low license floor; higher eng + optional LangChain cloud stack. TCO rises with Platform adoption.",
+    crewai:
+      "Low license floor; fast prototypes can hide later Enterprise + ops cost. Model usage scales with crew size/steps.",
+  },
+];
+
 const chooseLangGraph = [
   "You need durable, multi-step workflows with cycles, retries, and explicit branching",
   "Shared state and checkpointing are requirements, not nice-to-haves",
@@ -186,6 +244,7 @@ const decisionSteps = [
         </p>
         <div class="mt-7 flex flex-wrap gap-3">
           <a href="#verdict" class="btn-primary">Quick verdict</a>
+          <a href="#pricing" class="btn-secondary">Pricing</a>
           <a href="/categories/frameworks/" class="btn-secondary"
             >All frameworks</a
           >
@@ -464,6 +523,76 @@ const decisionSteps = [
                 >.
               </p>
             </div>
+          </div>
+        </section>
+
+        <!-- Pricing -->
+        <section class="mt-14 sm:mt-16" id="pricing">
+          <h2 class="guide-h2">Pricing comparison (2026)</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Both frameworks are free to start as open source. Real cost is{" "}
+            <strong class="font-semibold text-ink">models + people + optional managed platforms</strong
+            >. Figures below are approximate public packaging for planning —
+            vendors change list prices, tiers, and bundles often.{" "}
+            <strong class="font-semibold text-ink"
+              >Always verify on the official LangChain / CrewAI sites</strong
+            >{" "}
+            (and your cloud provider) before budgeting.
+          </p>
+
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[44rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Pricing aspect</th>
+                  <th class="px-4 py-3 font-semibold">LangGraph</th>
+                  <th class="px-4 py-3 font-semibold">CrewAI</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  pricingRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.aspect}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.langgraph}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.crewai}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            class="mt-6 rounded-2xl border border-border bg-surface-muted/60 p-5 sm:p-6"
+          >
+            <p class="text-sm leading-relaxed text-ink-muted sm:text-base">
+              <strong class="font-semibold text-ink">How to compare fairly:</strong
+              >{" "}
+              Hold model choice and workload constant. Price three scenarios —
+              prototype (OSS only), team with tracing seats, production with
+              managed runtime. If you only compare “framework license = $0,” you
+              will miss the bill that actually arrives. Profile notes:{" "}
+              <a
+                href="/tools/langgraph/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >LangGraph</a
+              >
+              {" · "}
+              <a
+                href="/tools/crewai/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >CrewAI</a
+              >.
+            </p>
           </div>
         </section>
 

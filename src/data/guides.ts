@@ -48,6 +48,25 @@ export const latestGuides: GuidePreview[] = [
     readTime: "14 min",
     date: "2026-04-01",
   },
+  {
+    slug: "claude-code-vs-cursor",
+    title: "Claude Code vs Cursor in 2026: Which AI Coding Agent Should You Use?",
+    excerpt:
+      "IDE-first vs terminal-first coding agents — workflow, autonomy, refactors, ecosystem, pricing, and when to use both.",
+    category: "Comparison",
+    readTime: "13 min",
+    date: "2026-04-01",
+  },
+  {
+    slug: "copilot-studio-vs-agentforce",
+    title:
+      "Microsoft Copilot Studio vs Salesforce Agentforce in 2026: Which Enterprise Agent Platform Should You Choose?",
+    excerpt:
+      "Enterprise agent platforms compared — grounding, governance, lock-in, pricing/TCO, and when to pick Microsoft vs Salesforce.",
+    category: "Comparison",
+    readTime: "15 min",
+    date: "2026-04-01",
+  },
 ];
 
 export function guideHref(slug: string): string {
@@ -75,11 +94,26 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
   if (cats.includes("Frameworks") || cats.includes("Enterprise")) {
     slugs.add("frameworks-vs-enterprise-platforms");
   }
+  if (cats.includes("Enterprise")) {
+    slugs.add("copilot-studio-vs-agentforce");
+  }
+  if (
+    tool.slug === "microsoft-copilot-studio" ||
+    tool.slug === "salesforce-agentforce"
+  ) {
+    slugs.add("copilot-studio-vs-agentforce");
+  }
   if (cats.includes("Frameworks")) {
     slugs.add("langgraph-vs-crewai");
   }
   if (tool.slug === "langgraph" || tool.slug === "crewai") {
     slugs.add("langgraph-vs-crewai");
+  }
+  if (cats.includes("Coding")) {
+    slugs.add("claude-code-vs-cursor");
+  }
+  if (tool.slug === "claude-code" || tool.slug === "cursor") {
+    slugs.add("claude-code-vs-cursor");
   }
   if (
     tool.features.mcpSupport ||
@@ -104,6 +138,7 @@ export function getRelatedGuidesForCategory(
 ): GuidePreview[] {
   const byCat: Record<ToolCategory, string[]> = {
     Enterprise: [
+      "copilot-studio-vs-agentforce",
       "frameworks-vs-enterprise-platforms",
       "how-to-evaluate-ai-agent-platforms",
     ],
@@ -118,6 +153,7 @@ export function getRelatedGuidesForCategory(
       "frameworks-vs-enterprise-platforms",
     ],
     Coding: [
+      "claude-code-vs-cursor",
       "mcp-and-tool-calling-explained",
       "how-to-evaluate-ai-agent-platforms",
     ],
@@ -167,5 +203,19 @@ export const guideExampleTools: Record<
   "langgraph-vs-crewai": {
     label: "Compare these multi-agent frameworks",
     slugs: ["langgraph", "crewai", "openai-agents-sdk", "pydantic-ai", "mastra"],
+  },
+  "claude-code-vs-cursor": {
+    label: "Compare coding agents",
+    slugs: ["cursor", "claude-code", "github-copilot-agents", "cline", "devin"],
+  },
+  "copilot-studio-vs-agentforce": {
+    label: "Compare enterprise agent platforms",
+    slugs: [
+      "microsoft-copilot-studio",
+      "salesforce-agentforce",
+      "aws-bedrock-agents",
+      "servicenow-ai-agents",
+      "google-vertex-ai-agent-builder",
+    ],
   },
 };

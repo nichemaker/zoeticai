@@ -1,0 +1,893 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
+import { site } from "../../data/site";
+import { getToolBySlug } from "../../data/tools";
+
+const title =
+  "Microsoft Copilot Studio vs Salesforce Agentforce in 2026: Which Enterprise Agent Platform Should You Choose?";
+const description =
+  "A practical 2026 comparison of Microsoft Copilot Studio and Salesforce Agentforce for enterprise buyers: architecture, grounding, governance, UX, lock-in, pricing, TCO, and when to choose each — or both.";
+const published = "2026-04-01";
+const readTime = "15 min";
+
+const copilot = getToolBySlug("microsoft-copilot-studio");
+const agentforce = getToolBySlug("salesforce-agentforce");
+
+const comparisonRows: {
+  dimension: string;
+  copilot: string;
+  agentforce: string;
+}[] = [
+  {
+    dimension: "Primary system of record",
+    copilot: "Microsoft 365, Dataverse, Teams, Power Platform, Azure AD",
+    agentforce: "Salesforce Customer 360 (Sales, Service, Marketing, etc.)",
+  },
+  {
+    dimension: "Agent architecture",
+    copilot:
+      "Studio-built topics/tools/knowledge; publish to Copilot, Teams, custom channels",
+    agentforce:
+      "CRM-native agents with actions on Salesforce objects, flows, and trusted data",
+  },
+  {
+    dimension: "Grounding",
+    copilot: "Graph, SharePoint, Dataverse, connectors, uploaded knowledge",
+    agentforce: "Org data, Knowledge, Data Cloud paths, CRM records as truth",
+  },
+  {
+    dimension: "Governance default",
+    copilot: "Entra ID, DLP, Power Platform admin, environment controls",
+    agentforce: "Salesforce identity, sharing model, Shield options, admin setup",
+  },
+  {
+    dimension: "Primary builders",
+    copilot: "IT + Power Platform makers; pro-dev for complex extensions",
+    agentforce: "Salesforce admins/builders; pro-dev for Apex/complex integrations",
+  },
+  {
+    dimension: "Lock-in shape",
+    copilot: "Deep Microsoft estate dependency",
+    agentforce: "Deep Salesforce CRM/process dependency",
+  },
+];
+
+const pricingRows: {
+  aspect: string;
+  copilot: string;
+  agentforce: string;
+}[] = [
+  {
+    aspect: "Commercial model (2026)",
+    copilot:
+      "Capacity / messages + often Microsoft 365 Copilot or Power Platform entitlements",
+    agentforce:
+      "Agentforce add-ons on Salesforce editions; credit/conversation or SKU bundles common",
+  },
+  {
+    aspect: "Credit / capacity unit",
+    copilot:
+      "Messages / conversations against Copilot Studio capacity packs or included allotments",
+    agentforce:
+      "Flex credits / agent actions or conversation-style metering (depends on contract)",
+  },
+  {
+    aspect: "Per-user options",
+    copilot:
+      "Frequently paired with M365 Copilot seats (~tens of USD/user/mo list historically; verify current)",
+    agentforce:
+      "User-based Salesforce licenses required; Agentforce may add user or usage SKUs",
+  },
+  {
+    aspect: "Indicative public list signals",
+    copilot:
+      "Pay-as-you-go message packs often cited in the low hundreds of USD per large message blocks; enterprise quotes vary widely",
+    agentforce:
+      "Public list is limited; pilots often quote usage + cloud edition. Expect multi-line enterprise quotes",
+  },
+  {
+    aspect: "What usually dominates the bill",
+    copilot:
+      "Seats (M365 Copilot) + message capacity + premium connectors + premium environments",
+    agentforce:
+      "Salesforce cloud licenses + Agentforce usage/SKU + Data Cloud / integration add-ons if used",
+  },
+  {
+    aspect: "Approximate cost character",
+    copilot:
+      "Predictable if seat-heavy Microsoft shop; spikes with high-volume unattended messaging",
+    agentforce:
+      "Predictable base CRM spend; agent usage can climb with service volume and automation depth",
+  },
+  {
+    aspect: "Best pricing fit",
+    copilot:
+      "Orgs already paying for Microsoft 365 / Power Platform at scale",
+    agentforce:
+      "Orgs already paying for Salesforce Sales/Service (or full Customer 360) at scale",
+  },
+];
+
+const tcoItems = [
+  {
+    title: "Prerequisite licenses",
+    body: "Neither product is a cheap standalone “agent app.” Budget the underlying Microsoft or Salesforce estate first — Agentforce without CRM seats, or Studio without M365/Power Platform reality, is a paper exercise.",
+  },
+  {
+    title: "Integration and data work",
+    body: "Grounding quality drives outcome quality. SharePoint hygiene, Dataverse modeling, Salesforce data quality, and Knowledge articles often cost more than the agent SKU itself.",
+  },
+  {
+    title: "Builder capacity",
+    body: "Power Platform makers and Salesforce admins are scarce. Training, CoE, and environment strategy are TCO, not free.",
+  },
+  {
+    title: "Runtime volume",
+    body: "Message packs and agent credits scale with traffic. Service-desk deflection that works is a win; chatty agents that loop tools are a surprise invoice.",
+  },
+  {
+    title: "Governance overhead",
+    body: "DLP, sharing rules, audit, and change management reduce risk and add process cost. Skipping them shifts cost into incidents.",
+  },
+  {
+    title: "Exit and dual-stack cost",
+    body: "Running both stacks is viable for multi-platform enterprises — and doubles admin surface. Only do it with a clear system-of-record split.",
+  },
+];
+
+const chooseCopilot = [
+  "Microsoft 365, Teams, and Dataverse are where work and knowledge already live",
+  "IT wants Entra ID, DLP, and Power Platform admin as the control plane",
+  "Employee-facing copilots (HR, IT, internal ops) are the primary use cases",
+  "You already fund M365 Copilot and/or Power Platform capacity",
+  "Makers should ship in a studio model without standing up a custom agent runtime",
+  "CRM is secondary or multi-CRM — Salesforce is not the single system of action",
+];
+
+const chooseAgentforce = [
+  "Salesforce is the system of record for customers, cases, and revenue processes",
+  "Sales, service, or marketing agents must read/write CRM objects with native trust",
+  "Admins and Salesforce builders will own day-to-day agent configuration",
+  "You want agents that trigger Flows and CRM automation, not only answer docs",
+  "Procurement and security already standardize on the Salesforce trust model",
+  "Microsoft is not your primary collaboration or identity stack for this workload",
+];
+
+const bothCases = [
+  {
+    title: "Split by system of record",
+    body: "Employee productivity agents on Copilot Studio (M365/Teams); customer lifecycle agents on Agentforce (CRM). Do not duplicate the same process in both.",
+  },
+  {
+    title: "Shared identity and policy",
+    body: "Align on who can publish agents, what data can leave each cloud, and how incidents are reviewed — even if runtimes differ.",
+  },
+  {
+    title: "Integration bus, not double grounding",
+    body: "If both must touch the same API, put shared services behind governed interfaces. Avoid two agents writing the same record with different rules.",
+  },
+];
+
+const decisionSteps = [
+  {
+    step: "1",
+    title: "Name the system of action",
+    body: "Where must the agent write state — Dataverse/Graph or Salesforce objects? That answer usually decides the platform.",
+  },
+  {
+    step: "2",
+    title: "Name the primary user",
+    body: "Employees in Teams vs customers/reps in Salesforce experiences imply different success metrics and builders.",
+  },
+  {
+    step: "3",
+    title: "Inventory licenses you already pay for",
+    body: "M365 Copilot / Power Platform vs Salesforce clouds. Prefer the platform that rides existing spend unless the workload forbids it.",
+  },
+  {
+    step: "4",
+    title: "Model volume, not only seats",
+    body: "Estimate monthly conversations/actions. Price capacity packs and Agentforce usage under realistic peak load.",
+  },
+  {
+    step: "5",
+    title: "Pilot governance readiness",
+    body: "Environments, DLP/sharing, audit, and CoE. The weaker governance story on paper is often the one you will staff poorly in practice — plan for it.",
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/guides/copilot-studio-vs-agentforce/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    {
+      name: "Copilot Studio vs Agentforce",
+      path: "/guides/copilot-studio-vs-agentforce/",
+    },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12 lg:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "Copilot Studio vs Agentforce" },
+        ]}
+      />
+
+      <div class="mt-8 max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span class="rounded-full bg-accent-soft px-3 py-1 text-accent">
+            Enterprise comparison
+          </span>
+          <span class="text-ink-soft">
+            <time datetime={published}>Apr 1, 2026</time>
+            <span aria-hidden="true"> · </span>
+            {readTime} read
+          </span>
+        </div>
+
+        <h1
+          class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.25rem]"
+        >
+          Microsoft Copilot Studio vs Salesforce Agentforce in 2026: Which
+          Enterprise Agent Platform Should You Choose?
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
+          Two enterprise agent platforms that only look comparable on a slide.
+          One is built for the Microsoft work graph; the other for Salesforce as
+          the system of customer action. Pick the system of record first.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#verdict" class="btn-primary">Quick verdict</a>
+          <a href="#pricing" class="btn-secondary">Pricing table</a>
+        </div>
+        <p class="mt-6 text-sm text-ink-muted">
+          Profiles:{" "}
+          <a
+            href="/tools/microsoft-copilot-studio/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Copilot Studio</a
+          >
+          {
+            copilot && (
+              <span class="text-ink-soft">
+                {" "}
+                ({copilot.scores.overall.toFixed(1)}/10)
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/tools/salesforce-agentforce/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Agentforce</a
+          >
+          {
+            agentforce && (
+              <span class="text-ink-soft">
+                {" "}
+                ({agentforce.scores.overall.toFixed(1)}/10)
+              </span>
+            )
+          }
+          {" · "}
+          <a
+            href="/categories/enterprise/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Enterprise</a
+          >
+          {" · "}
+          <a
+            href="/methodology/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Methodology</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- 1. Intro -->
+        <section class="prose-guide">
+          <h2 id="introduction" class="guide-h2">
+            Why this decision matters in 2026
+          </h2>
+          <p>
+            Enterprise buyers are no longer asking whether to pilot “an agent.”
+            They are asking which platform owns employee productivity copilots
+            and which owns customer-lifecycle automation — under real identity,
+            data, and license constraints.{" "}
+            <a
+              href="/tools/microsoft-copilot-studio/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Microsoft Copilot Studio</a
+            >{" "}
+            and{" "}
+            <a
+              href="/tools/salesforce-agentforce/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Salesforce Agentforce</a
+            >{" "}
+            dominate those RFPs because they sit on the two most common enterprise
+            stacks: Microsoft 365 and Salesforce CRM.
+          </p>
+          <p>
+            Choosing wrong is expensive. You pay twice — once in licenses, again
+            in rebuilds when agents cannot write to the system of record your
+            process actually uses. This comparison is for IT, digital, RevOps,
+            and service leaders who need a defensible shortlist, not a feature
+            laundry list.
+          </p>
+        </section>
+
+        <!-- 2. Verdict -->
+        <section class="mt-12 sm:mt-14" id="verdict">
+          <div
+            class="rounded-2xl border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+          >
+            <p
+              class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
+            >
+              Quick verdict
+            </p>
+            <h2
+              class="mt-2 text-xl font-bold tracking-tight text-ink sm:text-2xl"
+            >
+              Follow the system of record
+            </h2>
+            <div class="mt-5 grid gap-5 sm:grid-cols-2">
+              <div class="rounded-xl border border-border bg-surface p-5">
+                <h3 class="text-base font-semibold text-ink">
+                  Choose Copilot Studio
+                </h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                  When agents must live in Microsoft 365, Teams, Dataverse, and
+                  Power Platform — especially employee-facing and IT-owned
+                  scenarios with Entra ID governance.
+                </p>
+              </div>
+              <div class="rounded-xl border border-border bg-surface p-5">
+                <h3 class="text-base font-semibold text-ink">
+                  Choose Agentforce
+                </h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                  When agents must act on Salesforce customer data and processes —
+                  sales, service, and marketing workflows where CRM is the system
+                  of action.
+                </p>
+              </div>
+            </div>
+            <p class="mt-5 text-sm leading-relaxed text-ink-muted">
+              If your estate is both Microsoft-heavy and Salesforce-heavy, see
+              dual-stack guidance below — do not force one platform to own every
+              agent.
+            </p>
+          </div>
+        </section>
+
+        <!-- 3. Positioning -->
+        <section class="mt-14 sm:mt-16" id="positioning">
+          <h2 class="guide-h2">Core positioning difference</h2>
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">
+                Copilot Studio
+              </h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                <strong class="font-semibold text-ink"
+                  >Agent builder for the Microsoft work graph.</strong
+                >{" "}
+                Topics, tools, knowledge, and channels optimized for M365,
+                Teams, and Power Platform. Strongest as an IT-governed maker
+                platform, not a CRM replacement.
+              </p>
+            </div>
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">Agentforce</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                <strong class="font-semibold text-ink"
+                  >Agent layer for Salesforce Customer 360.</strong
+                >{" "}
+                Agents that reason over CRM data and take CRM actions under
+                Salesforce trust. Strongest for customer-facing and
+                revenue-process automation.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Detailed comparison -->
+        <section class="mt-14 sm:mt-16" id="comparison">
+          <h2 class="guide-h2">Detailed comparison</h2>
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[40rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Dimension</th>
+                  <th class="px-4 py-3 font-semibold">Copilot Studio</th>
+                  <th class="px-4 py-3 font-semibold">Agentforce</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  comparisonRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.dimension}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.copilot}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.agentforce}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-10 space-y-8">
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Agent capabilities and architecture
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Both support task-oriented agents with tools and knowledge — not
+                open multi-agent research frameworks like{" "}
+                <a
+                  href="/guides/langgraph-vs-crewai/"
+                  class="font-semibold text-accent hover:text-accent-hover"
+                  >LangGraph / CrewAI</a
+                >. Copilot Studio architecture centers on studio-authored agents
+                published into Microsoft channels. Agentforce architecture centers
+                on Salesforce objects, actions, and CRM process automation. Judge
+                them on the jobs they finish inside their stack, not on abstract
+                “agent IQ.”
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Data grounding and knowledge sources
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Copilot Studio grounds against Microsoft Graph, SharePoint,
+                Dataverse, and connectors — quality tracks your M365 information
+                architecture. Agentforce grounds against Salesforce org data and
+                Knowledge (and related Customer 360 data paths) — quality tracks
+                CRM hygiene and service content. Neither fixes bad source data.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Governance, security, and compliance
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Copilot Studio inherits Entra ID, environment strategy, and Power
+                Platform DLP patterns familiar to Microsoft IT. Agentforce
+                inherits Salesforce sharing, profiles/permission sets, and
+                enterprise controls buyers already use for CRM. Security reviews
+                will re-use those mental models — plan evidence packs accordingly.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Business user vs developer experience
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Both target makers more than framework engineers. Copilot Studio
+                fits Power Platform centers of excellence. Agentforce fits
+                Salesforce admin/builder organizations. Pro-code extensions exist
+                on both sides (Azure/custom connectors vs Apex/integrations) but
+                are not the default path.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Ecosystem lock-in
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                This is not a bug; it is the product. Agents that deeply use
+                Graph or Salesforce data are sticky by design. Exit cost is high
+                once processes depend on native actions. If portability is a hard
+                requirement, you may need a custom framework layer — see{" "}
+                <a
+                  href="/guides/frameworks-vs-enterprise-platforms/"
+                  class="font-semibold text-accent hover:text-accent-hover"
+                  >frameworks vs enterprise platforms</a
+                >.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. Pricing -->
+        <section class="mt-14 sm:mt-16" id="pricing">
+          <h2 class="guide-h2">Pricing comparison (2026)</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Enterprise agent pricing is quote-driven and changes with promotions,
+            editions, and bundles. Treat the table as a{" "}
+            <strong class="font-semibold text-ink">cost-structure map</strong> —
+            not a binding price list. Always confirm with Microsoft and Salesforce
+            for your tenant and region.
+          </p>
+
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[44rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Pricing aspect</th>
+                  <th class="px-4 py-3 font-semibold">Copilot Studio</th>
+                  <th class="px-4 py-3 font-semibold">Agentforce</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  pricingRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.aspect}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.copilot}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.agentforce}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            class="mt-6 rounded-2xl border border-border bg-surface-muted/60 p-5 sm:p-6"
+          >
+            <p class="text-sm leading-relaxed text-ink-muted sm:text-base">
+              <strong class="font-semibold text-ink">Practical modeling tip:</strong
+              >{" "}
+              Build three scenarios (pilot, production steady state, peak month).
+              Price seats/licenses separately from agent capacity. If finance only
+              sees “agent SKU,” you will under-budget the stack.
+            </p>
+          </div>
+        </section>
+
+        <!-- 6. TCO -->
+        <section class="mt-14 sm:mt-16" id="tco">
+          <h2 class="guide-h2">Total cost of ownership considerations</h2>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              tcoItems.map((item) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {item.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- Scores -->
+        {
+          copilot && agentforce && (
+            <section class="mt-14 sm:mt-16" id="scores">
+              <h2 class="guide-h2">Directory scores (editorial snapshot)</h2>
+              <p class="mt-3 text-base leading-relaxed text-ink-muted">
+                From our{" "}
+                <a
+                  href="/methodology/"
+                  class="font-semibold text-accent hover:text-accent-hover"
+                >
+                  methodology
+                </a>
+                . Useful for structured comparison — not a substitute for a
+                security review or commercial quote.
+              </p>
+              <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+                <table class="w-full min-w-[32rem] text-left text-sm">
+                  <thead class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                    <tr>
+                      <th class="px-4 py-3 font-semibold">Metric</th>
+                      <th class="px-4 py-3 font-semibold">Copilot Studio</th>
+                      <th class="px-4 py-3 font-semibold">Agentforce</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border bg-surface text-ink-muted">
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-ink">Overall</td>
+                      <td class="px-4 py-3 tabular-nums font-semibold text-ink">
+                        {copilot.scores.overall.toFixed(1)}
+                      </td>
+                      <td class="px-4 py-3 tabular-nums font-semibold text-ink">
+                        {agentforce.scores.overall.toFixed(1)}
+                      </td>
+                    </tr>
+                    {(
+                      [
+                        ["Capability", "capability"],
+                        ["Ease of use", "easeOfUse"],
+                        ["Integrations", "integrations"],
+                        ["Enterprise", "enterprise"],
+                        ["Developer experience", "developerExperience"],
+                        ["Value", "value"],
+                      ] as const
+                    ).map(([label, key]) => (
+                      <tr>
+                        <td class="px-4 py-3 font-medium text-ink">{label}</td>
+                        <td class="px-4 py-3 tabular-nums">
+                          {copilot.scores[key].toFixed(1)}
+                        </td>
+                        <td class="px-4 py-3 tabular-nums">
+                          {agentforce.scores[key].toFixed(1)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )
+        }
+
+        <!-- 7. Choose Copilot -->
+        <section class="mt-14 sm:mt-16" id="choose-copilot">
+          <h2 class="guide-h2">Choose Copilot Studio if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseCopilot.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5 text-sm text-ink-muted">
+            Profile:{" "}
+            <a
+              href="/tools/microsoft-copilot-studio/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Microsoft Copilot Studio</a
+            >
+            {" · "}
+            <a
+              href="/categories/enterprise/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Enterprise category</a
+            >
+          </p>
+        </section>
+
+        <!-- 8. Choose Agentforce -->
+        <section class="mt-14 sm:mt-16" id="choose-agentforce">
+          <h2 class="guide-h2">Choose Agentforce if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseAgentforce.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5 text-sm text-ink-muted">
+            Profile:{" "}
+            <a
+              href="/tools/salesforce-agentforce/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Salesforce Agentforce</a
+            >
+            {" · "}
+            <a
+              href="/categories/enterprise/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Enterprise category</a
+            >
+          </p>
+        </section>
+
+        <!-- 9. Both -->
+        <section class="mt-14 sm:mt-16" id="both">
+          <h2 class="guide-h2">When using both can make sense</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Large enterprises often run Microsoft for work and Salesforce for
+            customers. Dual agent platforms are rational only with a hard split.
+          </p>
+          <ul class="mt-8 space-y-4">
+            {
+              bothCases.map((h) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{h.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                    {h.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 10. Decision framework -->
+        <section class="mt-14 sm:mt-16" id="decision">
+          <h2 class="guide-h2">Final recommendation framework</h2>
+          <ol class="mt-8 space-y-4">
+            {
+              decisionSteps.map((r) => (
+                <li class="flex gap-4 rounded-2xl border border-border bg-surface-muted/50 p-5 sm:p-6">
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-fg"
+                    aria-hidden="true"
+                  >
+                    {r.step}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{r.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {r.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <p class="mt-8 text-base leading-relaxed text-ink-muted">
+            <strong class="font-semibold text-ink">Bottom line:</strong> Copilot
+            Studio is the enterprise agent platform for Microsoft-centered work.
+            Agentforce is the enterprise agent platform for Salesforce-centered
+            customer operations. Start from the system of record and the licenses
+            you already own — then model capacity, not just seats.
+          </p>
+          <p class="mt-4 text-base leading-relaxed text-ink-muted">
+            For a general evaluation checklist, see{" "}
+            <a
+              href="/guides/how-to-evaluate-ai-agent-platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >How to Evaluate AI Agent Platforms in 2026</a
+            >. For framework alternatives outside suites, see{" "}
+            <a
+              href="/guides/frameworks-vs-enterprise-platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Frameworks vs enterprise platforms</a
+            >.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <GuideExplore
+    slug="copilot-studio-vs-agentforce"
+    categories={["Enterprise", "No-Code", "Workflow"]}
+  />
+
+  <!-- CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Compare profiles — then model real TCO
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Open both listings, review the{" "}
+          <a
+            href="/categories/enterprise/"
+            class="text-indigo-300 hover:text-white">Enterprise category</a
+          >, and use our{" "}
+          <a href="/methodology/" class="text-indigo-300 hover:text-white"
+            >methodology</a
+          >{" "}
+          when you score governance and value for your RFP.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+        >
+          <a
+            href="/tools/microsoft-copilot-studio/"
+            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+          >
+            Copilot Studio
+          </a>
+          <a
+            href="/tools/salesforce-agentforce/"
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
+          >
+            Agentforce
+          </a>
+        </div>
+        <p class="mt-6 text-sm text-slate-400">
+          <a href="/contact/" class="text-indigo-300 hover:text-white"
+            >Contact</a
+          >
+          {" · "}
+          <a href={site.cta.href} class="text-indigo-300 hover:text-white"
+            >Implementation</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>
