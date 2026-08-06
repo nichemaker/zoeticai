@@ -1,0 +1,102 @@
+---
+export type RelatedLink = {
+  href: string;
+  title: string;
+  excerpt?: string;
+};
+
+interface Props {
+  title?: string;
+  eyebrow?: string;
+  links: RelatedLink[];
+  /** Muted surface section vs inline card */
+  variant?: "section" | "card";
+}
+
+const {
+  title = "Related reading",
+  eyebrow,
+  links,
+  variant = "card",
+} = Astro.props;
+---
+
+{
+  links.length > 0 &&
+    (variant === "section" ? (
+      <section class="border-t border-border bg-surface-muted">
+        <div class="container-site section-y">
+          {eyebrow && (
+            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
+              {eyebrow}
+            </p>
+          )}
+          <h2
+            class:list={[
+              "text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]",
+              eyebrow && "mt-2",
+            ]}
+          >
+            {title}
+          </h2>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {links.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="card-interactive group flex h-full flex-col p-5 sm:p-6"
+                >
+                  <span class="text-base font-semibold text-ink transition-colors group-hover:text-accent">
+                    {link.title}
+                  </span>
+                  {link.excerpt && (
+                    <span class="mt-2 text-sm leading-relaxed text-ink-muted">
+                      {link.excerpt}
+                    </span>
+                  )}
+                  <span class="mt-4 text-sm font-semibold text-accent">
+                    Read →
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ) : (
+      <div class="rounded-2xl border border-border bg-surface-muted/50 p-5 sm:p-6">
+        {eyebrow && (
+          <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">
+            {eyebrow}
+          </p>
+        )}
+        <h2
+          class:list={[
+            "text-base font-semibold tracking-tight text-ink",
+            eyebrow && "mt-2",
+          ]}
+        >
+          {title}
+        </h2>
+        <ul class="mt-4 space-y-3">
+          {links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="group block rounded-lg -mx-1 px-1 py-0.5"
+              >
+                <span class="text-sm font-semibold text-ink transition-colors group-hover:text-accent">
+                  {link.title}
+                </span>
+                {link.excerpt && (
+                  <span class="mt-0.5 block text-xs leading-relaxed text-ink-muted">
+                    {link.excerpt}
+                  </span>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+}

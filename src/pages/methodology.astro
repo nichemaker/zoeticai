@@ -1,0 +1,572 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import { site } from "../data/site";
+
+const title = "How We Evaluate AI Agent Platforms";
+const description =
+  "Transparent methodology for Zoetic AI platform scores: six dimensions, overall score derivation, production-readiness criteria, feature flags, and update cadence.";
+
+const dimensions = [
+  {
+    key: "capability",
+    label: "Capability",
+    weight: "Primary signal for “can it do the work?”",
+    summary:
+      "Depth of agent abilities: reasoning quality for multi-step tasks, tool use, memory, and how autonomous the system can be without constant hand-holding.",
+    looksFor: [
+      "Multi-step planning and recovery from failed steps",
+      "Tool calling / action quality (and MCP where relevant)",
+      "Memory and state beyond a single chat turn",
+      "Single-agent vs multi-agent / handoff patterns",
+      "Fit for real workloads, not only demo prompts",
+    ],
+  },
+  {
+    key: "easeOfUse",
+    label: "Ease of use",
+    weight: "Time-to-value for the intended operator",
+    summary:
+      "How quickly a competent user (engineer, admin, or ops owner — depending on the product) can reach a useful first agent without tribal knowledge.",
+    looksFor: [
+      "Onboarding, docs, and default templates",
+      "Clarity of core concepts (agents, tools, runs)",
+      "Studio / IDE / CLI ergonomics for the target user",
+      "Friction to connect the first real system",
+      "Whether day-two operations feel operable",
+    ],
+  },
+  {
+    key: "integrations",
+    label: "Integrations",
+    weight: "Breadth and quality of ecosystem access",
+    summary:
+      "Connectors, APIs, SDKs, and third-party tool ecosystems that let agents act in real systems of record — CRM, cloud, tickets, code, data.",
+    looksFor: [
+      "Native connectors vs custom tools only",
+      "Auth models (OAuth, service principals, secrets)",
+      "API / webhook extensibility",
+      "MCP or equivalent tool-server support where claimed",
+      "Rate limits, reliability, and production constraints",
+    ],
+  },
+  {
+    key: "enterprise",
+    label: "Enterprise readiness",
+    weight: "Security, admin, compliance, and scale",
+    summary:
+      "Whether a security, IT, or compliance buyer can put the product in production without inventing an entire control plane from scratch.",
+    looksFor: [
+      "SSO, RBAC, audit logs, and admin controls",
+      "Data residency / deployment options (SaaS, VPC, self-host)",
+      "SLAs, support paths, and procurement fit",
+      "Environment separation and change management",
+      "Governance for who can publish agents and tools",
+    ],
+  },
+  {
+    key: "developerExperience",
+    label: "Developer experience",
+    weight: "DX for teams that build and operate agents as software",
+    summary:
+      "SDKs, local development, testing, observability hooks, and extensibility — how pleasant and correct it is to ship changes safely.",
+    looksFor: [
+      "SDK / CLI quality and typed interfaces",
+      "Local or sandbox development loops",
+      "Tracing, evals, and CI-friendly hooks",
+      "Documentation accuracy and examples",
+      "Versioning and upgrade ergonomics",
+    ],
+  },
+  {
+    key: "value",
+    label: "Value",
+    weight: "Price-to-capability fit for typical buyers",
+    summary:
+      "Not “cheapest,” but whether cost shape (seats, usage, enterprise contracts, eng time) matches what you get relative to alternatives in the same lane.",
+    looksFor: [
+      "Transparent vs opaque pricing",
+      "Seat / run / token cost patterns",
+      "Engineering effort required to reach production",
+      "Included platform value vs glue you must build",
+      "Fit for startups vs mid-market vs large enterprise",
+    ],
+  },
+];
+
+const productionSignals = [
+  {
+    title: "Human-in-the-loop",
+    body: "Approval gates for sensitive actions, clear ownership of reviews, and sensible defaults when the agent is unsure — not “ship fully autonomous” as the only mode.",
+  },
+  {
+    title: "Observability",
+    body: "Run-level traces of prompts, tool calls, latency, failures, and cost. If you cannot debug a bad run, you cannot improve quality.",
+  },
+  {
+    title: "Evaluation paths",
+    body: "Support for golden tasks, regression sets, or human review workflows. Demos that cannot be re-run as tests age poorly.",
+  },
+  {
+    title: "Governance & access control",
+    body: "Who can publish agents, attach tools, or expand permissions. Least privilege for tools and secrets is a first-class concern.",
+  },
+  {
+    title: "Failure behavior",
+    body: "Retries, timeouts, partial completion, and what happens when a tool is down. Production agents fail; good platforms make failure visible and contained.",
+  },
+  {
+    title: "Operate model",
+    body: "Who runs the system on Friday night — eng on-call, vendor support, or business admins. We score fitness for that model, not an imaginary one.",
+  },
+];
+
+const featureFlags = [
+  {
+    flag: "Multi-agent",
+    meaning:
+      "Native support for multiple cooperating agents, roles, or handoffs — not only a single chat assistant.",
+  },
+  {
+    flag: "Open source",
+    meaning:
+      "Core software is available under an open or fair-code license you can inspect and, typically, self-run.",
+  },
+  {
+    flag: "Self-host",
+    meaning:
+      "You can run meaningful components in your own infrastructure or private network (not SaaS-only).",
+  },
+  {
+    flag: "MCP",
+    meaning:
+      "Documented support for Model Context Protocol (or a clear equivalent tool-server client/server path) for portable tools.",
+  },
+  {
+    flag: "Computer use",
+    meaning:
+      "Can drive GUI / browser / desktop-style control (API tool calling alone does not count).",
+  },
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12 lg:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Methodology" },
+        ]}
+      />
+
+      <p
+        class="mt-8 text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
+      >
+        Methodology
+      </p>
+      <h1
+        class="mt-3 max-w-3xl text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.5rem]"
+      >
+        How We Evaluate AI Agent Platforms
+      </h1>
+      <p
+        class="mt-4 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg"
+      >
+        Transparent scoring for a noisy market. This page explains what each
+        number means, what we look for in production readiness, and where our
+        judgments stop.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a href="#dimensions" class="btn-primary">Scoring dimensions</a>
+        <a href="/platforms/" class="btn-secondary">Browse platforms</a>
+      </div>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl space-y-14 sm:space-y-16">
+        <!-- 1. Intro -->
+        <section>
+          <h2 class="method-h2">Why transparent scoring matters</h2>
+          <div
+            class="mt-4 space-y-4 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem] sm:leading-relaxed"
+          >
+            <p>
+              Almost every product now claims “agents.” Launch posts, G2-style
+              stars, and vendor scorecards rarely share definitions — so a 9.0
+              for a chat wrapper can sit next to a 9.0 for a multi-agent
+              production stack with no way to tell them apart.
+            </p>
+            <p>
+              We publish an explicit rubric so technical buyers can disagree
+              productively. If you weight enterprise governance higher than we
+              do, you can re-rank using the same dimensions. If a score seems
+              off, this page is the contract for what we meant.
+            </p>
+            <p>
+              Scores are <strong class="font-semibold text-ink">editorial</strong
+              >. They synthesize public documentation, product positioning,
+              hands-on patterns in the market, and production-fit judgment.
+              They are not paid placements, lab benchmarks under NDA, or
+              guarantees of future performance.
+            </p>
+          </div>
+        </section>
+
+        <!-- 2. Six dimensions -->
+        <section id="dimensions">
+          <h2 class="method-h2">The six scoring dimensions</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem]">
+            Each dimension is scored on a <strong class="font-semibold text-ink"
+              >0–10 scale</strong
+            >. Higher means stronger fit for serious buyers in that dimension —
+            relative to peers in the agent platform market, not to an absolute
+            theoretical maximum.
+          </p>
+
+          <ol class="mt-10 space-y-5">
+            {
+              dimensions.map((d, i) => (
+                <li class="card-surface p-6 sm:p-7">
+                  <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div class="flex items-start gap-3">
+                      <span
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-xs font-bold tabular-nums text-accent"
+                        aria-hidden="true"
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div>
+                        <h3 class="text-lg font-semibold tracking-tight text-ink">
+                          {d.label}
+                        </h3>
+                        <p class="mt-0.5 text-xs font-medium text-ink-soft">
+                          {d.weight}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mt-4 text-sm leading-relaxed text-ink-muted sm:text-base">
+                    {d.summary}
+                  </p>
+                  <p class="mt-4 text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                    What we look for
+                  </p>
+                  <ul class="mt-2 space-y-1.5">
+                    {d.looksFor.map((item) => (
+                      <li class="flex items-start gap-2 text-sm text-ink-muted">
+                        <span
+                          class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+                          aria-hidden="true"
+                        />
+                        <span class="leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))
+            }
+          </ol>
+        </section>
+
+        <!-- 3. Overall score -->
+        <section id="overall">
+          <h2 class="method-h2">How overall scores are derived</h2>
+          <div
+            class="mt-4 space-y-4 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem] sm:leading-relaxed"
+          >
+            <p>
+              The <strong class="font-semibold text-ink">overall score</strong> is
+              a single headline number (also 0–10) that reflects a{" "}
+              <em>capability-weighted blend</em> of the six dimensions — not a
+              flat average of marketing claims.
+            </p>
+            <p>In practice:</p>
+          </div>
+          <ul class="mt-5 space-y-3">
+            {
+              [
+                "Capability and integrations carry more influence when the product’s job is to act in real systems.",
+                "Enterprise readiness rises in influence for suites sold into regulated or IT-led buyers; developer experience rises for frameworks and SDKs.",
+                "Ease of use and value keep “impressive but unusable” or “powerful but irrationally expensive” products from floating to the top on capability alone.",
+                "Overall is rounded to one decimal and kept within ~1 point of a sensible multi-dimension center of gravity — outliers get a second pass.",
+              ].map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <div
+            class="mt-6 rounded-2xl border border-border bg-surface-muted/60 p-5 sm:p-6"
+          >
+            <p class="text-sm leading-relaxed text-ink-muted sm:text-base">
+              <strong class="font-semibold text-ink">How to use overall:</strong
+              >{" "}
+              Sort and shortlist. Then open the dimension breakdown for your
+              constraints. A framework with overall 8.4 and enterprise 6.5 may
+              still beat a suite at 8.1 if you have engineers and need control
+              — and lose if you need SSO and vendor SLAs next quarter.
+            </p>
+          </div>
+          <p class="mt-4 text-sm leading-relaxed text-ink-muted">
+            Scores are comparable across the directory, but the fairest reads
+            are <strong class="font-semibold text-ink">within a category</strong>{" "}
+            (e.g. frameworks vs frameworks). A no-code builder and a graph
+            framework can share a scale without sharing a job description.
+          </p>
+        </section>
+
+        <!-- 4. Production readiness -->
+        <section id="production">
+          <h2 class="method-h2">What we look for in production readiness</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem]">
+            Capability demos are cheap. Production requires boring, visible
+            controls. These signals influence capability, enterprise, and
+            developer-experience scores — and whether we feature a product at
+            all.
+          </p>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              productionSignals.map((s) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{s.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {s.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 5. Feature flags -->
+        <section id="features">
+          <h2 class="method-h2">Feature flags we track</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem]">
+            Boolean flags power filters on the{" "}
+            <a href="/platforms/" class="font-medium text-accent hover:text-accent-hover"
+              >All Platforms</a
+            >{" "}
+            page. A flag means “meaningfully supported as a product capability,”
+            not “mentioned once in a blog post.”
+          </p>
+          <div class="mt-8 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[28rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Flag</th>
+                  <th class="px-4 py-3 font-semibold">What it means here</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  featureFlags.map((f) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {f.flag}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {f.meaning}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-4 text-sm leading-relaxed text-ink-muted">
+            Flags can lag product releases by a few weeks. If you ship MCP or
+            multi-agent support and we have not flipped the bit yet,{" "}
+            <a
+              href={`mailto:${site.email}`}
+              class="font-medium text-accent hover:text-accent-hover"
+              >tell us</a
+            >.
+          </p>
+        </section>
+
+        <!-- 6. Limitations -->
+        <section id="limitations">
+          <h2 class="method-h2">Limitations and disclaimers</h2>
+          <ul class="mt-6 space-y-4">
+            {
+              [
+                {
+                  title: "Editorial, not audited lab results",
+                  body: "We do not claim standardized third-party benchmarks under identical hardware for every vendor. Scores encode judgment plus public evidence.",
+                },
+                {
+                  title: "The market moves fast",
+                  body: "A release can change capability or pricing overnight. Treat scores as a structured snapshot, then verify against current docs and a hands-on pilot.",
+                },
+                {
+                  title: "Category context matters",
+                  body: "Comparing Cursor to Salesforce Agentforce on a single number without reading categories is a misuse of the scale.",
+                },
+                {
+                  title: "No paid ranking",
+                  body: "Featured placement and scores are not sold. Implementation CTAs on the site are separate from editorial ratings.",
+                },
+                {
+                  title: "Your weights may differ",
+                  body: "Regulated buyers should overweight enterprise and guardrails. Product startups may overweight capability and DX. Recast our dimensions for your RFP.",
+                },
+                {
+                  title: "Not investment or legal advice",
+                  body: "Nothing here is a recommendation to purchase a specific vendor under your contracts, security policies, or jurisdiction.",
+                },
+              ].map((item) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                    {item.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 7. Update cadence -->
+        <section id="updates">
+          <h2 class="method-h2">How often we update profiles</h2>
+          <div
+            class="mt-4 space-y-4 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem] sm:leading-relaxed"
+          >
+            <p>
+              Each profile carries a <strong class="font-semibold text-ink"
+                >last updated</strong
+              > date. We aim to:
+            </p>
+          </div>
+          <ul class="mt-5 space-y-3">
+            {
+              [
+                "Refresh high-traffic and featured platforms at least quarterly, or sooner after major launches.",
+                "Pass across the full catalog when the market shifts (new protocols, pricing models, or category boundaries).",
+                "Patch individual listings when we learn of material errors (wrong pricing model, incorrect feature flags, broken URLs).",
+                "Expand descriptions and best-for tags when we deepen category coverage — not only when scores change.",
+              ].map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem]">
+            Vendors and users can send corrections with public references. We
+            update when evidence warrants it — not on request for a higher
+            score alone.
+          </p>
+        </section>
+
+        <!-- Related -->
+        <section
+          class="rounded-2xl border border-border bg-surface-muted/50 p-6 sm:p-8"
+        >
+          <h2 class="text-lg font-semibold text-ink">Related reading</h2>
+          <ul class="mt-4 space-y-2 text-sm sm:text-base">
+            <li>
+              <a
+                href="/guides/how-to-evaluate-ai-agent-platforms/"
+                class="font-medium text-accent hover:text-accent-hover"
+              >
+                How to Evaluate AI Agent Platforms in 2026
+              </a>
+              <span class="text-ink-muted"> — buyer checklist and scoring sheet</span>
+            </li>
+            <li>
+              <a
+                href="/guides/frameworks-vs-enterprise-platforms/"
+                class="font-medium text-accent hover:text-accent-hover"
+              >
+                Frameworks vs Enterprise Platforms
+              </a>
+              <span class="text-ink-muted"> — when control beats suite fit</span>
+            </li>
+            <li>
+              <a
+                href="/about/"
+                class="font-medium text-accent hover:text-accent-hover"
+              >
+                About Zoetic AI
+              </a>
+              <span class="text-ink-muted"> — who we are and what we publish</span>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <!-- CTA -->
+  <section class="border-t border-border bg-ink text-accent-fg">
+    <div
+      class="container-site flex flex-col items-start gap-6 py-12 sm:flex-row sm:items-center sm:justify-between sm:py-14"
+    >
+      <div class="max-w-xl">
+        <h2 class="text-xl font-bold tracking-tight sm:text-2xl">
+          Apply the rubric to the catalog
+        </h2>
+        <p class="mt-2 text-sm leading-relaxed text-slate-300 sm:text-base">
+          Browse scored platforms, open dimension breakdowns on each profile,
+          and shortlist against your workload.
+        </p>
+      </div>
+      <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+        <a
+          href="/platforms/"
+          class="inline-flex items-center justify-center rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
+        >
+          All platforms
+        </a>
+        <a
+          href="/guides/how-to-evaluate-ai-agent-platforms/"
+          class="inline-flex items-center justify-center rounded-xl border border-slate-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-slate-400 hover:bg-white/5"
+        >
+          Evaluation guide
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .method-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .method-h2 {
+      font-size: 1.75rem;
+    }
+  }
+</style>

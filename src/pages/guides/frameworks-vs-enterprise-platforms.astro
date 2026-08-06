@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
 import { site } from "../../data/site";
 
 const title =
@@ -476,6 +477,11 @@ const recommendations = [
       </div>
     </div>
   </article>
+
+  <GuideExplore
+    slug="frameworks-vs-enterprise-platforms"
+    categories={["Frameworks", "Enterprise"]}
+  />
 
   <!-- CTA -->
   <section class="relative overflow-hidden bg-ink text-accent-fg">

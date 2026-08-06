@@ -1,0 +1,247 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import { site } from "../data/site";
+
+const title = "About Zoetic AI";
+const description =
+  "Zoetic AI is an independent directory of AI agent platforms — structured scores, practical guides, and clear categories for buyers and builders who need production-ready clarity.";
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12 lg:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "About" },
+        ]}
+      />
+
+      <p
+        class="mt-8 text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
+      >
+        About
+      </p>
+      <h1
+        class="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.5rem]"
+      >
+        About Zoetic AI
+      </h1>
+      <p
+        class="mt-4 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg"
+      >
+        An independent directory of AI agent platforms — built for people who
+        evaluate, buy, and ship agents in production, not for demo theater.
+      </p>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl space-y-14 sm:space-y-16">
+        <!-- 1. Opening -->
+        <section>
+          <h2 class="about-h2">What Zoetic AI is today</h2>
+          <div class="mt-4 space-y-4 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem] sm:leading-relaxed">
+            <p>
+              Zoetic AI is a practical directory of AI agent platforms. We help
+              technical founders, engineering leads, and ops teams shortlist
+              tools across enterprise suites, developer frameworks, no-code
+              builders, coding agents, browser control, and workflow automation.
+            </p>
+            <p>
+              The goal is simple: make evaluation clearer. Profiles, scores, and
+              guides are written so you can compare options against real
+              workloads — integrations, governance, developer experience, and
+              total cost — without wading through launch-day marketing.
+            </p>
+          </div>
+        </section>
+
+        <!-- 2. History -->
+        <section>
+          <h2 class="about-h2">Our history</h2>
+          <div class="mt-4 space-y-4 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem] sm:leading-relaxed">
+            <p>
+              Zoetic AI originally developed <strong class="font-semibold text-ink">Kiki</strong>, an
+              AI-powered companion robot that gained attention at CES 2019. That
+              work focused on systems that could sense context, adapt to people,
+              and operate in the physical world — early lessons in what it takes
+              for AI to be useful outside a slide deck.
+            </p>
+            <p>
+              The through-line was never gadgets for their own sake. It was how
+              machines understand goals, take action, and stay aligned with human
+              needs. As the industry moved from single chatbots to multi-step and
+              multi-agent systems, our focus shifted with it.
+            </p>
+            <p>
+              Today that trajectory lands here: mapping the broader agentic AI
+              landscape so teams can choose platforms with clearer eyes.
+            </p>
+          </div>
+        </section>
+
+        <!-- 3. What we do now -->
+        <section>
+          <h2 class="about-h2">What we do now</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem]">
+            The directory is the product surface. Behind each listing is a
+            consistent structure so comparisons stay fair.
+          </p>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              [
+                {
+                  title: "Independent platform directory",
+                  body: "Profiles for enterprise, frameworks, no-code, coding agents, browser, and workflow categories — one place to browse the field.",
+                },
+                {
+                  title: "Structured scoring",
+                  body: "Editorial scores across capability, ease of use, integrations, enterprise readiness, developer experience, and value.",
+                },
+                {
+                  title: "Guides and frameworks",
+                  body: "Practical evaluation guides, frameworks vs enterprise tradeoffs, and tool-calling / MCP explainers for buyers and builders.",
+                },
+                {
+                  title: "Clarity over hype",
+                  body: "Written for people who need a defensible shortlist — not a list of every logo that shipped an “agent” button.",
+                },
+              ].map((item) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {item.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 4. Approach -->
+        <section>
+          <h2 class="about-h2">Our approach</h2>
+          <ul class="mt-6 space-y-4">
+            {
+              [
+                {
+                  title: "Production readiness over demos",
+                  body: "We care about permissions, observability, failure modes, and operate cost — the parts that show up after the pilot deck is approved.",
+                },
+                {
+                  title: "Clear category distinctions",
+                  body: "Multi-agent frameworks, enterprise suites, no-code builders, and coding agents solve different jobs. We keep those lanes explicit so comparisons stay honest.",
+                },
+                {
+                  title: "Editorial and independent",
+                  body: "Scores and recommendations are our editorial judgment based on publicly available product positioning, documentation, and market fit. They are not paid placements or vendor-written copy.",
+                },
+              ].map((item, i) => (
+                <li class="flex gap-4 rounded-2xl border border-border bg-surface-muted/40 p-5 sm:p-6">
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-sm font-bold tabular-nums text-accent"
+                    aria-hidden="true"
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {item.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 5. Closing -->
+        <section>
+          <h2 class="about-h2">What’s next</h2>
+          <div class="mt-4 space-y-4 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem] sm:leading-relaxed">
+            <p>
+              The agent market will keep changing. Our job is to keep the map
+              usable: better listings, sharper comparisons, and guides that
+              match how teams actually decide.
+            </p>
+            <p>
+              Explore the directory when you are shortlisting platforms. Read{" "}
+              <a
+                href="/methodology/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >how we evaluate platforms</a
+              >{" "}
+              if you want the scoring rubric. Reach out via{" "}
+              <a
+                href="/contact/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >contact</a
+              >{" "}
+              if you need help implementing production agents with clear
+              boundaries and governance.
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <!-- Soft CTA -->
+  <section class="border-t border-border bg-surface-muted">
+    <div
+      class="container-site flex flex-col items-start gap-6 py-12 sm:flex-row sm:items-center sm:justify-between sm:py-14"
+    >
+      <div class="max-w-xl">
+        <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">
+          Explore the directory
+        </h2>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+          Browse scored platforms, filter by category and features, or read the
+          evaluation guides.
+        </p>
+      </div>
+      <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+        <a href="/platforms/" class="btn-primary px-6 py-3 text-center">
+          All platforms
+        </a>
+        <a href="/guides/" class="btn-secondary px-6 py-3 text-center">
+          Read guides
+        </a>
+        <a
+          href={site.cta.href}
+          class="btn-secondary px-6 py-3 text-center"
+          rel="noopener noreferrer"
+        >
+          Contact
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .about-h2 {
+      font-size: 1.75rem;
+    }
+  }
+</style>

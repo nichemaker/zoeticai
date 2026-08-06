@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
 import { site } from "../../data/site";
 
 const title = "MCP and Tool Calling Explained — Why It Matters for AI Agents";
@@ -531,6 +532,11 @@ const evalChecklist = [
       </div>
     </div>
   </article>
+
+  <GuideExplore
+    slug="mcp-and-tool-calling-explained"
+    categories={["Frameworks", "Coding", "Browser"]}
+  />
 
   <!-- CTA -->
   <section class="relative overflow-hidden bg-ink text-accent-fg">

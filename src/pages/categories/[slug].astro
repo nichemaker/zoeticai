@@ -8,6 +8,12 @@ import {
   categoryHref,
 } from "../../data/categories";
 import { getToolsByCategory } from "../../data/tools";
+import {
+  getRelatedGuidesForCategory,
+  guideHref,
+  methodologyLink,
+} from "../../data/guides";
+import RelatedLinks from "../../components/RelatedLinks.astro";
 import { site } from "../../data/site";
 import type { Tool } from "../../types/tool";
 
@@ -34,6 +40,25 @@ const toolsInCategory: Tool[] = getToolsByCategory(resolved.id).sort(
 );
 
 const otherCategories = categories.filter((c) => c.slug !== resolved.slug);
+
+const relatedGuides = getRelatedGuidesForCategory(resolved.id);
+const relatedLinks = [
+  {
+    href: "/platforms/",
+    title: "All AI agent platforms",
+    excerpt: "Filter the full catalog by category, features, pricing, and score.",
+  },
+  {
+    href: methodologyLink.href,
+    title: methodologyLink.title,
+    excerpt: methodologyLink.excerpt,
+  },
+  ...relatedGuides.map((g) => ({
+    href: guideHref(g.slug),
+    title: g.title,
+    excerpt: g.excerpt,
+  })),
+];
 
 const pageTitle = `${resolved.name} AI agent platforms`;
 const pageDescription = `${resolved.description} Compare ${toolsInCategory.length} platforms in the ${resolved.name} category.`;
@@ -166,7 +191,15 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
       {
         otherCategories.length > 0 && (
           <div class="mt-12 border-t border-border pt-10 sm:mt-14 sm:pt-12">
-            <h2 class="text-sm font-semibold text-ink">Other categories</h2>
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <h2 class="text-sm font-semibold text-ink">Other categories</h2>
+              <a
+                href="/platforms/"
+                class="text-sm font-semibold text-accent hover:text-accent-hover"
+              >
+                View all platforms →
+              </a>
+            </div>
             <ul class="mt-4 flex flex-wrap gap-2">
               {otherCategories.map((c) => (
                 <li>
@@ -185,6 +218,13 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
       }
     </div>
   </section>
+
+  <RelatedLinks
+    variant="section"
+    eyebrow="Guides"
+    title={`Helpful reading for ${resolved.name}`}
+    links={relatedLinks}
+  />
 
   <!-- Bottom CTA -->
   <section class="relative overflow-hidden border-t border-border bg-ink text-accent-fg">
@@ -221,10 +261,10 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
           Talk about implementation
         </a>
         <a
-          href="/compare/"
+          href="/platforms/"
           class="inline-flex items-center justify-center rounded-xl border border-slate-600 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-slate-400 hover:bg-white/5"
         >
-          Compare platforms
+          All platforms
         </a>
       </div>
     </div>

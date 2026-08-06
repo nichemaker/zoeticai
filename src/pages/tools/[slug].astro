@@ -12,6 +12,12 @@ import {
   getSimilarTools,
 } from "../../data/tools";
 import { categoryHref } from "../../data/categories";
+import {
+  getRelatedGuidesForTool,
+  guideHref,
+  methodologyLink,
+} from "../../data/guides";
+import RelatedLinks from "../../components/RelatedLinks.astro";
 import { site } from "../../data/site";
 import type { Tool, ToolScores } from "../../types/tool";
 
@@ -41,6 +47,19 @@ if (!tool) {
 }
 
 const similar = getSimilarTools(tool, 4);
+const relatedGuides = getRelatedGuidesForTool(tool);
+const relatedReading = [
+  {
+    href: methodologyLink.href,
+    title: methodologyLink.title,
+    excerpt: methodologyLink.excerpt,
+  },
+  ...relatedGuides.map((g) => ({
+    href: guideHref(g.slug),
+    title: g.title,
+    excerpt: g.excerpt,
+  })),
+];
 
 const scoreDimensions: {
   key: keyof Omit<ToolScores, "overall">;
@@ -259,7 +278,14 @@ const pageDescription = tool.tagline || tool.description.slice(0, 160);
             </h2>
             <p class="mt-1.5 text-sm text-ink-muted">
               Editorial scores on a 0–10 scale across six buyer-relevant
-              dimensions.
+              dimensions. See{" "}
+              <a
+                href="/methodology/"
+                class="font-medium text-accent hover:text-accent-hover"
+              >
+                how we evaluate platforms
+              </a>{" "}
+              for the full rubric.
             </p>
 
             <ul class="mt-6 space-y-5">
@@ -418,6 +444,40 @@ const pageDescription = tool.tagline || tool.description.slice(0, 160);
               {websiteHost}
               <span class="ml-1.5" aria-hidden="true">↗</span>
             </a>
+          </div>
+
+          <RelatedLinks
+            title="Guides & methodology"
+            eyebrow="Learn more"
+            links={relatedReading}
+          />
+
+          <div class="rounded-2xl border border-border p-5 sm:p-6">
+            <p class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+              Browse
+            </p>
+            <ul class="mt-3 space-y-2 text-sm">
+              <li>
+                <a
+                  href="/platforms/"
+                  class="font-medium text-accent hover:text-accent-hover"
+                >
+                  All platforms
+                </a>
+              </li>
+              {
+                tool.categories.map((cat) => (
+                  <li>
+                    <a
+                      href={categoryHref(cat)}
+                      class="font-medium text-ink-muted hover:text-accent"
+                    >
+                      More in {cat}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
           </div>
         </aside>
       </div>

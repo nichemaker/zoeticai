@@ -9,7 +9,7 @@ export const site = {
   /** External CTA for custom / production agent work */
   cta: {
     label: 'Need production AI agents built?',
-    href: 'https://example.com/contact',
+    href: '/contact/',
   },
 } as const;
 
@@ -22,7 +22,6 @@ export const primaryNav: NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/platforms/', label: 'Platforms' },
   { href: '/categories/', label: 'Categories' },
-  { href: '/compare/', label: 'Compare' },
   { href: '/guides/', label: 'Guides' },
 ];
 
@@ -37,17 +36,17 @@ export const footerGroups: FooterGroup[] = [
     links: [
       { href: '/platforms/', label: 'All platforms' },
       { href: '/categories/', label: 'Categories' },
-      { href: '/compare/', label: 'Compare' },
       { href: '/guides/', label: 'Guides' },
-      { href: '/submit/', label: 'Submit a listing' },
+      { href: '/methodology/', label: 'Methodology' },
     ],
   },
   {
-    heading: 'Resources',
+    heading: 'Learn',
     links: [
-      { href: '/guides/', label: 'Guides' },
-      { href: '/blog/', label: 'Blog' },
-      { href: '/changelog/', label: 'Changelog' },
+      { href: '/guides/how-to-evaluate-ai-agent-platforms/', label: 'Evaluation guide' },
+      { href: '/guides/frameworks-vs-enterprise-platforms/', label: 'Frameworks vs enterprise' },
+      { href: '/guides/mcp-and-tool-calling-explained/', label: 'MCP & tool calling' },
+      { href: '/about/', label: 'About' },
     ],
   },
   {
@@ -55,8 +54,16 @@ export const footerGroups: FooterGroup[] = [
     links: [
       { href: '/about/', label: 'About' },
       { href: '/contact/', label: 'Contact' },
-      { href: '/privacy/', label: 'Privacy' },
-      { href: '/terms/', label: 'Terms' },
+      { href: '/methodology/', label: 'Methodology' },
     ],
   },
+];
+
+/** Always shown in the footer legal row */
+export const footerLegal: NavLink[] = [
+  { href: '/about/', label: 'About' },
+  { href: '/methodology/', label: 'Methodology' },
+  { href: '/contact/', label: 'Contact' },
+  { href: '/privacy/', label: 'Privacy' },
+  { href: '/terms/', label: 'Terms' },
 ];
