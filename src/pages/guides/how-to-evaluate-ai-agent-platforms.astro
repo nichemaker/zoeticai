@@ -135,7 +135,27 @@ const decisionRows = [
 ];
 ---
 
-<BaseLayout title={title} description={description} ogImage={heroImage}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={heroImage}
+  canonical="/guides/how-to-evaluate-ai-agent-platforms/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    {
+      name: "Evaluate platforms",
+      path: "/guides/how-to-evaluate-ai-agent-platforms/",
+    },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
   <!-- Hero -->
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"

@@ -15,10 +15,18 @@ const sortedDefault = [...tools].sort(
 const initialQuery = Astro.url.searchParams.get("q")?.trim() ?? "";
 
 const pageTitle = "All AI Agent Platforms";
-const pageDescription = `Browse and filter ${total} AI agent platforms — enterprise suites, frameworks, no-code builders, coding agents, and more.`;
+const pageDescription = `Browse and filter ${total} AI agent platforms — enterprise suites, frameworks, no-code builders, coding agents, and more. Sort by score, name, or last updated.`;
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonical="/platforms/"
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Platforms", path: "/platforms/" },
+  ]}
+>
   <!-- Header -->
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"

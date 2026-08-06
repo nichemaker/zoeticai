@@ -210,7 +210,27 @@ const evalChecklist = [
 ];
 ---
 
-<BaseLayout title={title} description={description} ogImage={heroImage}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={heroImage}
+  canonical="/guides/mcp-and-tool-calling-explained/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    {
+      name: "MCP & tool calling",
+      path: "/guides/mcp-and-tool-calling-explained/",
+    },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
   <!-- Hero -->
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"

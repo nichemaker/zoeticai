@@ -8,7 +8,15 @@ const description =
   "Zoetic AI is an independent directory of AI agent platforms — structured scores, practical guides, and clear categories for buyers and builders who need production-ready clarity.";
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/about/"
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about/" },
+  ]}
+>
   <!-- Hero -->
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"

@@ -60,11 +60,20 @@ const relatedLinks = [
   })),
 ];
 
-const pageTitle = `${resolved.name} AI agent platforms`;
-const pageDescription = `${resolved.description} Compare ${toolsInCategory.length} platforms in the ${resolved.name} category.`;
+const pageTitle = `${resolved.name} AI Agent Platforms`;
+const pageDescription = `${resolved.description} Compare ${toolsInCategory.length} scored platforms in the ${resolved.name} category.`;
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonical={`/categories/${resolved.slug}/`}
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Categories", path: "/categories/" },
+    { name: resolved.name, path: `/categories/${resolved.slug}/` },
+  ]}
+>
   <!-- Header -->
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"

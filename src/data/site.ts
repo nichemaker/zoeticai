@@ -1,15 +1,24 @@
-/** Shared site config for layout, nav, and schema. Update before publish. */
+/** Shared site config for layout, nav, schema, and SEO defaults. */
+
 export const site = {
-  name: 'AI Directory',
-  tagline: 'Discover, compare, and choose AI tools and agents.',
+  name: "AI Directory",
+  /** Brand used in long-form and About copy */
+  brand: "Zoetic AI",
+  tagline: "Discover, compare, and choose AI tools and agents.",
   description:
-    'A curated directory of AI agents, tools, and platforms — browse categories, compare options, and find the right fit.',
-  url: 'https://example.com',
-  email: 'hello@example.com',
-  /** External CTA for custom / production agent work */
+    "A curated directory of AI agents, tools, and platforms — browse categories, compare options, and find the right fit.",
+  /** Canonical origin — keep aligned with astro.config `site` and deploy host */
+  url: "https://www.zoeticai.com",
+  email: "hello@zoeticai.com",
+  locale: "en_US",
+  themeColor: "#4f46e5",
+  /** Default social preview (site-relative path) */
+  defaultOgImage: "/images/guides/evaluate-ai-agent-platforms-hero.jpg",
+  /** Appended to page titles unless titleAbsolute */
+  titleSeparator: "·",
   cta: {
-    label: 'Need production AI agents built?',
-    href: '/contact/',
+    label: "Need production AI agents built?",
+    href: "/contact/",
   },
 } as const;
 
@@ -19,10 +28,10 @@ export type NavLink = {
 };
 
 export const primaryNav: NavLink[] = [
-  { href: '/', label: 'Home' },
-  { href: '/platforms/', label: 'Platforms' },
-  { href: '/categories/', label: 'Categories' },
-  { href: '/guides/', label: 'Guides' },
+  { href: "/", label: "Home" },
+  { href: "/platforms/", label: "Platforms" },
+  { href: "/categories/", label: "Categories" },
+  { href: "/guides/", label: "Guides" },
 ];
 
 export type FooterGroup = {
@@ -32,38 +41,47 @@ export type FooterGroup = {
 
 export const footerGroups: FooterGroup[] = [
   {
-    heading: 'Explore',
+    heading: "Explore",
     links: [
-      { href: '/platforms/', label: 'All platforms' },
-      { href: '/categories/', label: 'Categories' },
-      { href: '/guides/', label: 'Guides' },
-      { href: '/methodology/', label: 'Methodology' },
+      { href: "/platforms/", label: "All platforms" },
+      { href: "/categories/", label: "Categories" },
+      { href: "/guides/", label: "Guides" },
+      { href: "/methodology/", label: "Methodology" },
     ],
   },
   {
-    heading: 'Learn',
+    heading: "Learn",
     links: [
-      { href: '/guides/how-to-evaluate-ai-agent-platforms/', label: 'Evaluation guide' },
-      { href: '/guides/frameworks-vs-enterprise-platforms/', label: 'Frameworks vs enterprise' },
-      { href: '/guides/mcp-and-tool-calling-explained/', label: 'MCP & tool calling' },
-      { href: '/about/', label: 'About' },
+      {
+        href: "/guides/how-to-evaluate-ai-agent-platforms/",
+        label: "Evaluation guide",
+      },
+      { href: "/guides/langgraph-vs-crewai/", label: "LangGraph vs CrewAI" },
+      {
+        href: "/guides/frameworks-vs-enterprise-platforms/",
+        label: "Frameworks vs enterprise",
+      },
+      {
+        href: "/guides/mcp-and-tool-calling-explained/",
+        label: "MCP & tool calling",
+      },
     ],
   },
   {
-    heading: 'Company',
+    heading: "Company",
     links: [
-      { href: '/about/', label: 'About' },
-      { href: '/contact/', label: 'Contact' },
-      { href: '/methodology/', label: 'Methodology' },
+      { href: "/about/", label: "About" },
+      { href: "/contact/", label: "Contact" },
+      { href: "/methodology/", label: "Methodology" },
     ],
   },
 ];
 
 /** Always shown in the footer legal row */
 export const footerLegal: NavLink[] = [
-  { href: '/about/', label: 'About' },
-  { href: '/methodology/', label: 'Methodology' },
-  { href: '/contact/', label: 'Contact' },
-  { href: '/privacy/', label: 'Privacy' },
-  { href: '/terms/', label: 'Terms' },
+  { href: "/about/", label: "About" },
+  { href: "/methodology/", label: "Methodology" },
+  { href: "/contact/", label: "Contact" },
+  { href: "/privacy/", label: "Privacy" },
+  { href: "/terms/", label: "Terms" },
 ];

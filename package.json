@@ -7,10 +7,11 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/verify-tool-pages.mjs",
+    "build": "astro build && node scripts/seo-postbuild.mjs && node scripts/verify-tool-pages.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "verify:tools": "node scripts/verify-tool-pages.mjs",
+    "verify:seo": "node scripts/seo-postbuild.mjs",
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {

@@ -1,0 +1,777 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
+import { site } from "../../data/site";
+import { getToolBySlug } from "../../data/tools";
+
+const title =
+  "LangGraph vs CrewAI in 2026: Which Multi-Agent Framework Should You Choose?";
+const description =
+  "A practical comparison of LangGraph and CrewAI for engineering leads: architecture, state, multi-agent topology, human-in-the-loop, DX, observability, and when to pick each — or both.";
+const published = "2026-04-01";
+const readTime = "14 min";
+
+const langgraph = getToolBySlug("langgraph");
+const crewai = getToolBySlug("crewai");
+
+const comparisonRows: {
+  dimension: string;
+  langgraph: string;
+  crewai: string;
+}[] = [
+  {
+    dimension: "Architecture & orchestration",
+    langgraph:
+      "Explicit graphs: nodes, edges, cycles, conditional routing. You design the control flow.",
+    crewai:
+      "Role/process-oriented crews and flows. Agents collaborate under process patterns more than raw graphs.",
+  },
+  {
+    dimension: "State & persistence",
+    langgraph:
+      "First-class shared state, checkpoints, and durable runs. Strong for long-running or resumable workflows.",
+    crewai:
+      "Task/context sharing across roles; persistence depth depends on how you structure crews and enterprise tooling.",
+  },
+  {
+    dimension: "Multi-agent topology",
+    langgraph:
+      "Arbitrary topologies: supervisor, swarm, pipeline, custom. Topology is a design choice, not a metaphor.",
+    crewai:
+      "Natural fit for role-based crews (researcher, writer, reviewer). Fast to express “team of specialists.”",
+  },
+  {
+    dimension: "Human-in-the-loop",
+    langgraph:
+      "Interrupt/resume and approval-style nodes are common production patterns in graph designs.",
+    crewai:
+      "HITL is achievable; less “graph interrupt” native feel — often designed into tasks and human review steps.",
+  },
+  {
+    dimension: "Developer experience",
+    langgraph:
+      "Steeper learning curve; rewards teams that think in state machines. Python + JS ecosystem via LangChain.",
+    crewai:
+      "Faster time-to-first multi-agent demo for many Python teams; role metaphors map cleanly to product language.",
+  },
+  {
+    dimension: "Observability & production",
+    langgraph:
+      "Tight path to LangSmith tracing and LangGraph Platform options for deploy/ops maturity.",
+    crewai:
+      "OSS core for experiments; CrewAI Enterprise path for teams that outgrow scripts and need ops features.",
+  },
+];
+
+const chooseLangGraph = [
+  "You need durable, multi-step workflows with cycles, retries, and explicit branching",
+  "Shared state and checkpointing are requirements, not nice-to-haves",
+  "Human approval gates must pause and resume the same run safely",
+  "You already live in the LangChain / LangSmith ecosystem",
+  "The agent loop is core product IP and you want maximum control over topology",
+  "You are willing to invest engineering time for long-term operate cost",
+];
+
+const chooseCrewAI = [
+  "You want multi-agent collaboration expressed as roles and processes quickly",
+  "Your team prototypes in Python and values readable “crew” structure over graph theory",
+  "Research, content, analysis, or ops pipelines map well to specialist agents",
+  "You need a short path from idea to working multi-agent demo for stakeholders",
+  "You may grow into CrewAI Enterprise later without rewriting the mental model",
+  "You accept less low-level graph control in exchange for velocity",
+];
+
+const hybridCases = [
+  {
+    title: "Crew for research, graph for execution",
+    body: "Use CrewAI-style role crews for exploration and drafting, then hand structured outputs into a LangGraph workflow that owns tools, approvals, and production side effects.",
+  },
+  {
+    title: "Shared tools, separate runtimes",
+    body: "Keep MCP/tool servers common across stacks. Let each framework call the same tool layer so you are not rewriting integrations twice.",
+  },
+  {
+    title: "Prototype in CrewAI, harden in LangGraph",
+    body: "Validate agent roles and prompts with CrewAI, then re-implement critical paths as graphs when you need checkpoints, complex branching, or stricter HITL.",
+  },
+];
+
+const decisionSteps = [
+  {
+    step: "1",
+    title: "Name the workload shape",
+    body: "Is it a role-based collaboration (research → draft → review) or a durable state machine (intake → branch → act → wait → resume)?",
+  },
+  {
+    step: "2",
+    title: "List non-negotiables",
+    body: "Persistence, approval gates, multi-day runs, and audit trails push toward LangGraph. Speed-to-demo and role clarity push toward CrewAI.",
+  },
+  {
+    step: "3",
+    title: "Score your team, not the Twitter thread",
+    body: "Graph-native engineers will ship LangGraph faster. Product-minded Python teams often ship CrewAI first. Staffing beats hype.",
+  },
+  {
+    step: "4",
+    title: "Run the same three golden tasks",
+    body: "Implement identical tasks in both (or one deeply if time is short). Measure failure modes, not only happy-path demos.",
+  },
+  {
+    step: "5",
+    title: "Decide operate model",
+    body: "Who owns tracing, evals, and incidents? Align framework choice with LangSmith/Platform vs CrewAI Enterprise vs pure self-host.",
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/guides/langgraph-vs-crewai/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    { name: "LangGraph vs CrewAI", path: "/guides/langgraph-vs-crewai/" },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12 lg:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "LangGraph vs CrewAI" },
+        ]}
+      />
+
+      <div class="mt-8 max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span class="rounded-full bg-accent-soft px-3 py-1 text-accent">
+            Comparison
+          </span>
+          <span class="text-ink-soft">
+            <time datetime={published}>Apr 1, 2026</time>
+            <span aria-hidden="true"> · </span>
+            {readTime} read
+          </span>
+        </div>
+
+        <h1
+          class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.35rem]"
+        >
+          LangGraph vs CrewAI in 2026: Which Multi-Agent Framework Should You
+          Choose?
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
+          Two of the most common open multi-agent stacks for product teams —
+          one graph-first, one role-first. This guide helps engineering leads
+          pick for production constraints, not launch-day vibes.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#verdict" class="btn-primary">Quick verdict</a>
+          <a href="/categories/frameworks/" class="btn-secondary"
+            >All frameworks</a
+          >
+        </div>
+        <p class="mt-6 text-sm text-ink-muted">
+          Profiles:{" "}
+          <a
+            href="/tools/langgraph/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >LangGraph</a
+          >
+          {langgraph && (
+            <span class="text-ink-soft">
+              {" "}
+              ({langgraph.scores.overall.toFixed(1)}/10)
+            </span>
+          )}
+          {" · "}
+          <a
+            href="/tools/crewai/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >CrewAI</a
+          >
+          {crewai && (
+            <span class="text-ink-soft">
+              {" "}
+              ({crewai.scores.overall.toFixed(1)}/10)
+            </span>
+          )}
+          {" · "}
+          <a
+            href="/methodology/"
+            class="font-semibold text-accent hover:text-accent-hover"
+            >Methodology</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- 1. Intro -->
+        <section class="prose-guide">
+          <h2 id="introduction" class="guide-h2">
+            Why teams keep comparing LangGraph and CrewAI
+          </h2>
+          <p>
+            In 2026, “multi-agent” is no longer a research poster — it is a
+            shipping decision. Engineering leads shortlist frameworks that can
+            coordinate tools, roles, and long-running work without locking the
+            company into a single enterprise suite.
+          </p>
+          <p>
+            <a
+              href="/tools/langgraph/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >LangGraph</a
+            >{" "}
+            and{" "}
+            <a
+              href="/tools/crewai/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >CrewAI</a
+            >{" "}
+            show up in the same conversations because both are open,
+            Python-friendly, multi-agent capable, and serious enough for
+            production paths. They are not interchangeable metaphors. One asks
+            you to design a graph of control flow; the other asks you to staff a
+            crew of specialist agents.
+          </p>
+          <p>
+            This comparison is for technical founders and eng leads who need a
+            defensible choice: architecture fit, operate cost, and team skill —
+            not a feature bingo card from a conference booth.
+          </p>
+        </section>
+
+        <!-- 2. Verdict -->
+        <section class="mt-12 sm:mt-14" id="verdict">
+          <div
+            class="rounded-2xl border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+          >
+            <p
+              class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
+            >
+              Quick verdict
+            </p>
+            <h2 class="mt-2 text-xl font-bold tracking-tight text-ink sm:text-2xl">
+              Pick the control model that matches the work
+            </h2>
+            <div class="mt-5 grid gap-5 sm:grid-cols-2">
+              <div class="rounded-xl border border-border bg-surface p-5">
+                <h3 class="text-base font-semibold text-ink">Choose LangGraph</h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                  When the workflow is a durable process: branching, cycles,
+                  checkpoints, tool-heavy side effects, and human approval that
+                  must pause the same run.
+                </p>
+              </div>
+              <div class="rounded-xl border border-border bg-surface p-5">
+                <h3 class="text-base font-semibold text-ink">Choose CrewAI</h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                  When the problem maps cleanly to collaborating roles and you
+                  need multi-agent results quickly — research, drafting,
+                  analysis, and specialist pipelines.
+                </p>
+              </div>
+            </div>
+            <p class="mt-5 text-sm leading-relaxed text-ink-muted">
+              Neither replaces governance, evals, or tool security. Both can
+              ship junk with vague goals. Both can ship well with golden tasks
+              and least-privilege tools. See our{" "}
+              <a
+                href="/methodology/"
+                class="font-semibold text-accent hover:text-accent-hover"
+                >scoring methodology</a
+              >{" "}
+              for how we rate frameworks generally.
+            </p>
+          </div>
+        </section>
+
+        <!-- 3. Philosophy -->
+        <section class="mt-14 sm:mt-16" id="philosophy">
+          <h2 class="guide-h2">Core philosophy difference</h2>
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">LangGraph</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                <strong class="font-semibold text-ink">Control flow is explicit.</strong
+                >{" "}
+                You model nodes and edges. State is shared and durable. Loops
+                and interrupts are features, not accidents. Best mental model:
+                a state machine for agents.
+              </p>
+            </div>
+            <div class="card-surface p-5 sm:p-6">
+              <h3 class="text-base font-semibold text-accent">CrewAI</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                <strong class="font-semibold text-ink">Collaboration is explicit.</strong
+                >{" "}
+                You model roles, tasks, and processes. Agents hand work to each
+                other like a team. Best mental model: an org chart that runs
+                tools.
+              </p>
+            </div>
+          </div>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            If your product language is “workflow stages and approvals,”
+            LangGraph will feel native. If it is “research agent + editor agent
+            + QA agent,” CrewAI will feel native. Fighting the grain is how
+            teams rewrite in six months.
+          </p>
+        </section>
+
+        <!-- 4. Detailed comparison -->
+        <section class="mt-14 sm:mt-16" id="comparison">
+          <h2 class="guide-h2">Detailed comparison</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Dimensions that matter for production multi-agent systems — not
+            every checkbox on a landing page.
+          </p>
+
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[42rem] text-left text-sm">
+              <thead
+                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
+              >
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Dimension</th>
+                  <th class="px-4 py-3 font-semibold">LangGraph</th>
+                  <th class="px-4 py-3 font-semibold">CrewAI</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface">
+                {
+                  comparisonRows.map((row) => (
+                    <tr>
+                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
+                        {row.dimension}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.langgraph}
+                      </td>
+                      <td class="px-4 py-3.5 align-top text-ink-muted">
+                        {row.crewai}
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-10 space-y-8">
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Architecture &amp; orchestration model
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                LangGraph forces you to declare how control moves: edges,
+                conditions, cycles. That is verbose early and invaluable when
+                debugging “why did step 7 run twice?” CrewAI optimizes for
+                describing who does what; process abstractions cover many
+                multi-agent patterns without drawing a graph. If orchestration
+                is the product, prefer graphs. If collaboration is the product,
+                prefer crews.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                State management &amp; persistence
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Production agents fail mid-flight. LangGraph’s checkpoint and
+                shared-state model is built for resume, audit, and long-running
+                jobs. CrewAI shares context across tasks and roles effectively
+                for many pipelines; for multi-day durable execution with formal
+                resume semantics, validate your persistence design early — do
+                not assume “crew” equals “checkpointed graph.”
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Multi-agent topology
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                Both support multi-agent systems. LangGraph treats topology as
+                open-ended (supervisor, peer, pipeline, custom). CrewAI makes
+                role topologies the default path — which is why it spreads so
+                quickly in demos that sound like org charts. Exotic topologies
+                are possible in both; cost of expression differs.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Human-in-the-loop
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                If a human must approve a refund, publish, or deploy, you need a
+                first-class pause. LangGraph patterns for interrupt/resume map
+                cleanly to that. CrewAI teams often insert human review as a
+                task boundary or external step — workable, but design it
+                deliberately rather than bolting it on after a bad demo.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Developer experience &amp; learning curve
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                CrewAI usually wins “Friday afternoon prototype.” LangGraph
+                usually wins “Monday morning incident investigation” once the
+                graph is correct. Budget for LangGraph onboarding if your team
+                has never built state machines. Budget for CrewAI discipline if
+                your team ships role sprawl without evals.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold tracking-tight text-ink">
+                Observability and production readiness
+              </h3>
+              <p class="mt-2 text-base leading-relaxed text-ink-muted">
+                LangGraph pairs naturally with LangSmith and optional LangGraph
+                Platform for teams already in that ecosystem. CrewAI’s open
+                core is strong for experiments; production buyers should look at
+                Enterprise offerings and their own tracing stack. Neither
+                framework absolves you of golden tasks, tool allowlists, or
+                on-call — see{" "}
+                <a
+                  href="/guides/how-to-evaluate-ai-agent-platforms/"
+                  class="font-semibold text-accent hover:text-accent-hover"
+                  >how to evaluate agent platforms</a
+                >.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Directory scores snapshot -->
+        {
+          langgraph && crewai && (
+            <section class="mt-14 sm:mt-16" id="scores">
+              <h2 class="guide-h2">Directory scores (editorial snapshot)</h2>
+              <p class="mt-3 text-base leading-relaxed text-ink-muted">
+                From our{" "}
+                <a
+                  href="/methodology/"
+                  class="font-semibold text-accent hover:text-accent-hover"
+                >
+                  methodology
+                </a>
+                — useful as a structured second opinion, not a lab benchmark.
+              </p>
+              <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+                <table class="w-full min-w-[32rem] text-left text-sm">
+                  <thead class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                    <tr>
+                      <th class="px-4 py-3 font-semibold">Metric</th>
+                      <th class="px-4 py-3 font-semibold">LangGraph</th>
+                      <th class="px-4 py-3 font-semibold">CrewAI</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border bg-surface text-ink-muted">
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-ink">Overall</td>
+                      <td class="px-4 py-3 tabular-nums font-semibold text-ink">
+                        {langgraph.scores.overall.toFixed(1)}
+                      </td>
+                      <td class="px-4 py-3 tabular-nums font-semibold text-ink">
+                        {crewai.scores.overall.toFixed(1)}
+                      </td>
+                    </tr>
+                    {(
+                      [
+                        ["Capability", "capability"],
+                        ["Ease of use", "easeOfUse"],
+                        ["Integrations", "integrations"],
+                        ["Enterprise", "enterprise"],
+                        ["Developer experience", "developerExperience"],
+                        ["Value", "value"],
+                      ] as const
+                    ).map(([label, key]) => (
+                      <tr>
+                        <td class="px-4 py-3 font-medium text-ink">{label}</td>
+                        <td class="px-4 py-3 tabular-nums">
+                          {langgraph.scores[key].toFixed(1)}
+                        </td>
+                        <td class="px-4 py-3 tabular-nums">
+                          {crewai.scores[key].toFixed(1)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p class="mt-3 text-sm text-ink-muted">
+                Full profiles:{" "}
+                <a
+                  href="/tools/langgraph/"
+                  class="font-medium text-accent hover:text-accent-hover"
+                >
+                  LangGraph
+                </a>
+                {" · "}
+                <a
+                  href="/tools/crewai/"
+                  class="font-medium text-accent hover:text-accent-hover"
+                >
+                  CrewAI
+                </a>
+              </p>
+            </section>
+          )
+        }
+
+        <!-- 5. Choose LangGraph -->
+        <section class="mt-14 sm:mt-16" id="choose-langgraph">
+          <h2 class="guide-h2">Choose LangGraph if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseLangGraph.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5 text-sm text-ink-muted">
+            Read the full listing:{" "}
+            <a
+              href="/tools/langgraph/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >LangGraph platform profile</a
+            >
+            {" · "}
+            <a
+              href="/categories/frameworks/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Frameworks category</a
+            >
+          </p>
+        </section>
+
+        <!-- 6. Choose CrewAI -->
+        <section class="mt-14 sm:mt-16" id="choose-crewai">
+          <h2 class="guide-h2">Choose CrewAI if…</h2>
+          <ul class="mt-6 space-y-3">
+            {
+              chooseCrewAI.map((item) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5 text-sm text-ink-muted">
+            Read the full listing:{" "}
+            <a
+              href="/tools/crewai/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >CrewAI platform profile</a
+            >
+            {" · "}
+            <a
+              href="/categories/frameworks/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Frameworks category</a
+            >
+          </p>
+        </section>
+
+        <!-- 7. Hybrid -->
+        <section class="mt-14 sm:mt-16" id="hybrid">
+          <h2 class="guide-h2">When a hybrid approach makes sense</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Using both is fine if the boundary is explicit. Using both as two
+            unowned prototypes is how you double on-call without doubling
+            value.
+          </p>
+          <ul class="mt-8 space-y-4">
+            {
+              hybridCases.map((h) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{h.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                    {h.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            For broader stack choice (framework vs enterprise suite), see{" "}
+            <a
+              href="/guides/frameworks-vs-enterprise-platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Frameworks vs enterprise platforms</a
+            >. For tool interoperability across hosts, see{" "}
+            <a
+              href="/guides/mcp-and-tool-calling-explained/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >MCP and tool calling explained</a
+            >.
+          </p>
+        </section>
+
+        <!-- 8. Decision framework -->
+        <section class="mt-14 sm:mt-16" id="decision">
+          <h2 class="guide-h2">Final decision framework</h2>
+          <ol class="mt-8 space-y-4">
+            {
+              decisionSteps.map((r) => (
+                <li class="flex gap-4 rounded-2xl border border-border bg-surface-muted/50 p-5 sm:p-6">
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-fg"
+                    aria-hidden="true"
+                  >
+                    {r.step}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{r.title}</h3>
+                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                      {r.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <p class="mt-8 text-base leading-relaxed text-ink-muted">
+            <strong class="font-semibold text-ink">Bottom line:</strong>{" "}
+            LangGraph optimizes for controlled, durable orchestration. CrewAI
+            optimizes for role-based multi-agent velocity. Choose the grain that
+            matches your workload and your team — then instrument it like
+            production software.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <GuideExplore
+    slug="langgraph-vs-crewai"
+    categories={["Frameworks", "Enterprise"]}
+  />
+
+  <!-- CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Compare profiles — or get a second opinion
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Open the LangGraph and CrewAI listings, review scores against our
+          methodology, or talk through architecture if you are choosing a
+          multi-agent stack for production.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+        >
+          <a
+            href="/tools/langgraph/"
+            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+          >
+            LangGraph profile
+          </a>
+          <a
+            href="/tools/crewai/"
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
+          >
+            CrewAI profile
+          </a>
+        </div>
+        <p class="mt-6 text-sm text-slate-400">
+          <a href="/methodology/" class="text-indigo-300 hover:text-white"
+            >Methodology</a
+          >
+          {" · "}
+          <a
+            href="/categories/frameworks/"
+            class="text-indigo-300 hover:text-white">Frameworks</a
+          >
+          {" · "}
+          <a href="/contact/" class="text-indigo-300 hover:text-white"
+            >Contact</a
+          >
+          {" · "}
+          <a href={site.cta.href} class="text-indigo-300 hover:text-white"
+            >Implementation</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

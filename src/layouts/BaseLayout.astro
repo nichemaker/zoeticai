@@ -2,52 +2,138 @@
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import Seo from "../components/Seo.astro";
 import { site } from "../data/site";
+import {
+  getSiteOrigin,
+  buildCanonical,
+  buildDocumentTitle,
+  buildImageUrl,
+  type JsonLd,
+  type SeoInput,
+  type SeoOgType,
+} from "../lib/seo";
+import {
+  buildArticleGraph,
+  buildHomeGraph,
+  buildWebPageGraph,
+  type BreadcrumbItem,
+} from "../lib/jsonld";
 
 interface Props {
+  /** Page title (site name appended unless titleAbsolute) */
   title: string;
   description?: string;
-  /** Open Graph image path (absolute or site-relative) */
+  /** Canonical path or absolute URL (query strings stripped) */
+  canonical?: string;
+  /** OG/Twitter image — site-relative or absolute */
+  image?: string;
+  /** @deprecated Use `image` */
   ogImage?: string;
-  /** When true, emit Organization + WebSite JSON-LD (homepage) */
+  type?: SeoOgType;
+  robots?: SeoInput["robots"];
+  /**
+   * Optional extra JSON-LD nodes (merged into @graph).
+   * Prefer breadcrumbs/article props for standard patterns.
+   */
+  jsonLd?: JsonLd | JsonLd[];
+  titleAbsolute?: boolean;
+  /** Homepage: WebSite + Organization + Project graph */
   isHome?: boolean;
+  /** Article-style pages (guides) — emits Article + WebPage + BreadcrumbList */
+  isArticle?: boolean;
+  /** Breadcrumb trail for JSON-LD (and optional UI elsewhere) */
+  breadcrumbs?: BreadcrumbItem[];
+  /** Article metadata for guide/comparison pages */
+  article?: {
+    headline?: string;
+    description?: string;
+    datePublished: string;
+    dateModified?: string;
+  };
+  /**
+   * When true (default for non-home pages with breadcrumbs), emit WebPage graph.
+   * Set false to pass fully custom jsonLd only.
+   */
+  includeWebPageSchema?: boolean;
 }
 
 const {
   title,
   description = site.description,
+  canonical: canonicalProp,
+  image,
   ogImage,
+  type,
+  robots,
+  jsonLd,
+  titleAbsolute = false,
   isHome = false,
+  isArticle = false,
+  breadcrumbs,
+  article,
+  includeWebPageSchema = true,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const fullTitle = title.includes(site.name) ? title : `${title} · ${site.name}`;
-const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined;
+const origin = getSiteOrigin(Astro.site);
+const resolvedImage = image ?? ogImage ?? site.defaultOgImage;
+const resolvedType: SeoOgType = type ?? (isArticle ? "article" : "website");
+const documentTitle = buildDocumentTitle(title, titleAbsolute);
+const pageUrl = buildCanonical(Astro.url.pathname, {
+  override: canonicalProp,
+  origin,
+});
+const imageUrl = buildImageUrl(resolvedImage, origin);
 
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: site.name,
-  url: site.url,
-  description: site.description,
-  email: site.email,
-};
+/** Build the page @graph */
+function buildPageJsonLd(): JsonLd | undefined {
+  if (isHome) {
+    return buildHomeGraph(origin);
+  }
 
-const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: site.name,
-  url: site.url,
-  description: site.description,
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: `${site.url}/platforms/?q={search_term_string}`,
-    },
-    "query-input": "required name=search_term_string",
-  },
-};
+  const crumbs: BreadcrumbItem[] =
+    breadcrumbs ??
+    [
+      { name: "Home", path: "/" },
+      { name: title, path: Astro.url.pathname },
+    ];
+
+  if (isArticle && article) {
+    return buildArticleGraph({
+      origin,
+      pageUrl,
+      headline: article.headline ?? title,
+      description: article.description ?? description,
+      datePublished: article.datePublished,
+      dateModified: article.dateModified,
+      imageUrl,
+      breadcrumbs: crumbs,
+    });
+  }
+
+  if (includeWebPageSchema && breadcrumbs) {
+    return buildWebPageGraph({
+      origin,
+      pageUrl,
+      name: documentTitle,
+      description,
+      breadcrumbs: crumbs,
+      imageUrl,
+      dateModified: article?.dateModified,
+    });
+  }
+
+  // Custom-only payload
+  if (jsonLd) {
+    return Array.isArray(jsonLd) || jsonLd["@graph"]
+      ? (jsonLd as JsonLd)
+      : jsonLd;
+  }
+
+  return undefined;
+}
+
+const schema = buildPageJsonLd();
 ---
 
 <!doctype html>
@@ -56,28 +142,21 @@ const websiteSchema = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <title>{fullTitle}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content={site.themeColor} />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={site.name} />
-    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
-    <meta property="og:locale" content="en_US" />
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={fullTitle} />
-    <meta name="twitter:description" content={description} />
-    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+    <Seo
+      title={title}
+      description={description}
+      canonical={canonicalProp}
+      image={resolvedImage}
+      type={resolvedType}
+      robots={robots}
+      jsonLd={schema}
+      titleAbsolute={titleAbsolute}
+    />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <meta name="theme-color" content="#4f46e5" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -85,21 +164,6 @@ const websiteSchema = {
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-
-    {
-      isHome && (
-        <>
-          <script
-            type="application/ld+json"
-            set:html={JSON.stringify(organizationSchema)}
-          />
-          <script
-            type="application/ld+json"
-            set:html={JSON.stringify(websiteSchema)}
-          />
-        </>
-      )
-    }
   </head>
   <body class="flex min-h-screen flex-col">
     <a

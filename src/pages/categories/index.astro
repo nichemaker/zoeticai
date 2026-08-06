@@ -7,8 +7,13 @@ const categoryCards = getCategoryCounts();
 ---
 
 <BaseLayout
-  title="Categories"
-  description="Browse AI agent platforms by category — enterprise, frameworks, no-code, coding, browser, and workflow."
+  title="AI Agent Platform Categories"
+  description="Browse AI agent platforms by category — enterprise, frameworks, no-code, coding agents, browser control, and workflow automation."
+  canonical="/categories/"
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Categories", path: "/categories/" },
+  ]}
 >
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"

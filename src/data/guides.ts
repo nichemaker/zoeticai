@@ -38,6 +38,16 @@ export const latestGuides: GuidePreview[] = [
     readTime: "11 min",
     date: "2026-04-01",
   },
+  {
+    slug: "langgraph-vs-crewai",
+    title:
+      "LangGraph vs CrewAI in 2026: Which Multi-Agent Framework Should You Choose?",
+    excerpt:
+      "Graph-first vs role-first multi-agent frameworks — architecture, state, HITL, DX, and when to pick each.",
+    category: "Comparison",
+    readTime: "14 min",
+    date: "2026-04-01",
+  },
 ];
 
 export function guideHref(slug: string): string {
@@ -64,6 +74,12 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
   const cats = tool.categories;
   if (cats.includes("Frameworks") || cats.includes("Enterprise")) {
     slugs.add("frameworks-vs-enterprise-platforms");
+  }
+  if (cats.includes("Frameworks")) {
+    slugs.add("langgraph-vs-crewai");
+  }
+  if (tool.slug === "langgraph" || tool.slug === "crewai") {
+    slugs.add("langgraph-vs-crewai");
   }
   if (
     tool.features.mcpSupport ||
@@ -92,6 +108,7 @@ export function getRelatedGuidesForCategory(
       "how-to-evaluate-ai-agent-platforms",
     ],
     Frameworks: [
+      "langgraph-vs-crewai",
       "frameworks-vs-enterprise-platforms",
       "mcp-and-tool-calling-explained",
       "how-to-evaluate-ai-agent-platforms",
@@ -146,5 +163,9 @@ export const guideExampleTools: Record<
       "langgraph",
       "openai-agents-sdk",
     ],
+  },
+  "langgraph-vs-crewai": {
+    label: "Compare these multi-agent frameworks",
+    slugs: ["langgraph", "crewai", "openai-agents-sdk", "pydantic-ai", "mastra"],
   },
 };

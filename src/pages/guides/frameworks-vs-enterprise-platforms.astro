@@ -146,7 +146,27 @@ const recommendations = [
 ];
 ---
 
-<BaseLayout title={title} description={description} ogImage={heroImage}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={heroImage}
+  canonical="/guides/frameworks-vs-enterprise-platforms/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    {
+      name: "Frameworks vs enterprise",
+      path: "/guides/frameworks-vs-enterprise-platforms/",
+    },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
   <!-- Hero -->
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"

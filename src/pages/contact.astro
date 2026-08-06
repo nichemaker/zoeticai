@@ -3,11 +3,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
 import { site } from "../data/site";
 
-const title = "Contact";
-const description = `Contact ${site.name} for platform submissions, profile corrections, partnerships, and implementation inquiries.`;
+const title = "Contact Zoetic AI";
+const description = `Contact Zoetic AI for platform submissions, profile corrections, partnerships, and implementation inquiries. Email ${site.email}.`;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/contact/"
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Contact", path: "/contact/" },
+  ]}
+>
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"
   >

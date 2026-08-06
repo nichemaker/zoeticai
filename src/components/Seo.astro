@@ -1,0 +1,96 @@
+---
+/**
+ * Centralized SEO head tags: title, description, canonical, OG, Twitter,
+ * robots, and a single JSON-LD @graph document when schema is provided.
+ */
+import { site } from "../data/site";
+import {
+  asJsonLdArray,
+  buildCanonical,
+  buildDocumentTitle,
+  buildImageUrl,
+  buildRobotsContent,
+  getSiteOrigin,
+  type JsonLd,
+  type SeoInput,
+  type SeoOgType,
+} from "../lib/seo";
+import { buildJsonLdGraph } from "../lib/jsonld";
+
+export type Props = SeoInput;
+
+const {
+  title,
+  description = site.description,
+  canonical: canonicalOverride,
+  image = site.defaultOgImage,
+  type = "website",
+  robots,
+  jsonLd,
+  titleAbsolute = false,
+} = Astro.props;
+
+const origin = getSiteOrigin(Astro.site);
+const documentTitle = buildDocumentTitle(title, titleAbsolute);
+const canonical = buildCanonical(Astro.url.pathname, {
+  override: canonicalOverride,
+  origin,
+});
+const imageUrl = buildImageUrl(image, origin);
+const robotsContent = buildRobotsContent(robots);
+
+/**
+ * Normalize to one @graph document to avoid conflicting multi-script graphs.
+ */
+function normalizeJsonLd(
+  input: JsonLd | JsonLd[] | undefined,
+): JsonLd | undefined {
+  if (!input) return undefined;
+
+  // Already a full graph document
+  if (!Array.isArray(input) && input["@graph"]) {
+    const graph = input["@graph"];
+    const nodes = Array.isArray(graph) ? (graph as JsonLd[]) : [graph as JsonLd];
+    return buildJsonLdGraph(nodes);
+  }
+
+  const nodes = asJsonLdArray(input);
+  if (nodes.length === 0) return undefined;
+
+  // Single node that is already a graph wrapper
+  if (nodes.length === 1 && nodes[0]?.["@graph"]) {
+    return normalizeJsonLd(nodes[0]);
+  }
+
+  return buildJsonLdGraph(nodes);
+}
+
+const schemaDoc = normalizeJsonLd(jsonLd);
+const ogType: SeoOgType = type;
+---
+
+<title>{documentTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={robotsContent} />
+
+<!-- Open Graph -->
+<meta property="og:title" content={documentTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:locale" content={site.locale} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={documentTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+
+{
+  schemaDoc && (
+    <script type="application/ld+json" set:html={JSON.stringify(schemaDoc)} />
+  )
+}

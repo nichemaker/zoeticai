@@ -142,11 +142,28 @@ try {
   /* keep fallback */
 }
 
-const pageTitle = `${tool.name} — AI agent platform`;
-const pageDescription = tool.tagline || tool.description.slice(0, 160);
+const pageTitle = `${tool.name} — AI Agent Platform Review`;
+const pageDescription = `${tool.tagline} Overall score ${overall}/10. ${tool.categories.join(", ")} · See features, pricing, and similar tools.`.slice(
+  0,
+  160,
+);
+
+const toolBreadcrumbs = [
+  { name: "Home", path: "/" },
+  ...(primaryCategory
+    ? [{ name: primaryCategory, path: categoryHref(primaryCategory) }]
+    : [{ name: "Platforms", path: "/platforms/" }]),
+  { name: tool.name, path: `/tools/${tool.slug}/` },
+];
 ---
 
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonical={`/tools/${tool.slug}/`}
+  breadcrumbs={toolBreadcrumbs}
+  article={{ dateModified: tool.lastUpdated, datePublished: tool.lastUpdated }}
+>
   <!-- Hero -->
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"

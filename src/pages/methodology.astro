@@ -150,7 +150,15 @@ const featureFlags = [
 ];
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/methodology/"
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Methodology", path: "/methodology/" },
+  ]}
+>
   <!-- Hero -->
   <section
     class="relative overflow-hidden border-b border-border bg-surface-muted"
