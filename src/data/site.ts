@@ -20,6 +20,7 @@ export type NavLink = {
 
 export const primaryNav: NavLink[] = [
   { href: '/', label: 'Home' },
+  { href: '/platforms/', label: 'Platforms' },
   { href: '/categories/', label: 'Categories' },
   { href: '/compare/', label: 'Compare' },
   { href: '/guides/', label: 'Guides' },
@@ -34,6 +35,7 @@ export const footerGroups: FooterGroup[] = [
   {
     heading: 'Explore',
     links: [
+      { href: '/platforms/', label: 'All platforms' },
       { href: '/categories/', label: 'Categories' },
       { href: '/compare/', label: 'Compare' },
       { href: '/guides/', label: 'Guides' },

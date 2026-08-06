@@ -1,0 +1,453 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import { tools } from "../../data/tools";
+import { categories } from "../../data/categories";
+import { site } from "../../data/site";
+
+const total = tools.length;
+const sortedDefault = [...tools].sort(
+  (a, b) => b.scores.overall - a.scores.overall,
+);
+
+/** Prefill search from ?q= (header search and deep links). */
+const initialQuery = Astro.url.searchParams.get("q")?.trim() ?? "";
+
+const pageTitle = "All AI Agent Platforms";
+const pageDescription = `Browse and filter ${total} AI agent platforms — enterprise suites, frameworks, no-code builders, coding agents, and more.`;
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <!-- Header -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Platforms" },
+        ]}
+      />
+      <h1
+        class="mt-7 text-3xl font-bold tracking-tight text-ink sm:mt-8 sm:text-4xl sm:leading-tight"
+      >
+        All AI Agent Platforms
+      </h1>
+      <p
+        class="mt-3 max-w-2xl text-base leading-relaxed text-ink-muted sm:text-lg"
+      >
+        Explore every platform in the directory. Filter by category, features,
+        and pricing — then open a profile for scores, integrations, and who it
+        is best for.
+      </p>
+    </div>
+  </section>
+
+  <!-- Sticky filter / sort bar -->
+  <div
+    class="sticky top-16 z-40 border-b border-border bg-surface/95 shadow-(--shadow-sm) sm:top-[4.25rem]"
+    data-filter-bar
+  >
+    <div class="container-site py-4">
+      <form
+        class="flex flex-col gap-4"
+        data-platforms-filters
+        onsubmit="return false;"
+      >
+        <!-- Search + sort row -->
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="relative min-w-0 flex-1 sm:max-w-md">
+            <label for="platforms-q" class="sr-only">Search platforms</label>
+            <svg
+              class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              aria-hidden="true"
+            >
+              <circle cx="8.5" cy="8.5" r="5.5"></circle>
+              <path d="M13 13l3.5 3.5" stroke-linecap="round"></path>
+            </svg>
+            <input
+              id="platforms-q"
+              type="search"
+              name="q"
+              value={initialQuery}
+              placeholder="Search by name, category, use case…"
+              class="input-search"
+              data-filter-q
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+            <label
+              for="platforms-sort"
+              class="text-sm font-medium text-ink-muted"
+            >
+              Sort
+            </label>
+            <select
+              id="platforms-sort"
+              class="min-w-[10.5rem] rounded-xl border border-border bg-surface py-2.5 pl-3 pr-8 text-sm font-medium text-ink shadow-(--shadow-sm) focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+              data-filter-sort
+            >
+              <option value="score">Highest score</option>
+              <option value="name">Name A–Z</option>
+              <option value="updated">Recently updated</option>
+            </select>
+            <button
+              type="button"
+              class="btn-secondary py-2 text-xs sm:text-sm"
+              data-filter-reset
+            >
+              Clear filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter chips -->
+        <div class="flex flex-col gap-3 border-t border-border pt-4">
+          <fieldset class="min-w-0">
+            <legend
+              class="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-soft"
+            >
+              Category
+            </legend>
+            <div class="flex flex-wrap gap-2" data-filter-group="category">
+              {
+                categories.map((c) => (
+                  <label class="filter-chip">
+                    <input
+                      type="checkbox"
+                      name="category"
+                      value={c.id}
+                      class="sr-only peer"
+                      data-filter-category
+                    />
+                    <span class="filter-chip-ui">{c.name}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <fieldset class="min-w-0">
+            <legend
+              class="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-soft"
+            >
+              Features
+            </legend>
+            <div class="flex flex-wrap gap-2">
+              {
+                [
+                  { value: "multi-agent", label: "Multi-agent", attr: "multi-agent" },
+                  { value: "open-source", label: "Open source", attr: "open-source" },
+                  { value: "self-host", label: "Self-host", attr: "self-host" },
+                  { value: "mcp", label: "MCP", attr: "mcp" },
+                  {
+                    value: "computer-use",
+                    label: "Computer use",
+                    attr: "computer-use",
+                  },
+                ].map((f) => (
+                  <label class="filter-chip">
+                    <input
+                      type="checkbox"
+                      name="feature"
+                      value={f.value}
+                      class="sr-only peer"
+                      data-filter-feature={f.attr}
+                    />
+                    <span class="filter-chip-ui">{f.label}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <fieldset class="min-w-0">
+            <legend
+              class="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-soft"
+            >
+              Pricing model
+            </legend>
+            <div class="flex flex-wrap gap-2">
+              {
+                [
+                  { value: "free", label: "Free" },
+                  { value: "freemium", label: "Freemium" },
+                  { value: "usage", label: "Usage-based" },
+                  { value: "enterprise", label: "Enterprise" },
+                ].map((p) => (
+                  <label class="filter-chip">
+                    <input
+                      type="checkbox"
+                      name="pricing"
+                      value={p.value}
+                      class="sr-only peer"
+                      data-filter-pricing
+                    />
+                    <span class="filter-chip-ui">{p.label}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <section class="bg-surface">
+    <div class="container-site section-y">
+      <div
+        class="mb-6 flex flex-col gap-1 sm:mb-8 sm:flex-row sm:items-baseline sm:justify-between"
+      >
+        <p class="text-sm font-medium text-ink" data-result-count>
+          Showing {total} of {total} platforms
+        </p>
+        <p class="text-sm text-ink-soft">
+          {total} platforms in {site.name}
+        </p>
+      </div>
+
+      <div
+        class="grid auto-rows-fr gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
+        data-platforms-grid
+      >
+        {sortedDefault.map((tool) => <ToolCard tool={tool} maxTags={4} />)}
+      </div>
+
+      <div class="empty-panel mt-4 hidden" data-platforms-empty hidden>
+        <p class="text-base font-semibold text-ink">No platforms match</p>
+        <p class="mt-2 max-w-sm text-sm text-ink-muted">
+          Try clearing a filter, broadening the pricing model, or searching a
+          different keyword.
+        </p>
+        <button type="button" class="btn-primary mt-6" data-filter-reset>
+          Clear all filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-border bg-accent-soft">
+    <div
+      class="container-site flex flex-col items-start gap-5 py-10 sm:flex-row sm:items-center sm:justify-between sm:py-12"
+    >
+      <div class="max-w-xl">
+        <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">
+          Need help shortlisting or implementing agents?
+        </h2>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+          We help teams compare platforms and ship production agent systems with
+          the right governance and integrations.
+        </p>
+      </div>
+      <a
+        href={site.cta.href}
+        class="btn-primary shrink-0 px-5 py-3"
+        rel="noopener noreferrer"
+      >
+        Talk to us
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .filter-chip {
+    cursor: pointer;
+  }
+  .filter-chip-ui {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-muted);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-ink-muted);
+    transition:
+      background-color 0.15s,
+      border-color 0.15s,
+      color 0.15s;
+  }
+  .filter-chip:hover .filter-chip-ui {
+    border-color: var(--color-border-strong);
+    color: var(--color-ink);
+  }
+  .filter-chip input:checked + .filter-chip-ui {
+    border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border));
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+</style>
+
+<script>
+  const grid = document.querySelector<HTMLElement>("[data-platforms-grid]");
+  const empty = document.querySelector<HTMLElement>("[data-platforms-empty]");
+  const countEl = document.querySelector<HTMLElement>("[data-result-count]");
+  const qInput = document.querySelector<HTMLInputElement>("[data-filter-q]");
+  const sortSelect = document.querySelector<HTMLSelectElement>("[data-filter-sort]");
+  const resetBtns = document.querySelectorAll("[data-filter-reset]");
+
+  if (!grid || !empty || !countEl || !qInput || !sortSelect) {
+    // no-op if markup missing
+  } else {
+    const total = grid.querySelectorAll("[data-tool-card]").length;
+
+    function selectedValues(selector: string): string[] {
+      return Array.from(
+        document.querySelectorAll<HTMLInputElement>(`${selector}:checked`),
+      ).map((el) => el.value);
+    }
+
+    function matchesPricing(model: string, selected: string[]): boolean {
+      if (selected.length === 0) return true;
+      // Free filter also matches open-source
+      return selected.some((s) => {
+        if (s === "free") return model === "free" || model === "open-source";
+        return model === s;
+      });
+    }
+
+    function applyFilters() {
+      const q = qInput!.value.trim().toLowerCase();
+      const cats = selectedValues("[data-filter-category]");
+      const pricing = selectedValues("[data-filter-pricing]");
+      const features = Array.from(
+        document.querySelectorAll<HTMLInputElement>(
+          "[data-filter-feature]:checked",
+        ),
+      ).map((el) => el.getAttribute("data-filter-feature")!);
+
+      const cards = Array.from(
+        grid!.querySelectorAll<HTMLElement>("[data-tool-card]"),
+      );
+
+      let visible = 0;
+
+      for (const card of cards) {
+        const search = card.dataset.search ?? "";
+        const cardCats = (card.dataset.categories ?? "").split("|").filter(Boolean);
+        const model = card.dataset.pricing ?? "";
+
+        let show = true;
+
+        if (q && !search.includes(q)) show = false;
+
+        if (show && cats.length > 0) {
+          show = cats.some((c) => cardCats.includes(c));
+        }
+
+        if (show && !matchesPricing(model, pricing)) show = false;
+
+        if (show && features.length > 0) {
+          for (const f of features) {
+            const key =
+              f === "multi-agent"
+                ? "multiAgent"
+                : f === "open-source"
+                  ? "openSource"
+                  : f === "self-host"
+                    ? "selfHost"
+                    : f === "computer-use"
+                      ? "computerUse"
+                      : "mcp";
+            // dataset converts data-multi-agent → multiAgent in camelCase... 
+            // Actually HTML data-multi-agent is dataset.multiAgent in modern browsers
+            const attrMap: Record<string, string> = {
+              "multi-agent": "multiAgent",
+              "open-source": "openSource",
+              "self-host": "selfHost",
+              mcp: "mcp",
+              "computer-use": "computerUse",
+            };
+            const dsKey = attrMap[f] ?? f;
+            if (card.dataset[dsKey] !== "1") {
+              show = false;
+              break;
+            }
+          }
+        }
+
+        card.classList.toggle("hidden", !show);
+        if (show) visible += 1;
+      }
+
+      // Sort visible cards in the grid
+      const mode = sortSelect!.value;
+      const sorted = cards
+        .filter((c) => !c.classList.contains("hidden"))
+        .sort((a, b) => {
+          if (mode === "name") {
+            return (a.dataset.name ?? "").localeCompare(b.dataset.name ?? "");
+          }
+          if (mode === "updated") {
+            return (b.dataset.updated ?? "").localeCompare(
+              a.dataset.updated ?? "",
+            );
+          }
+          return Number(b.dataset.score ?? 0) - Number(a.dataset.score ?? 0);
+        });
+
+      for (const card of sorted) {
+        grid!.appendChild(card);
+      }
+      // keep hidden cards after (order among hidden does not matter)
+      for (const card of cards) {
+        if (card.classList.contains("hidden")) grid!.appendChild(card);
+      }
+
+      countEl!.textContent = `Showing ${visible} of ${total} platforms`;
+      empty!.classList.toggle("hidden", visible > 0);
+      empty!.hidden = visible > 0;
+
+      // Keep URL shareable without full reload
+      const url = new URL(window.location.href);
+      if (q) url.searchParams.set("q", q);
+      else url.searchParams.delete("q");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+
+    function resetFilters() {
+      qInput!.value = "";
+      document
+        .querySelectorAll<HTMLInputElement>(
+          "[data-filter-category], [data-filter-feature], [data-filter-pricing]",
+        )
+        .forEach((el) => {
+          el.checked = false;
+        });
+      sortSelect!.value = "score";
+      applyFilters();
+    }
+
+    qInput.addEventListener("input", applyFilters);
+    sortSelect.addEventListener("change", applyFilters);
+    document
+      .querySelectorAll(
+        "[data-filter-category], [data-filter-feature], [data-filter-pricing]",
+      )
+      .forEach((el) => el.addEventListener("change", applyFilters));
+    resetBtns.forEach((btn) => btn.addEventListener("click", resetFilters));
+
+    // Initial apply (handles ?q= from header)
+    applyFilters();
+  }
+</script>

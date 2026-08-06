@@ -60,6 +60,15 @@ const primaryCategory = tool.categories[0] ?? "Platform";
   data-tool-card
   data-name={tool.name.toLowerCase()}
   data-score={tool.scores.overall}
+  data-updated={tool.lastUpdated}
+  data-pricing={tool.pricing.model}
+  data-categories={tool.categories.join("|")}
+  data-multi-agent={tool.features.multiAgent ? "1" : "0"}
+  data-open-source={tool.features.openSource ? "1" : "0"}
+  data-self-host={tool.features.selfHost ? "1" : "0"}
+  data-mcp={tool.features.mcpSupport ? "1" : "0"}
+  data-computer-use={tool.features.computerUse ? "1" : "0"}
+  data-search={`${tool.name} ${tool.tagline} ${tool.categories.join(" ")} ${tool.bestFor.join(" ")}`.toLowerCase()}
 >
   <div class="flex items-start gap-3.5">
     <div
