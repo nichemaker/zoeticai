@@ -1,9 +1,13 @@
 {
-  // Workers + Static Assets (not Cloudflare Pages).
-  "name": "ai-directory",
+  // Cloudflare Workers + Static Assets (NOT Pages SPA mode).
+  // Deploy: npm run build && npx wrangler deploy
+  "name": "zoeticai",
   "compatibility_date": "2025-01-01",
   "assets": {
     "directory": "./dist",
-    "html_handling": "auto-trailing-slash"
+    // folder/index.html → /folder/ (matches Astro trailingSlash: 'always')
+    "html_handling": "force-trailing-slash",
+    // Serve dist/404.html for unknown routes — do NOT use single-page-application
+    "not_found_handling": "404-page"
   }
 }

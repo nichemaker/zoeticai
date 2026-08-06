@@ -8,6 +8,11 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://example.com',
   output: 'static',
+  // Matches Cloudflare assets html_handling + internal links (/tools/slug/)
+  trailingSlash: 'always',
+  build: {
+    format: 'directory',
+  },
   vite: {
     plugins: [tailwindcss()],
   },

@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Page not found"
+  description="The page you requested could not be found."
+>
+  <section class="container-site section-y">
+    <div class="empty-panel mx-auto max-w-lg">
+      <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+        404
+      </p>
+      <h1 class="mt-3 text-2xl font-bold tracking-tight text-ink">
+        Page not found
+      </h1>
+      <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+        That URL does not match a tool, category, or guide in the directory.
+      </p>
+      <div class="mt-6 flex flex-wrap justify-center gap-3">
+        <a href="/" class="btn-primary">Home</a>
+        <a href="/categories/" class="btn-secondary">Browse categories</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
