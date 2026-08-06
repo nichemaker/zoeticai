@@ -11,12 +11,12 @@ export type GuidePreview = {
 export const latestGuides: GuidePreview[] = [
   {
     slug: "how-to-evaluate-ai-agent-platforms",
-    title: "How to evaluate AI agent platforms",
+    title: "How to Evaluate AI Agent Platforms in 2026",
     excerpt:
       "A practical checklist for capability, governance, integrations, and total cost before you pilot.",
     category: "Buying",
-    readTime: "8 min",
-    date: "2026-02-18",
+    readTime: "12 min",
+    date: "2026-04-01",
   },
   {
     slug: "frameworks-vs-enterprise-platforms",

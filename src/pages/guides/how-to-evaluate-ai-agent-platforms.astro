@@ -1,0 +1,502 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import { site } from "../../data/site";
+
+const title = "How to Evaluate AI Agent Platforms in 2026";
+const description =
+  "A practical, buyer-focused framework for evaluating AI agent platforms — seven criteria, a scoring sheet you can copy, common mistakes, and when to pick frameworks vs enterprise vs no-code.";
+const heroImage = "/images/guides/evaluate-ai-agent-platforms-hero.jpg";
+const published = "2026-04-01";
+const readTime = "12 min";
+
+const criteria = [
+  {
+    num: "01",
+    title: "Autonomy & multi-agent capability",
+    body: "Decide how much independent work the system should do — single-tool assistants, multi-step agents, or multi-agent crews with handoffs. Ask whether the platform supports durable task loops, role specialization, and recovery after failure. A demo that answers a chat is not the same as an agent that can plan, act, and finish a workflow overnight.",
+    checks: [
+      "Single-agent vs multi-agent / handoff support",
+      "Long-running or asynchronous task execution",
+      "Failure recovery, retries, and timeout behavior",
+    ],
+  },
+  {
+    num: "02",
+    title: "Tool use & integrations (including MCP)",
+    body: "Agents are only as useful as the systems they can touch. Map required actions (CRM, tickets, code repos, internal APIs) and verify connectors, auth models, and rate limits. Treat Model Context Protocol (MCP) and similar tool standards as a plus for future interoperability — but still validate the tools you need today, not just a logo wall.",
+    checks: [
+      "Native connectors vs custom tools / webhooks",
+      "OAuth, secrets, and least-privilege access",
+      "MCP or equivalent tool-server support",
+    ],
+  },
+  {
+    num: "03",
+    title: "Memory & state management",
+    body: "Production agents need more than a chat transcript. Look for short-term working memory, long-term memory stores, conversation or workflow state, and clear data retention controls. Ask where memory lives (vendor cloud vs your VPC), how it is scoped per user or tenant, and whether you can audit or delete it on request.",
+    checks: [
+      "Session state vs persistent memory",
+      "Per-user / per-tenant isolation",
+      "Retention, export, and deletion paths",
+    ],
+  },
+  {
+    num: "04",
+    title: "Human-in-the-loop & guardrails",
+    body: "High-stakes steps should not run unsupervised by default. Good platforms make approvals, policy checks, and tool allowlists first-class — not bolt-ons. Clarify who can approve, what is blocked, and how the agent behaves when a guardrail fires. “We’ll add review later” is how pilots become incidents.",
+    checks: [
+      "Approval gates for sensitive actions",
+      "Tool allow/deny lists and content filters",
+      "Clear audit trail of human decisions",
+    ],
+  },
+  {
+    num: "05",
+    title: "Observability & evaluation",
+    body: "If you cannot see traces, tool calls, latency, and cost, you cannot improve quality. Require run-level traces, searchable logs, and a path to offline or online evaluation (golden tasks, regression sets, human review). Vendor dashboards help; the ability to export data into your stack often decides whether you can operate at scale.",
+    checks: [
+      "End-to-end traces of prompts, tools, and outcomes",
+      "Metrics for success rate, latency, and cost",
+      "Eval hooks or batch evaluation support",
+    ],
+  },
+  {
+    num: "06",
+    title: "Deployment & governance options",
+    body: "Match the platform to how your org ships software. Options range from fully managed SaaS to self-host, VPC, or on-prem patterns. Check SSO, RBAC, data residency, logging sinks, and change management. Engineering-led teams may prefer frameworks they own; enterprises may need vendor SLAs and admin controls from day one.",
+    checks: [
+      "SaaS vs self-host / private network options",
+      "SSO, RBAC, and environment separation",
+      "Compliance artifacts relevant to your industry",
+    ],
+  },
+  {
+    num: "07",
+    title: "Total cost of ownership",
+    body: "List price is rarely the full cost. Model tokens, seat licenses, workflow runs, connector fees, and the people time to build, review, and maintain agents. A “cheap” framework can cost more in engineering months; an enterprise suite can look expensive until you count avoided infra and compliance work. Score five-year TCO, not just the pilot invoice.",
+    checks: [
+      "Seats, runs, and model usage pricing",
+      "Hidden costs: storage, support, premium connectors",
+      "Internal build/operate effort for 12 months",
+    ],
+  },
+];
+
+const mistakes = [
+  {
+    title: "Buying the demo, not the workload",
+    body: "A polished chat UI does not prove the agent can complete your tickets, CRM updates, or repo changes under real permissions and edge cases.",
+  },
+  {
+    title: "Skipping a written success metric",
+    body: "Without a baseline (time to resolve, deflection rate, PR cycle time), you cannot tell if the pilot worked — only that people liked the demo.",
+  },
+  {
+    title: "Ignoring permissions and blast radius",
+    body: "Over-scoped tokens and broad tool access turn a helpful agent into an incident. Least privilege and dry-run modes should be non-negotiable.",
+  },
+  {
+    title: "Treating frameworks and products as interchangeable",
+    body: "LangGraph-class frameworks maximize control; Copilot Studio-class products maximize governance. Comparing only feature checklists hides the operating model difference.",
+  },
+  {
+    title: "Underestimating ongoing evaluation cost",
+    body: "Models, prompts, and tools drift. If nobody owns weekly evals and incident review, quality decays quietly after launch.",
+  },
+  {
+    title: "Optimizing only for build speed",
+    body: "No-code gets you live fast; the wrong abstraction forces a rewrite when you need custom tools, multi-agent control, or private deployment.",
+  },
+];
+
+const decisionRows = [
+  {
+    choose: "Open frameworks",
+    when: "You have engineers, need deep control, multi-step graphs, and are willing to own runtime, evals, and ops.",
+    examples: "LangGraph, CrewAI, OpenAI / Claude agent SDKs, Pydantic AI, Mastra",
+  },
+  {
+    choose: "Enterprise platforms",
+    when: "You need SSO, admin controls, SLAs, and agents that live inside CRM/ITSM/cloud estates your company already runs.",
+    examples: "Salesforce Agentforce, Microsoft Copilot Studio, AWS Bedrock Agents, ServiceNow AI Agents",
+  },
+  {
+    choose: "No-code / low-code",
+    when: "Ops or GTM teams must ship workflows without a platform squad, and the integrations are mostly SaaS-to-SaaS.",
+    examples: "n8n, Make, Zapier Agents, Lindy, Relevance AI",
+  },
+  {
+    choose: "Coding agents",
+    when: "The job is software delivery — IDE pair programming, repo-wide edits, or ticket-to-PR automation — not business process bots.",
+    examples: "Cursor, Claude Code, GitHub Copilot Agents, Devin, Cline",
+  },
+];
+---
+
+<BaseLayout title={title} description={description} ogImage={heroImage}>
+  <!-- Hero -->
+  <section
+    class="relative overflow-hidden border-b border-border bg-surface-muted"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative py-10 sm:py-12 lg:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "Evaluate platforms" },
+        ]}
+      />
+
+      <div class="mt-8 grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
+        <div class="lg:col-span-6">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+            <span
+              class="rounded-full bg-accent-soft px-3 py-1 text-accent"
+            >
+              Buying guide
+            </span>
+            <span class="text-ink-soft">
+              <time datetime={published}>Apr 1, 2026</time>
+              <span aria-hidden="true"> · </span>
+              {readTime} read
+            </span>
+          </div>
+
+          <h1
+            class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.5rem]"
+          >
+            How to Evaluate AI Agent Platforms in 2026
+          </h1>
+          <p class="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
+            Most teams do not fail because models are weak. They fail because
+            they bought a demo, skipped permissions and evals, and discovered
+            TCO only after the pilot was already political.
+          </p>
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a href="#criteria" class="btn-primary">Jump to criteria</a>
+            <a href="/platforms/" class="btn-secondary">Browse platforms</a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-6">
+          <figure
+            class="overflow-hidden rounded-2xl border border-border bg-surface shadow-(--shadow-md)"
+          >
+            <img
+              src={heroImage}
+              alt="Illustration of an AI agent platform evaluation dashboard with scores, progress bars, and a checklist"
+              width="1600"
+              height="900"
+              class="h-auto w-full object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Article -->
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- 1. Intro -->
+        <section class="prose-guide">
+          <h2 id="introduction" class="guide-h2">
+            Why most teams pick the wrong platform
+          </h2>
+          <p>
+            The agent market in 2026 is crowded on purpose: frameworks promise
+            control, enterprise suites promise governance, no-code tools promise
+            speed, and coding agents promise shipping velocity. The wrong
+            purchase is usually a category mistake — treating a chat wrapper
+            like a production worker, or forcing a low-code tool to do what a
+            graph framework should.
+          </p>
+          <p>
+            This guide is for technical founders, engineering leads, and ops
+            owners who need a defensible shortlist. It is not a vendor ranking.
+            It is a process: define the work, score platforms on seven criteria,
+            run a narrow pilot with real permissions, then decide.
+          </p>
+          <p>
+            If you only take one idea: <strong class="font-semibold text-ink"
+              >evaluate platforms against a specific workload</strong
+            >, not against a generic “AI agent” fantasy. An ITSM triage bot, a
+            multi-step research crew, and a repo-wide coding agent need different
+            products — even when the marketing language sounds identical.
+          </p>
+        </section>
+
+        <!-- 2. Criteria -->
+        <section class="mt-14 sm:mt-16" id="criteria">
+          <h2 class="guide-h2">The 7 key evaluation criteria</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Score each criterion 1–5 for your use case (not in the abstract).
+            Weight the criteria that can kill the project — often integrations,
+            guardrails, and TCO — higher than the ones that only make the demo
+            impressive.
+          </p>
+
+          <ol class="mt-10 space-y-8">
+            {
+              criteria.map((c) => (
+                <li class="card-surface p-6 sm:p-7">
+                  <div class="flex items-start gap-4">
+                    <span
+                      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-xs font-bold tabular-nums text-accent"
+                      aria-hidden="true"
+                    >
+                      {c.num}
+                    </span>
+                    <div class="min-w-0">
+                      <h3 class="text-lg font-semibold tracking-tight text-ink">
+                        {c.title}
+                      </h3>
+                      <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                        {c.body}
+                      </p>
+                      <ul class="mt-4 space-y-2">
+                        {c.checks.map((item) => (
+                          <li class="flex items-start gap-2 text-sm text-ink">
+                            <span
+                              class="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                              aria-hidden="true"
+                            >
+                              ✓
+                            </span>
+                            <span class="leading-relaxed text-ink-muted">
+                              {item}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </section>
+
+        <!-- 3. Scoring framework -->
+        <section class="mt-14 sm:mt-16" id="scoring">
+          <h2 class="guide-h2">A practical scoring framework you can copy</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Use one sheet per platform. Keep the pilot workload fixed so scores
+            stay comparable.
+          </p>
+
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
+            <table class="w-full min-w-[36rem] text-left text-sm">
+              <thead class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Criterion</th>
+                  <th class="px-4 py-3 font-semibold">Weight</th>
+                  <th class="px-4 py-3 font-semibold">Score (1–5)</th>
+                  <th class="px-4 py-3 font-semibold">Weighted</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border bg-surface text-ink-muted">
+                {
+                  [
+                    ["Autonomy & multi-agent", "15%"],
+                    ["Tool use & integrations / MCP", "20%"],
+                    ["Memory & state", "10%"],
+                    ["HITL & guardrails", "15%"],
+                    ["Observability & evals", "15%"],
+                    ["Deployment & governance", "10%"],
+                    ["Total cost of ownership", "15%"],
+                  ].map(([name, weight]) => (
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-ink">{name}</td>
+                      <td class="px-4 py-3 tabular-nums">{weight}</td>
+                      <td class="px-4 py-3 text-ink-soft">—</td>
+                      <td class="px-4 py-3 text-ink-soft">—</td>
+                    </tr>
+                  ))
+                }
+                <tr class="bg-surface-muted/80">
+                  <td class="px-4 py-3 font-semibold text-ink" colspan="3">
+                    Total (out of 5.0)
+                  </td>
+                  <td class="px-4 py-3 font-semibold text-ink">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-6 space-y-3 text-sm leading-relaxed text-ink-muted sm:text-base">
+            <p>
+              <strong class="font-semibold text-ink">How to score:</strong> 1 =
+              blocks the use case; 3 = workable with effort; 5 = clear fit with
+              evidence from a hands-on trial (not a slide).
+            </p>
+            <p>
+              <strong class="font-semibold text-ink">Pilot weights</strong> if
+              your risk is compliance-heavy (governance + guardrails up) or
+              product-engineering heavy (autonomy + observability up). Write
+              weights down before demos so vendors cannot reframe the criteria
+              mid-process.
+            </p>
+            <p>
+              Require every shortlisted vendor (or open-source option) to run
+              the <em>same three golden tasks</em> with production-like
+              credentials in a sandbox. Score only what you observed.
+            </p>
+          </div>
+        </section>
+
+        <!-- 4. Mistakes -->
+        <section class="mt-14 sm:mt-16" id="mistakes">
+          <h2 class="guide-h2">Common mistakes to avoid</h2>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              mistakes.map((m) => (
+                <li class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{m.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                    {m.body}
+                  </p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 5. Decision framework -->
+        <section class="mt-14 sm:mt-16" id="decision">
+          <h2 class="guide-h2">
+            Decision framework: frameworks vs enterprise vs no-code
+          </h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Start with who will build and operate the agent, and where the
+            system of record lives. Then pick a category before you fall in love
+            with a single brand.
+          </p>
+
+          <div class="mt-8 space-y-4">
+            {
+              decisionRows.map((row) => (
+                <div class="card-surface p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-accent">
+                    Choose {row.choose} when…
+                  </h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                    {row.when}
+                  </p>
+                  <p class="mt-3 text-xs font-medium uppercase tracking-wider text-ink-soft">
+                    Examples in this directory
+                  </p>
+                  <p class="mt-1 text-sm text-ink">{row.examples}</p>
+                </div>
+              ))
+            }
+          </div>
+
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            Hybrid stacks are normal: an enterprise CRM agent for revenue
+            workflows plus a coding agent for engineering, with a framework only
+            where you need custom multi-step logic. Forcing one platform to do
+            everything is a common way to overpay and under-deliver.
+          </p>
+        </section>
+
+        <!-- 6. Conclusion -->
+        <section class="mt-14 sm:mt-16" id="conclusion">
+          <h2 class="guide-h2">Conclusion</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Good evaluation is boring on purpose: fixed workloads, weighted
+            criteria, observed traces, and honest TCO. Hype-friendly checklists
+            that ignore guardrails, memory ownership, and operate cost are how
+            teams restart the RFP six months later.
+          </p>
+          <p class="mt-4 text-base leading-relaxed text-ink-muted">
+            Use the seven criteria above, run three golden tasks, and shortlist
+            only platforms that survive real permissions. Then compare options
+            side by side in the directory — or get help implementing the stack
+            you choose.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <!-- CTA -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Shortlist platforms — or ship with help
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Browse scored profiles across enterprise, frameworks, no-code, and
+          coding agents. If you already know the category, we can help design
+          and implement production agents with the right guardrails.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+        >
+          <a
+            href="/platforms/"
+            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+          >
+            Browse the directory
+          </a>
+          <a
+            href={site.cta.href}
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
+            rel="noopener noreferrer"
+          >
+            Talk about implementation
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>
