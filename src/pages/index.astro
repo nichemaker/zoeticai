@@ -1,4 +1,8 @@
 ---
+/**
+ * Homepage — structured to match the modern AI tools directory reference:
+ * Hero (search + stats + visual) → trust → categories → top platforms → guides → CTA
+ */
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeader from "../components/SectionHeader.astro";
 import ToolCard from "../components/ToolCard.astro";
@@ -11,72 +15,51 @@ import {
 import { getCategoryCounts, categoryHref } from "../data/categories";
 import {
   getLatestGuides,
-  getGuideBySlug,
   getTopicHub,
   guideHref,
-  HOMEPAGE_LATEST_GUIDES_COUNT,
+  latestGuides,
 } from "../data/guides";
 
-const featuredRaw = getFeaturedTools(6);
-/** Never leave the featured strip empty — fall back to top-scored tools. */
+const featuredRaw = getFeaturedTools(5);
 const featured =
-  featuredRaw.length > 0 ? featuredRaw : getToolsByOverallScore(6);
+  featuredRaw.length > 0 ? featuredRaw : getToolsByOverallScore(5);
 
 const categoryCards = getCategoryCounts();
 const catalogCount = tools.length || 0;
-/** Newest-first subset for the homepage strip */
-const guideList = getLatestGuides(HOMEPAGE_LATEST_GUIDES_COUNT);
+const guideCount = latestGuides.length || 0;
+const categoryCount = categoryCards.length || 0;
 
+/** Guides for the homepage strip (newest first, skip dumping the full list) */
+const guideList = getLatestGuides(6);
 const platformsPillar = getTopicHub("agent-platforms");
-const platformsPillarPreview = getGuideBySlug(platformsPillar.slug);
-const codingHub = getTopicHub("coding-agents");
 
-/** High-signal comparisons called out near Latest guides */
-const featuredComparisons = [
-  {
-    href: "/guides/lindy-vs-relevance-ai-vs-dust/",
-    label: "Lindy vs Relevance AI vs Dust",
-  },
-  {
-    href: "/guides/n8n-vs-make-vs-zapier-agents/",
-    label: "n8n vs Make vs Zapier Agents",
-  },
-  {
-    href: "/guides/claude-code-vs-cursor/",
-    label: "Claude Code vs Cursor",
-  },
-  {
-    href: "/guides/copilot-studio-vs-agentforce/",
-    label: "Copilot Studio vs Agentforce",
-  },
+const stats = [
+  { value: `${catalogCount}+`, label: "Platforms" },
+  { value: `${categoryCount}`, label: "Categories" },
+  { value: `${guideCount}+`, label: "Guides" },
+  { value: "6", label: "Score dimensions" },
 ];
 
-const whyItems = [
-  {
-    title: "Structured scores",
-    body: "Overall rating plus six dimensions — capability, ease of use, integrations, enterprise, DX, and value.",
-    href: "/methodology/",
-    linkLabel: "See methodology",
-  },
-  {
-    title: "Feature-level filters",
-    body: "Multi-agent, open source, self-host, MCP, and computer use flags you can scan at a glance.",
-    href: "/platforms/",
-    linkLabel: "Filter platforms",
-  },
-  {
-    title: "Buyer-ready categories",
-    body: "Enterprise suites, frameworks, no-code, coding agents, browser control, and workflow automation.",
-    href: "/categories/",
-    linkLabel: "Browse categories",
-  },
-  {
-    title: "Compare-first design",
-    body: "Start from the AI Agent Platforms Guide, then open head-to-heads and roundups that match your decision.",
-    href: guideHref(platformsPillar.slug),
-    linkLabel: "AI Agent Platforms Guide",
-  },
+const trustLogos = [
+  "LangGraph",
+  "Cursor",
+  "n8n",
+  "CrewAI",
+  "Copilot Studio",
 ];
+
+/** Soft icon glyphs for category cards (letter kept as accessible fallback) */
+const categoryVisual: Record<
+  string,
+  { bg: string; fg: string; symbol: string }
+> = {
+  enterprise: { bg: "bg-violet-50", fg: "text-violet-600", symbol: "◇" },
+  frameworks: { bg: "bg-indigo-50", fg: "text-indigo-600", symbol: "{ }" },
+  "no-code": { bg: "bg-fuchsia-50", fg: "text-fuchsia-600", symbol: "◈" },
+  coding: { bg: "bg-sky-50", fg: "text-sky-600", symbol: "</>" },
+  browser: { bg: "bg-cyan-50", fg: "text-cyan-600", symbol: "◎" },
+  workflow: { bg: "bg-blue-50", fg: "text-blue-600", symbol: "⟳" },
+};
 ---
 
 <BaseLayout
@@ -84,125 +67,385 @@ const whyItems = [
   description={`${site.description} Independent scores, categories, and guides for buyers and builders.`}
   isHome
 >
-  <!-- 1. Hero -->
+  <!-- ═══════════════════════════════════════════════════════════
+       1. HERO
+       ═══════════════════════════════════════════════════════════ -->
   <section class="page-hero">
     <div class="page-hero-glow" aria-hidden="true"></div>
-    <div
-      class="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"
-      aria-hidden="true"
-    >
-    </div>
 
-    <div class="container-site relative section-y">
-      <div class="mx-auto max-w-3xl text-center">
-        <div
-          class="inline-flex items-center gap-2 rounded-full border border-accent/15 bg-surface/90 px-3.5 py-1.5 text-[0.6875rem] font-semibold tracking-[0.04em] text-accent shadow-(--shadow-xs)"
-        >
-          <span
-            class="h-1.5 w-1.5 rounded-full bg-accent"
-            aria-hidden="true"
-          ></span>
-          Your platform shortlist starts here
-        </div>
-
-        <h1 class="text-display mt-7">
-          Discover. Compare. Choose AI agents.
-        </h1>
-
-        <p class="text-body-lg mx-auto mt-5 max-w-2xl">
-          Independent profiles, scores, and comparisons across{" "}
-          <span class="font-semibold text-ink"
-            >{catalogCount || "dozens of"}+</span
-          >{" "}
-          enterprise suites, frameworks, no-code builders, and coding agents —
-          so you can shortlist with confidence.
-        </p>
-
-        <div
-          class="mt-10 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
-        >
-          <a href="/platforms/" class="btn-primary px-7 py-3 text-[0.9375rem]">
-            Browse platforms
-          </a>
-          <a
-            href={guideHref(platformsPillar.slug)}
-            class="btn-secondary px-7 py-3 text-[0.9375rem]"
+    <div class="container-site relative py-14 sm:py-16 lg:py-20">
+      <div
+        class="grid items-center gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-14"
+      >
+        <!-- Copy + search + stats -->
+        <div class="lg:col-span-6 xl:col-span-6">
+          <div
+            class="inline-flex items-center gap-2 rounded-full border border-accent/15 bg-surface/90 px-3.5 py-1.5 text-xs font-semibold text-accent shadow-(--shadow-xs)"
           >
-            Platforms guide
-          </a>
+            <span
+              class="flex h-5 w-5 items-center justify-center rounded-full bg-accent-soft text-[10px]"
+              aria-hidden="true">✦</span
+            >
+            Your agent advantage starts here
+          </div>
+
+          <h1
+            class="mt-6 text-[2.35rem] font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.15rem]"
+          >
+            Discover. Compare.<br class="hidden sm:block" />
+            Choose AI agents.
+          </h1>
+
+          <p class="mt-5 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
+            Zoetic AI is your independent directory of AI agent platforms —
+            scored profiles, head-to-head guides, and buyer frameworks so you
+            shortlist with confidence.
+          </p>
+
+          <!-- Search -->
+          <form
+            action="/platforms/"
+            method="get"
+            role="search"
+            class="mt-8"
+          >
+            <label for="home-search" class="sr-only"
+              >Search AI agent platforms</label
+            >
+            <div
+              class="flex items-center gap-2 rounded-[var(--radius-pill)] border border-border bg-surface p-1.5 shadow-(--shadow-md)"
+            >
+              <div class="relative min-w-0 flex-1">
+                <svg
+                  class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  aria-hidden="true"
+                >
+                  <circle cx="8.5" cy="8.5" r="5.5"></circle>
+                  <path d="M13 13l3.5 3.5" stroke-linecap="round"></path>
+                </svg>
+                <input
+                  id="home-search"
+                  type="search"
+                  name="q"
+                  placeholder="Search any AI agent platform…"
+                  class="w-full rounded-[var(--radius-pill)] border-0 bg-transparent py-2.5 pl-10 pr-3 text-sm text-ink placeholder:text-ink-soft focus:outline-none focus:ring-0"
+                  autocomplete="off"
+                />
+              </div>
+              <button type="submit" class="btn-primary shrink-0 px-5 py-2.5">
+                Search
+              </button>
+            </div>
+          </form>
+
+          <!-- Stats -->
+          <dl
+            class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6"
+          >
+            {
+              stats.map((s) => (
+                <div>
+                  <dt class="sr-only">{s.label}</dt>
+                  <dd>
+                    <p class="text-2xl font-bold tracking-tight text-ink sm:text-[1.65rem]">
+                      {s.value}
+                    </p>
+                    <p class="mt-0.5 text-xs font-medium text-ink-soft sm:text-sm">
+                      {s.label}
+                    </p>
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
         </div>
 
-        <ul
-          class="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-sm text-ink-soft"
+        <!-- Soft illustration (CSS / SVG abstract “agent” visual) -->
+        <div
+          class="relative mx-auto w-full max-w-md lg:col-span-6 lg:max-w-none xl:col-span-6"
+          aria-hidden="true"
         >
-          <li>
-            <a
-              href="/methodology/"
-              class="inline-flex items-center gap-2 transition-colors hover:text-ink"
+          <div
+            class="relative mx-auto aspect-square max-w-[26rem] lg:ml-auto lg:max-w-none"
+          >
+            <!-- Glow orb -->
+            <div
+              class="absolute inset-[8%] rounded-full bg-gradient-to-br from-accent-soft via-violet-100/80 to-transparent blur-2xl"
             >
-              <span
-                class="flex h-4 w-4 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
-                aria-hidden="true">✓</span
-              >
-              Transparent methodology
-            </a>
-          </li>
-          <li>
-            <a
-              href="/about/"
-              class="inline-flex items-center gap-2 transition-colors hover:text-ink"
+            </div>
+            <!-- Floating card -->
+            <div
+              class="absolute right-[4%] top-[12%] z-10 w-[58%] rounded-[1.25rem] border border-white/80 bg-surface/90 p-4 shadow-(--shadow-lg) backdrop-blur-sm"
             >
-              <span
-                class="flex h-4 w-4 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
-                aria-hidden="true">✓</span
-              >
-              About Zoetic AI
-            </a>
-          </li>
-          <li>
-            <a
-              href="/guides/"
-              class="inline-flex items-center gap-2 transition-colors hover:text-ink"
+              <div class="flex items-center gap-3">
+                <span
+                  class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-sm font-bold text-accent"
+                  >AI</span
+                >
+                <div>
+                  <p class="text-sm font-semibold text-ink">Agent shortlist</p>
+                  <p class="text-xs text-ink-soft">Scored · compared · ready</p>
+                </div>
+              </div>
+              <div class="mt-3 space-y-2">
+                <div class="h-2 rounded-full bg-surface-deep">
+                  <div class="h-2 w-[78%] rounded-full bg-accent"></div>
+                </div>
+                <div class="h-2 rounded-full bg-surface-deep">
+                  <div class="h-2 w-[62%] rounded-full bg-accent/70"></div>
+                </div>
+                <div class="h-2 rounded-full bg-surface-deep">
+                  <div class="h-2 w-[88%] rounded-full bg-accent/50"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Robot-like abstract figure -->
+            <div
+              class="absolute bottom-[6%] left-[8%] right-[18%] top-[28%] flex items-end justify-center"
             >
-              <span
-                class="flex h-4 w-4 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
-                aria-hidden="true">✓</span
+              <svg
+                viewBox="0 0 280 300"
+                class="h-full w-full drop-shadow-xl"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
               >
-              Practical guides
-            </a>
-          </li>
-        </ul>
+                <defs>
+                  <linearGradient id="botBody" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#e0e7ff"></stop>
+                    <stop offset="100%" stop-color="#c7d2fe"></stop>
+                  </linearGradient>
+                  <linearGradient id="botFace" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#f8fafc"></stop>
+                    <stop offset="100%" stop-color="#e2e8f0"></stop>
+                  </linearGradient>
+                </defs>
+                <!-- antenna -->
+                <circle cx="140" cy="36" r="10" fill="#6366f1"></circle>
+                <rect
+                  x="134"
+                  y="44"
+                  width="12"
+                  height="28"
+                  rx="6"
+                  fill="#a5b4fc"></rect>
+                <!-- head -->
+                <rect
+                  x="70"
+                  y="68"
+                  width="140"
+                  height="100"
+                  rx="36"
+                  fill="url(#botFace)"
+                  stroke="#c7d2fe"
+                  stroke-width="3"></rect>
+                <!-- eyes -->
+                <ellipse cx="112" cy="118" rx="16" ry="18" fill="#6366f1"
+                ></ellipse>
+                <ellipse cx="168" cy="118" rx="16" ry="18" fill="#6366f1"
+                ></ellipse>
+                <circle cx="116" cy="114" r="5" fill="white" opacity="0.9"
+                ></circle>
+                <circle cx="172" cy="114" r="5" fill="white" opacity="0.9"
+                ></circle>
+                <!-- smile -->
+                <path
+                  d="M118 148c8 12 36 12 44 0"
+                  stroke="#94a3b8"
+                  stroke-width="4"
+                  stroke-linecap="round"></path>
+                <!-- body -->
+                <rect
+                  x="78"
+                  y="178"
+                  width="124"
+                  height="90"
+                  rx="32"
+                  fill="url(#botBody)"
+                  stroke="#a5b4fc"
+                  stroke-width="3"></rect>
+                <!-- chest panel -->
+                <rect
+                  x="108"
+                  y="200"
+                  width="64"
+                  height="40"
+                  rx="12"
+                  fill="#6366f1"
+                  opacity="0.85"></rect>
+                <rect
+                  x="118"
+                  y="210"
+                  width="20"
+                  height="6"
+                  rx="3"
+                  fill="white"
+                  opacity="0.7"></rect>
+                <rect
+                  x="118"
+                  y="222"
+                  width="32"
+                  height="6"
+                  rx="3"
+                  fill="white"
+                  opacity="0.45"></rect>
+                <!-- arms -->
+                <rect
+                  x="40"
+                  y="190"
+                  width="36"
+                  height="56"
+                  rx="18"
+                  fill="#c7d2fe"
+                  stroke="#a5b4fc"
+                  stroke-width="2"></rect>
+                <rect
+                  x="204"
+                  y="190"
+                  width="36"
+                  height="56"
+                  rx="18"
+                  fill="#c7d2fe"
+                  stroke="#a5b4fc"
+                  stroke-width="2"></rect>
+              </svg>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 2. Featured Tools -->
+  <!-- ═══════════════════════════════════════════════════════════
+       2. TRUST / SOCIAL PROOF
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="border-b border-border bg-surface">
+    <div class="container-site py-10 sm:py-12">
+      <p
+        class="text-center text-xs font-semibold uppercase tracking-[0.16em] text-ink-soft"
+      >
+        Built for buyers who compare before they commit
+      </p>
+      <ul
+        class="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 sm:gap-x-12"
+      >
+        {
+          trustLogos.map((name) => (
+            <li class="text-sm font-semibold tracking-tight text-ink-soft/90 sm:text-base">
+              {name}
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-5 text-center text-sm text-ink-muted">
+        Independent scores ·{" "}
+        <a
+          href="/methodology/"
+          class="font-semibold text-accent hover:text-accent-hover"
+          >Transparent methodology</a
+        >
+        · Practical guides
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       3. EXPLORE CATEGORIES
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="border-b border-border bg-surface-muted">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="pill-accent">Browse by lane</span>
+        <h2 class="text-section-title mt-4">Explore top AI agent categories</h2>
+        <p class="mt-3 text-base text-ink-muted">
+          Start with how you buy and build — enterprise suites, frameworks,
+          no-code, coding agents, and more.
+        </p>
+      </div>
+
+      {
+        categoryCards.length > 0 ? (
+          <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {categoryCards.map(({ meta, count }) => {
+              const visual =
+                categoryVisual[meta.slug] ?? {
+                  bg: "bg-accent-soft",
+                  fg: "text-accent",
+                  symbol: meta.icon,
+                };
+              return (
+                <a
+                  href={categoryHref(meta)}
+                  class="card-interactive group flex items-start gap-4 p-5 sm:p-6"
+                >
+                  <span
+                    class:list={[
+                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold",
+                      visual.bg,
+                      visual.fg,
+                    ]}
+                    aria-hidden="true"
+                  >
+                    {visual.symbol}
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="flex items-start justify-between gap-2">
+                      <span class="text-base font-semibold tracking-tight text-ink transition-colors group-hover:text-accent">
+                        {meta.name}
+                      </span>
+                      <span class="shrink-0 text-xs font-semibold tabular-nums text-ink-soft">
+                        {count}
+                      </span>
+                    </span>
+                    <span class="mt-1 block text-sm leading-relaxed text-ink-muted">
+                      {meta.description}
+                    </span>
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+        ) : null
+      }
+
+      <div class="mt-10 flex justify-center">
+        <a href="/categories/" class="btn-secondary">
+          Explore all categories →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       4. TOP / FEATURED PLATFORMS
+       ═══════════════════════════════════════════════════════════ -->
   <section class="border-b border-border bg-surface">
     <div class="container-site section-y">
-      <SectionHeader
-        eyebrow="Featured"
-        title="Featured platforms"
-        description="A curated mix of high-signal tools across enterprise, frameworks, coding, and no-code."
-        href="/platforms/"
-        linkLabel="View all platforms"
-      />
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="pill-accent">Handpicked</span>
+        <h2 class="text-section-title mt-4">Top AI agent platforms</h2>
+        <p class="mt-3 text-base text-ink-muted">
+          High-signal listings across enterprise, frameworks, coding, and
+          no-code — scored for real buying decisions.
+        </p>
+      </div>
 
       {
         featured.length > 0 ? (
-          <div class="-mx-4 flex gap-4 overflow-x-auto px-4 pb-3 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none lg:grid-cols-3 lg:gap-6">
+          <div class="mt-12 -mx-4 flex gap-4 overflow-x-auto px-4 pb-3 snap-x snap-mandatory sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 sm:snap-none lg:grid-cols-3 xl:grid-cols-5 lg:gap-5">
             {featured.map((tool) => (
-              <div class="w-[min(100%,19rem)] shrink-0 snap-start sm:w-auto sm:min-w-0 sm:shrink">
-                <ToolCard tool={tool} featured maxTags={4} />
+              <div class="w-[min(100%,17.5rem)] shrink-0 snap-start sm:w-auto sm:min-w-0">
+                <ToolCard tool={tool} featured maxTags={3} />
               </div>
             ))}
           </div>
         ) : (
-          <div class="empty-panel">
+          <div class="empty-panel mt-12">
             <p class="text-base font-semibold text-ink">
               Featured listings coming soon
-            </p>
-            <p class="mt-2 max-w-sm text-sm text-ink-muted">
-              We are curating standout platforms for this strip.
             </p>
             <a href="/platforms/" class="btn-primary mt-6">
               Browse all platforms
@@ -210,297 +453,141 @@ const whyItems = [
           </div>
         )
       }
-    </div>
-  </section>
 
-  <!-- 3. Browse by Category -->
-  <section class="border-b border-border bg-surface-muted">
-    <div class="container-site section-y">
-      <SectionHeader
-        eyebrow="Categories"
-        title="Browse by category"
-        description="Start with how you buy and build — then drill into scored listings."
-        href="/categories/"
-        linkLabel="All categories"
-      />
-
-      {
-        categoryCards.length > 0 ? (
-          <div class="grid auto-rows-fr gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
-            {categoryCards.map(({ meta, count }) => (
-              <a
-                href={categoryHref(meta)}
-                class="card-interactive group flex h-full min-h-[12rem] flex-col p-6 sm:p-7"
-              >
-                <div class="flex items-start justify-between gap-3">
-                  <span
-                    class="flex h-11 w-11 items-center justify-center rounded-[var(--radius-lg)] bg-accent-soft text-sm font-bold text-accent ring-1 ring-accent/10"
-                    aria-hidden="true"
-                  >
-                    {meta.icon}
-                  </span>
-                  <span class="rounded-full bg-surface px-2.5 py-1 text-[11px] font-semibold tabular-nums text-ink-soft ring-1 ring-border">
-                    {count} {count === 1 ? "platform" : "platforms"}
-                  </span>
-                </div>
-
-                <h3 class="mt-5 text-lg font-semibold tracking-tight text-ink transition-colors duration-150 group-hover:text-accent">
-                  {meta.name}
-                </h3>
-                <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
-                  {meta.description}
-                </p>
-
-                <span class="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
-                  Explore
-                  <span
-                    class="transition-transform duration-200 ease-[var(--ease-out-soft)] group-hover:translate-x-0.5"
-                    aria-hidden="true"
-                  >
-                    →
-                  </span>
-                </span>
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div class="empty-panel">
-            <p class="text-base font-semibold text-ink">Categories loading</p>
-            <p class="mt-2 max-w-sm text-sm text-ink-muted">
-              Category navigation will appear here once listings are available.
-            </p>
-          </div>
-        )
-      }
-    </div>
-  </section>
-
-  <!-- 4. Why this directory -->
-  <section class="border-b border-border bg-surface">
-    <div class="container-site section-y">
-      <div class="grid items-start gap-12 lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-5 lg:sticky lg:top-24">
-          <p class="eyebrow">Why this directory</p>
-          <h2 class="text-section-title mt-2.5">
-            Built for decisions, not hype
-          </h2>
-          <p class="mt-4 text-base leading-relaxed text-ink-muted">
-            The agent market moves fast. We organize platforms by how teams
-            actually buy and ship — with comparable scores, clear features, and
-            honest positioning — so you spend less time on vendor theater.
-          </p>
-          <p class="mt-5 text-sm text-ink-muted">
-            Read{" "}
-            <a
-              href="/about/"
-              class="font-semibold text-accent hover:text-accent-hover"
-              >about Zoetic AI</a
-            >{" "}
-            or our full{" "}
-            <a
-              href="/methodology/"
-              class="font-semibold text-accent hover:text-accent-hover"
-              >scoring methodology</a
-            >.
-          </p>
-        </div>
-
-        <ul class="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:col-span-7">
-          {
-            whyItems.map((item, i) => (
-              <li class="card-interactive relative flex flex-col p-5 sm:p-6">
-                <span
-                  class="inline-flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] bg-surface-muted text-[11px] font-bold tabular-nums text-ink-soft ring-1 ring-border"
-                  aria-hidden="true"
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3 class="mt-4 text-base font-semibold tracking-tight text-ink">
-                  {item.title}
-                </h3>
-                <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
-                  {item.body}
-                </p>
-                <a
-                  href={item.href}
-                  class="relative z-10 mt-4 text-sm font-semibold text-accent hover:text-accent-hover"
-                >
-                  {item.linkLabel} →
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+      <div class="mt-10 flex justify-center">
+        <a href="/platforms/" class="btn-secondary">
+          View all platforms →
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- 5. Latest Guides -->
+  <!-- ═══════════════════════════════════════════════════════════
+       5. LATEST GUIDES / COMPARISONS
+       ═══════════════════════════════════════════════════════════ -->
   <section class="border-b border-border bg-surface-muted">
     <div class="container-site section-y">
       <SectionHeader
-        eyebrow="Guides"
-        title="Latest guides"
-        description="Start with the platforms pillar, then open newest roundups, TCO models, and head-to-head comparisons."
+        eyebrow="Guides & comparisons"
+        title="Learn before you buy"
+        description="Pillar guides, head-to-heads, and TCO playbooks for AI agent platforms."
         href="/guides/"
         linkLabel="All guides"
       />
 
-      {
-        platformsPillarPreview && (
-          <div class="mb-8 rounded-2xl border border-accent/20 bg-surface p-6 shadow-(--shadow-xs) sm:p-8">
-            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-              <div class="max-w-2xl">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="pill-accent">Start here</span>
-                  <span class="text-[11px] font-medium text-ink-soft">
-                    Pillar hub · {platformsPillarPreview.readTime} read
-                  </span>
-                </div>
-                <h3 class="mt-3 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-                  <a
-                    href={guideHref(platformsPillar.slug)}
-                    class="hover:text-accent"
-                  >
-                    {platformsPillarPreview.title}
-                  </a>
-                </h3>
-                <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
-                  {platformsPillar.description} Also see the{" "}
-                  <a
-                    href={guideHref(codingHub.slug)}
-                    class="font-semibold text-accent hover:text-accent-hover"
-                  >
-                    Best AI Coding Agents
-                  </a>{" "}
-                  hub for software-delivery tools.
-                </p>
-              </div>
-              <a
-                href={guideHref(platformsPillar.slug)}
-                class="btn-primary shrink-0 self-start lg:self-center"
-              >
-                Open platforms guide →
-              </a>
-            </div>
-          </div>
-        )
-      }
+      <!-- Pillar highlight -->
+      <a
+        href={guideHref(platformsPillar.slug)}
+        class="card-interactive group mb-6 flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-7"
+      >
+        <div class="max-w-2xl">
+          <span class="pill-accent">Start here · Pillar hub</span>
+          <h3
+            class="mt-3 text-xl font-semibold tracking-tight text-ink transition-colors group-hover:text-accent sm:text-2xl"
+          >
+            {platformsPillar.title}
+          </h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+            {platformsPillar.description}
+          </p>
+        </div>
+        <span
+          class="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-accent"
+        >
+          Open guide
+          <span aria-hidden="true">→</span>
+        </span>
+      </a>
 
       {
-        guideList.length > 0 ? (
-          <div class="grid auto-rows-fr gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6">
-            {guideList.map((guide) => (
-              <article class="card-interactive group relative flex h-full min-h-[13.5rem] flex-col p-6 sm:p-7">
-                <div class="flex flex-wrap items-center gap-2 text-[11px] font-medium text-ink-soft">
-                  <span class="pill-accent normal-case tracking-normal">
-                    {guide.category}
+        guideList.length > 0 && (
+          <div class="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+            {guideList
+              .filter((g) => g.slug !== platformsPillar.slug)
+              .slice(0, 6)
+              .map((guide) => (
+                <article class="card-interactive group relative flex h-full min-h-[12.5rem] flex-col p-6">
+                  <div class="flex flex-wrap items-center gap-2 text-[11px] font-medium text-ink-soft">
+                    <span class="pill-accent normal-case tracking-normal">
+                      {guide.category}
+                    </span>
+                    <span aria-hidden="true">·</span>
+                    <time datetime={guide.date}>{guide.readTime} read</time>
+                  </div>
+                  <h3 class="mt-3 text-base font-semibold leading-snug tracking-tight text-ink transition-colors group-hover:text-accent sm:text-lg">
+                    <a
+                      href={guideHref(guide.slug)}
+                      class="after:absolute after:inset-0 focus-visible:outline-none"
+                    >
+                      {guide.title}
+                    </a>
+                  </h3>
+                  <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted line-clamp-3">
+                    {guide.excerpt}
+                  </p>
+                  <span class="mt-4 text-sm font-semibold text-accent">
+                    Read guide →
                   </span>
-                  <span aria-hidden="true" class="text-border-strong">
-                    ·
-                  </span>
-                  <time datetime={guide.date} class="tracking-normal">
-                    {guide.readTime} read
-                  </time>
-                </div>
-                <h3 class="mt-4 text-lg font-semibold leading-snug tracking-tight text-ink transition-colors group-hover:text-accent">
-                  <a
-                    href={guideHref(guide.slug)}
-                    class="after:absolute after:inset-0 focus-visible:outline-none"
-                  >
-                    {guide.title}
-                  </a>
-                </h3>
-                <p class="mt-2.5 flex-1 text-sm leading-relaxed text-ink-muted">
-                  {guide.excerpt}
-                </p>
-                <span class="mt-5 text-sm font-semibold text-accent">
-                  Read guide
-                  <span
-                    class="inline-block transition-transform duration-200 ease-[var(--ease-out-soft)] group-hover:translate-x-0.5"
-                    aria-hidden="true"
-                  >
-                    {" "}
-                    →
-                  </span>
-                </span>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div class="empty-panel">
-            <p class="text-base font-semibold text-ink">Guides on the way</p>
-            <p class="mt-2 max-w-sm text-sm text-ink-muted">
-              Evaluation playbooks and architecture notes will land here soon.
-            </p>
-          </div>
-        )
-      }
-
-      {
-        featuredComparisons.length > 0 && (
-          <div class="mt-10 border-t border-border pt-8">
-            <p class="text-sm font-semibold text-ink">
-              Popular comparisons
-            </p>
-            <p class="mt-1 max-w-2xl text-sm text-ink-muted">
-              Head-to-head picks for no-code agents, workflow automation, coding
-              tools, and enterprise suites.
-            </p>
-            <ul class="mt-4 flex flex-wrap gap-2">
-              {featuredComparisons.map((item) => (
-                <li>
-                  <a
-                    href={item.href}
-                    class="inline-flex items-center rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm font-medium text-ink-muted transition-colors hover:border-accent/30 hover:bg-accent-soft hover:text-accent"
-                  >
-                    {item.label}
-                  </a>
-                </li>
+                </article>
               ))}
-            </ul>
           </div>
         )
       }
     </div>
   </section>
 
-  <!-- 6. Final CTA banner -->
-  <section class="section-cta">
-    <div
-      class="section-cta-glow"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="container-site relative section-y">
-      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/80">
-          Implementation
-        </p>
-        <h2
-          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
-        >
-          Need production AI agents built?
-        </h2>
-        <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
-          Beyond the directory — partner with a team that designs, ships, and
-          operates agent systems for real products and enterprise workflows.
-        </p>
+  <!-- ═══════════════════════════════════════════════════════════
+       6. STRONG CTA
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="bg-surface">
+    <div class="container-site py-14 sm:py-16 lg:py-20">
+      <div
+        class="band-brand relative overflow-hidden rounded-[var(--radius-xl)] px-6 py-10 text-accent-fg shadow-(--shadow-lg) sm:px-10 sm:py-12 lg:px-14"
+      >
         <div
-          class="mt-10 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+          class="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-white/15 blur-3xl"
+          aria-hidden="true"
         >
-          <a
-            href={site.cta.href}
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-7 py-3.5 text-[0.9375rem] font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] duration-200 hover:shadow-(--shadow-lg) active:translate-y-px"
-          >
-            Talk to us
-          </a>
-          <a
-            href="/contact/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-7 py-3.5 text-[0.9375rem] font-semibold text-white transition-colors duration-150 hover:border-white/55 hover:bg-white/15"
-          >
-            Contact us
-          </a>
+        </div>
+        <div
+          class="pointer-events-none absolute -bottom-20 left-1/4 h-44 w-44 rounded-full bg-white/10 blur-3xl"
+          aria-hidden="true"
+        >
+        </div>
+
+        <div
+          class="relative flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between"
+        >
+          <div class="max-w-xl">
+            <p
+              class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/75"
+            >
+              Be part of the agent stack
+            </p>
+            <h2
+              class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-snug"
+            >
+              Explore every platform — or get help shipping agents
+            </h2>
+            <p class="mt-3 text-sm leading-relaxed text-white/85 sm:text-base">
+              Browse scored listings across enterprise, frameworks, no-code, and
+              coding agents. Need an implementation partner? We’re here.
+            </p>
+          </div>
+          <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <a
+              href="/platforms/"
+              class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-6 py-3 text-sm font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] hover:shadow-(--shadow-lg) active:translate-y-px"
+            >
+              Explore all platforms
+            </a>
+            <a
+              href={site.cta.href}
+              class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/60 hover:bg-white/15"
+            >
+              Talk about implementation
+            </a>
+          </div>
         </div>
       </div>
     </div>

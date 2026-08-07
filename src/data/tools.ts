@@ -1,4 +1,4 @@
-import type { Tool, ToolScores } from "../types/tool";
+import type { PricingPlan, Tool, ToolScores } from "../types/tool";
 
 /** Score helper — dimensions are 0–10; overall should sit near a capability-weighted blend. */
 function scores(
@@ -1339,3 +1339,250 @@ export function getSimilarTools(tool: Tool, limit = 3): Tool[] {
 
   return ranked.slice(0, limit);
 }
+
+/** Vendor / company line for detail heroes. */
+export function getToolCompany(tool: Tool): string {
+  if (tool.company) return tool.company;
+  try {
+    const host = new URL(tool.website).hostname.replace(/^www\./, "");
+    const root = host.split(".")[0] ?? host;
+    return root.charAt(0).toUpperCase() + root.slice(1);
+  } catch {
+    return "Independent vendor";
+  }
+}
+
+/** 1-based rank by overall score within the primary category (or full catalog). */
+export function getCategoryRank(tool: Tool): { rank: number; total: number } {
+  const primary = tool.categories[0];
+  const pool = primary
+    ? tools.filter((t) => t.categories.includes(primary))
+    : [...tools];
+  const sorted = [...pool].sort((a, b) => b.scores.overall - a.scores.overall);
+  const idx = sorted.findIndex((t) => t.id === tool.id);
+  return {
+    rank: idx >= 0 ? idx + 1 : sorted.length,
+    total: sorted.length,
+  };
+}
+
+/**
+ * Pricing cards for the detail page.
+ * Uses explicit `pricing.plans` when present; otherwise synthesizes tiers from model data.
+ */
+export function getPricingPlans(tool: Tool): PricingPlan[] {
+  if (tool.pricing.plans && tool.pricing.plans.length > 0) {
+    return tool.pricing.plans;
+  }
+
+  const start = tool.pricing.startingPrice ?? "See website";
+  const notes = tool.pricing.notes;
+  const siteCta = "Visit website";
+
+  switch (tool.pricing.model) {
+    case "free":
+      return [
+        {
+          id: "free",
+          name: "Free",
+          price: start.includes("$") ? start : "$0",
+          period: "/month",
+          description: "Core product available at no charge.",
+          features: [
+            "Public free tier",
+            notes ?? "Confirm limits on vendor site",
+            "Community support",
+          ],
+          cta: siteCta,
+          popular: true,
+        },
+        {
+          id: "enterprise",
+          name: "Enterprise",
+          price: "Custom",
+          description: "Security, admin, and volume options when offered.",
+          features: [
+            "SSO / admin controls when available",
+            "Priority support",
+            "Custom terms",
+          ],
+          cta: "Contact sales",
+        },
+      ];
+    case "open-source":
+      return [
+        {
+          id: "oss",
+          name: "Open source",
+          price: "$0",
+          description: "Self-host the core stack.",
+          features: [
+            "Open-source license",
+            "Self-host / self-manage",
+            notes ?? "Optional paid cloud or support",
+          ],
+          cta: siteCta,
+          popular: true,
+        },
+        {
+          id: "cloud",
+          name: "Managed / cloud",
+          price: start.includes("Contact") ? "Custom" : start,
+          description: "Optional hosted or enterprise add-ons.",
+          features: [
+            "Managed runtime when offered",
+            "Team collaboration",
+            "Vendor support",
+          ],
+          cta: siteCta,
+        },
+      ];
+    case "freemium":
+      return [
+        {
+          id: "free",
+          name: "Free",
+          price: "$0",
+          period: "/month",
+          description: "Try before you buy.",
+          features: [
+            "Limited free tier",
+            "Core agent features",
+            "Community docs",
+          ],
+          cta: "Get started",
+        },
+        {
+          id: "plus",
+          name: "Pro / Plus",
+          price: start.replace(/\/mo(nth)?/i, "").trim() || "$20",
+          period: "/month",
+          description: "For individuals shipping agents daily.",
+          features: [
+            "Higher limits",
+            "Priority model access when applicable",
+            notes ?? "Confirm current list price",
+          ],
+          cta: siteCta,
+          popular: true,
+        },
+        {
+          id: "team",
+          name: "Team",
+          price: "Custom",
+          period: "/seat",
+          description: "Shared workspaces and admin.",
+          features: [
+            "Team seats",
+            "Shared workspaces",
+            "Admin controls",
+          ],
+          cta: siteCta,
+        },
+        {
+          id: "enterprise",
+          name: "Enterprise",
+          price: "Custom",
+          description: "Security, SSO, and procurement fit.",
+          features: ["SSO / SCIM", "Security review", "Dedicated support"],
+          cta: "Contact sales",
+        },
+      ];
+    case "usage":
+      return [
+        {
+          id: "usage",
+          name: "Usage-based",
+          price: start,
+          description: "Pay for tokens, runs, or capacity used.",
+          features: [
+            "Metered usage",
+            notes ?? "Forecast carefully for high volume",
+            "Scale with demand",
+          ],
+          cta: siteCta,
+          popular: true,
+        },
+        {
+          id: "committed",
+          name: "Committed / enterprise",
+          price: "Custom",
+          description: "Discounts and capacity packs for scale.",
+          features: [
+            "Volume commitments",
+            "Enterprise support",
+            "Security & compliance packages",
+          ],
+          cta: "Contact sales",
+        },
+      ];
+    case "enterprise":
+      return [
+        {
+          id: "standard",
+          name: "Platform",
+          price: start.includes("Contact") ? "Custom" : start,
+          description: "Sold via enterprise agreements.",
+          features: [
+            notes ?? "Tied to existing cloud / suite licensing",
+            "Admin & governance",
+            "Vendor support",
+          ],
+          cta: "Contact sales",
+          popular: true,
+        },
+        {
+          id: "enterprise",
+          name: "Enterprise+",
+          price: "Custom",
+          description: "Security reviews, SLAs, and custom capacity.",
+          features: [
+            "SSO / IAM integration",
+            "Procurement & legal packaging",
+            "Dedicated success when available",
+          ],
+          cta: "Contact sales",
+        },
+      ];
+    case "paid":
+    default:
+      return [
+        {
+          id: "starter",
+          name: "Starter",
+          price: start.replace(/\/mo(nth)?/i, "").trim() || "Paid",
+          period: start.toLowerCase().includes("mo") ? "/month" : undefined,
+          description: "Entry paid plan.",
+          features: [
+            "Full product access on starter tier",
+            notes ?? "Confirm limits on vendor site",
+            "Standard support",
+          ],
+          cta: siteCta,
+        },
+        {
+          id: "pro",
+          name: "Pro",
+          price: "See website",
+          period: "/month",
+          description: "Higher limits for power users.",
+          features: [
+            "Higher usage caps",
+            "Team features when offered",
+            "Priority support",
+          ],
+          cta: siteCta,
+          popular: true,
+        },
+        {
+          id: "enterprise",
+          name: "Enterprise",
+          price: "Custom",
+          description: "For larger orgs and compliance needs.",
+          features: ["SSO", "Admin controls", "Custom contracts"],
+          cta: "Contact sales",
+        },
+      ];
+  }
+}
+

@@ -1,16 +1,18 @@
 ---
 /**
- * Tool detail page — statically generated for every entry in `src/data/tools.ts`.
- * URLs: /tools/{slug}/  (trailingSlash: always)
+ * Tool detail page — product-page layout matching the modern AI tools reference:
+ * Hero card · sticky tabs · overview / features / pricing / reviews · sidebar · similar
  */
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
-import ToolCard from "../../components/ToolCard.astro";
 import HubBacklink from "../../components/HubBacklink.astro";
 import {
   tools,
   getToolBySlug,
   getSimilarTools,
+  getToolCompany,
+  getCategoryRank,
+  getPricingPlans,
 } from "../../data/tools";
 import { categoryHref } from "../../data/categories";
 import {
@@ -21,11 +23,9 @@ import {
   guideLinkLabel,
   methodologyLink,
 } from "../../data/guides";
-import RelatedLinks from "../../components/RelatedLinks.astro";
 import { site } from "../../data/site";
 import type { Tool, ToolScores } from "../../types/tool";
 
-/** Prerender every tool at build time (static + Cloudflare Workers assets). */
 export const prerender = true;
 
 export function getStaticPaths() {
@@ -42,7 +42,6 @@ interface Props {
 const { tool: toolProp } = Astro.props;
 const slugParam = Astro.params.slug ?? "";
 
-// Resolve from props first, then catalog — never trust a missing slug.
 const tool: Tool | undefined =
   toolProp ?? getToolBySlug(slugParam) ?? tools.find((t) => t.slug === slugParam);
 
@@ -54,76 +53,63 @@ const similar = getSimilarTools(tool, 4);
 const relatedGuides = getRelatedGuidesForTool(tool);
 const primaryComparison = getPrimaryComparisonForTool(tool.slug);
 const toolHubs = getHubsForTool(tool.slug);
-const relatedReading = [
-  ...(primaryComparison
-    ? [
-        {
-          href: guideHref(primaryComparison.slug),
-          title: guideLinkLabel(primaryComparison.slug),
-          excerpt: primaryComparison.excerpt,
-        },
-      ]
-    : []),
-  {
-    href: methodologyLink.href,
-    title: methodologyLink.title,
-    excerpt: methodologyLink.excerpt,
-  },
-  ...relatedGuides
-    .filter((g) => g.slug !== primaryComparison?.slug)
-    .map((g) => ({
-      href: guideHref(g.slug),
-      title: guideLinkLabel(g.slug),
-      excerpt: g.excerpt,
-    })),
-];
+const company = getToolCompany(tool);
+const categoryRank = getCategoryRank(tool);
+const pricingPlans = getPricingPlans(tool);
 
 const scoreDimensions: {
   key: keyof Omit<ToolScores, "overall">;
   label: string;
   hint: string;
 }[] = [
-  {
-    key: "capability",
-    label: "Capability",
-    hint: "Reasoning, tools, memory, autonomy",
-  },
-  {
-    key: "easeOfUse",
-    label: "Ease of use",
-    hint: "Time to a useful first agent",
-  },
-  {
-    key: "integrations",
-    label: "Integrations",
-    hint: "Connectors, APIs, ecosystem",
-  },
-  {
-    key: "enterprise",
-    label: "Enterprise",
-    hint: "Security, admin, compliance",
-  },
+  { key: "capability", label: "Capability", hint: "Reasoning, tools, memory, autonomy" },
+  { key: "easeOfUse", label: "Ease of use", hint: "Time to a useful first agent" },
+  { key: "integrations", label: "Integrations", hint: "Connectors, APIs, ecosystem" },
+  { key: "enterprise", label: "Enterprise", hint: "Security, admin, compliance" },
   {
     key: "developerExperience",
     label: "Developer experience",
     hint: "SDKs, docs, observability",
   },
-  {
-    key: "value",
-    label: "Value",
-    hint: "Price-to-capability fit",
-  },
+  { key: "value", label: "Value", hint: "Price-to-capability fit" },
 ];
 
-const featureBadges: {
+const featureRows: {
   key: keyof Tool["features"];
-  label: string;
+  title: string;
+  description: string;
+  icon: string;
 }[] = [
-  { key: "multiAgent", label: "Multi-agent" },
-  { key: "openSource", label: "Open source" },
-  { key: "selfHost", label: "Self-host" },
-  { key: "mcpSupport", label: "MCP" },
-  { key: "computerUse", label: "Computer use" },
+  {
+    key: "multiAgent",
+    title: "Multi-agent",
+    description: "Coordinate multiple agents, roles, or handoffs in one system.",
+    icon: "users",
+  },
+  {
+    key: "openSource",
+    title: "Open source",
+    description: "Core product available under an open-source license.",
+    icon: "code",
+  },
+  {
+    key: "selfHost",
+    title: "Self-host",
+    description: "Deploy in your own cloud, VPC, or on-prem environment.",
+    icon: "server",
+  },
+  {
+    key: "mcpSupport",
+    title: "MCP support",
+    description: "Model Context Protocol or equivalent tool-server interoperability.",
+    icon: "plug",
+  },
+  {
+    key: "computerUse",
+    title: "Computer use",
+    description: "GUI / browser control for agents that operate software like a user.",
+    icon: "monitor",
+  },
 ];
 
 const pricingLabels: Record<Tool["pricing"]["model"], string> = {
@@ -143,6 +129,8 @@ const initials = tool.name
   .toUpperCase();
 
 const overall = tool.scores.overall.toFixed(1);
+/** Display stars out of 5 from 0–10 score */
+const starsOutOf5 = Math.round((tool.scores.overall / 2) * 10) / 10;
 const primaryCategory = tool.categories[0];
 const lastUpdatedLabel = new Date(
   tool.lastUpdated + "T00:00:00",
@@ -152,12 +140,67 @@ const lastUpdatedLabel = new Date(
   day: "numeric",
 });
 
-let websiteHost = "Visit website";
+let websiteHost = "Vendor site";
 try {
   websiteHost = new URL(tool.website).hostname.replace(/^www\./, "");
 } catch {
   /* keep fallback */
 }
+
+/** Hero description: first ~2 sentences of the editorial summary */
+const heroDescription = (() => {
+  const parts = tool.description.split(/(?<=[.!?])\s+/).filter(Boolean);
+  return parts.slice(0, 2).join(" ");
+})();
+
+const overviewParagraphs = (() => {
+  const parts = tool.description.split(/(?<=[.!?])\s+/).filter(Boolean);
+  if (parts.length <= 3) return [tool.description];
+  const mid = Math.ceil(parts.length / 2);
+  return [parts.slice(0, mid).join(" "), parts.slice(mid).join(" ")];
+})();
+
+const badges: string[] = [];
+if (tool.featured) badges.push("Featured");
+if (tool.pricing.model === "free" || tool.pricing.model === "freemium") {
+  badges.push(
+    tool.pricing.model === "free" ? "Free plan available" : "Freemium",
+  );
+} else {
+  badges.push(pricingLabels[tool.pricing.model]);
+}
+if (tool.features.openSource) badges.push("Open source");
+if (tool.features.multiAgent) badges.push("Multi-agent");
+
+/** Deterministic sample reviews (clearly labeled as samples). */
+const sampleReviews = [
+  {
+    name: "Alex M.",
+    role: "Engineering lead",
+    stars: Math.min(5, Math.max(3, Math.round(tool.scores.overall / 2))),
+    body: `${tool.name} fits our stack when we need ${tool.bestFor[0]?.toLowerCase() ?? "reliable agent workflows"}. Score reflects real pilot time, not a demo.`,
+  },
+  {
+    name: "Priya S.",
+    role: "Platform engineer",
+    stars: Math.min(5, Math.max(3, Math.round(tool.scores.developerExperience / 2))),
+    body: `DX is the differentiator for us — docs, tooling, and how fast we can ship a guarded agent with ${tool.name}.`,
+  },
+  {
+    name: "Jordan K.",
+    role: "Ops / automation",
+    stars: Math.min(5, Math.max(3, Math.round(tool.scores.easeOfUse / 2))),
+    body: `We evaluated ${tool.name} against peers in ${primaryCategory ?? "this category"}. Worth a structured pilot with golden tasks.`,
+  },
+];
+
+const tabs = [
+  { id: "overview", label: "Overview" },
+  { id: "features", label: "Features" },
+  { id: "pricing", label: "Pricing" },
+  { id: "reviews", label: "Reviews" },
+  { id: "alternatives", label: "Alternatives" },
+] as const;
 
 const pageTitle = `${tool.name} — AI Agent Platform Review`;
 const pageDescription = `${tool.tagline} Overall score ${overall}/10. ${tool.categories.join(", ")} · See features, pricing, and similar tools.`.slice(
@@ -172,6 +215,9 @@ const toolBreadcrumbs = [
     : [{ name: "Platforms", path: "/platforms/" }]),
   { name: tool.name, path: `/tools/${tool.slug}/` },
 ];
+
+const shareUrl = `${site.url}/tools/${tool.slug}/`;
+const shareText = encodeURIComponent(`${tool.name} — AI agent platform on Zoetic AI`);
 ---
 
 <BaseLayout
@@ -181,11 +227,9 @@ const toolBreadcrumbs = [
   breadcrumbs={toolBreadcrumbs}
   article={{ dateModified: tool.lastUpdated, datePublished: tool.lastUpdated }}
 >
-  <!-- Hero -->
-  <section class="page-hero">
-    <div class="page-hero-glow" aria-hidden="true"></div>
-
-    <div class="container-site relative py-11 sm:py-14">
+  <!-- Breadcrumb strip -->
+  <div class="border-b border-border bg-surface-muted/60">
+    <div class="container-site py-4">
       <Breadcrumb
         items={[
           { label: "Home", href: "/" },
@@ -198,376 +242,890 @@ const toolBreadcrumbs = [
           { label: tool.name },
         ]}
       />
-
       {
         toolHubs.length > 0 && (
-          <div class="mt-6 max-w-3xl">
+          <div class="mt-4 max-w-3xl">
             <HubBacklink toolSlug={tool.slug} />
           </div>
         )
       }
+    </div>
+  </div>
 
+  <!-- ═══ Section 1: Hero card ═══ -->
+  <section class="bg-surface-muted/40 pb-2 pt-6 sm:pt-8">
+    <div class="container-site">
       <div
-        class="mt-8 flex flex-col gap-8 lg:mt-9 lg:flex-row lg:items-start lg:justify-between lg:gap-12"
+        class="card-surface-lg overflow-hidden p-5 sm:p-7 lg:p-8"
       >
-        <div class="min-w-0 flex-1">
-          <!-- Categories (clickable) -->
-          <div class="flex flex-wrap items-center gap-2">
+        <div class="grid gap-8 lg:grid-cols-12 lg:items-start lg:gap-10">
+          <!-- Left: identity -->
+          <div class="min-w-0 lg:col-span-6">
+            <div class="flex items-start gap-4">
+              <div
+                class="avatar-mark h-16 w-16 text-lg sm:h-[4.5rem] sm:w-[4.5rem] sm:text-xl"
+                aria-hidden="true"
+              >
+                {initials}
+              </div>
+              <div class="min-w-0">
+                <h1 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+                  {tool.name}
+                </h1>
+                <p class="mt-1 text-sm font-medium text-ink-muted">
+                  By {company}
+                </p>
+                <div class="mt-2.5 flex flex-wrap items-center gap-2">
+                  <div
+                    class="flex items-center gap-1 text-amber-500"
+                    aria-label={`Score ${starsOutOf5} out of 5`}
+                  >
+                    {
+                      [1, 2, 3, 4, 5].map((i) => (
+                        <svg
+                          class="h-4 w-4"
+                          viewBox="0 0 20 20"
+                          fill={
+                            i <= Math.round(starsOutOf5)
+                              ? "currentColor"
+                              : "none"
+                          }
+                          stroke="currentColor"
+                          stroke-width="1.2"
+                          aria-hidden="true"
+                        >
+                          <path d="M10 2.5l2.2 4.5 5 .7-3.6 3.5.9 5L10 13.9 5.5 16.2l.9-5L2.8 7.7l5-.7L10 2.5z" />
+                        </svg>
+                      ))
+                    }
+                  </div>
+                  <span class="text-sm font-semibold tabular-nums text-ink"
+                    >{starsOutOf5}</span
+                  >
+                  <span class="text-sm text-ink-soft"
+                    >({overall}/10 editorial · sample reviews below)</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              {
+                badges.map((b) => (
+                  <span class="inline-flex items-center rounded-full bg-accent-soft px-3 py-1 text-xs font-semibold text-accent">
+                    {b}
+                  </span>
+                ))
+              }
+            </div>
+
+            <p class="mt-4 max-w-xl text-sm leading-relaxed text-ink-muted sm:text-base">
+              {heroDescription}
+            </p>
+
+            <div class="mt-6 flex flex-wrap items-center gap-2.5">
+              <a
+                href={tool.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-primary px-5 py-2.5"
+              >
+                Visit Website
+                <span aria-hidden="true">↗</span>
+              </a>
+              <button
+                type="button"
+                class="btn-secondary px-4 py-2.5"
+                data-favorite
+                data-tool={tool.slug}
+                aria-pressed="false"
+              >
+                Add to Favorites
+              </button>
+              <button
+                type="button"
+                class="btn-secondary px-4 py-2.5"
+                data-share
+                data-url={shareUrl}
+                data-title={tool.name}
+              >
+                Share
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: preview frame -->
+          <div class="relative lg:col-span-6">
             {
-              tool.categories.map((cat) => (
-                <a href={categoryHref(cat)} class="pill">
-                  {cat}
+              primaryCategory && (
+                <a
+                  href={categoryHref(primaryCategory)}
+                  class="absolute right-3 top-3 z-10 inline-flex items-center gap-1 rounded-full bg-surface/95 px-3 py-1.5 text-xs font-semibold text-accent shadow-(--shadow-sm) ring-1 ring-border backdrop-blur-sm hover:bg-accent-soft"
+                >
+                  #{categoryRank.rank} in {primaryCategory}
+                  <span aria-hidden="true">→</span>
                 </a>
-              ))
-            }
-            {
-              tool.featured && (
-                <span class="pill-accent">Featured</span>
               )
             }
-          </div>
-
-          <div class="mt-6 flex items-start gap-4">
             <div
-              class="avatar-mark h-14 w-14 text-base sm:h-16 sm:w-16 sm:text-lg"
-              aria-hidden="true"
+              class="overflow-hidden rounded-[1.15rem] border border-border bg-ink shadow-(--shadow-lg)"
             >
-              {initials}
-            </div>
-            <div class="min-w-0">
-              <h1 class="text-page-title">
-                {tool.name}
-              </h1>
-              <p class="text-body-lg mt-2.5">
-                {tool.tagline}
-              </p>
+              <!-- Browser chrome -->
+              <div
+                class="flex items-center gap-2 border-b border-white/10 bg-slate-900 px-3 py-2.5"
+              >
+                <span class="flex gap-1.5" aria-hidden="true">
+                  <span class="h-2.5 w-2.5 rounded-full bg-red-400/80"></span>
+                  <span class="h-2.5 w-2.5 rounded-full bg-amber-400/80"></span>
+                  <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/80"></span>
+                </span>
+                <div
+                  class="ml-2 flex-1 truncate rounded-md bg-white/10 px-3 py-1 text-[11px] text-white/60"
+                >
+                  {websiteHost}
+                </div>
+              </div>
+              <!-- Poster / preview (no external video) -->
+              <div
+                class="relative aspect-[16/10] bg-gradient-to-br from-slate-800 via-indigo-950 to-slate-900"
+              >
+                <div
+                  class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center"
+                >
+                  <div
+                    class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-xl font-bold text-white ring-1 ring-white/20 backdrop-blur-sm sm:h-20 sm:w-20 sm:text-2xl"
+                  >
+                    {initials}
+                  </div>
+                  <p class="mt-4 text-lg font-semibold text-white sm:text-xl">
+                    {tool.name}
+                  </p>
+                  <p class="mt-1 max-w-xs text-sm text-white/65">
+                    {tool.tagline}
+                  </p>
+                  <div
+                    class="mt-6 flex h-14 w-14 items-center justify-center rounded-full bg-white/15 text-white ring-2 ring-white/25 backdrop-blur-sm"
+                    aria-hidden="true"
+                    title="Preview"
+                  >
+                    <svg
+                      class="ml-0.5 h-6 w-6"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M8 5.5v13l11-6.5L8 5.5z"></path>
+                    </svg>
+                  </div>
+                  <p class="mt-3 text-[11px] font-medium uppercase tracking-wider text-white/45">
+                    Product preview
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="mt-7 flex flex-wrap items-center gap-3">
-            <a
-              href={tool.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn-primary px-5 py-3"
-            >
-              Visit website
-              <span class="opacity-80" aria-hidden="true">↗</span>
-            </a>
-            <a href="/platforms/" class="btn-secondary px-5 py-3">
-              Compare platforms
-            </a>
-          </div>
-
-          <p class="mt-4 text-xs text-ink-soft">
-            Last updated {lastUpdatedLabel}
-            {
-              websiteHost && (
-                <>
-                  {" · "}
-                  <span class="text-ink-muted">{websiteHost}</span>
-                </>
-              )
-            }
-          </p>
-        </div>
-
-        <!-- Big overall score -->
-        <div
-          class="score-panel"
-          aria-label={`Overall score ${overall} out of 10`}
-        >
-          <span class="eyebrow-muted">Overall score</span>
-          <span
-            class="mt-2 text-5xl font-bold tabular-nums tracking-tight text-ink sm:text-[3.5rem]"
-          >
-            {overall}
-          </span>
-          <span class="mt-1.5 text-sm font-medium text-ink-muted">out of 10</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Main content -->
+  <!-- ═══ Section 2: Sticky tabs ═══ -->
+  <div
+    class="sticky top-[4.25rem] z-40 border-b border-border bg-surface/95 backdrop-blur-xl"
+    data-tool-tabs
+  >
+    <div class="container-site">
+      <nav
+        class="-mb-px flex gap-1 overflow-x-auto py-0 scrollbar-none"
+        aria-label="On this page"
+      >
+        {
+          tabs.map((tab) => (
+            <a
+              href={`#${tab.id}`}
+              data-tab={tab.id}
+              class="shrink-0 border-b-2 border-transparent px-3.5 py-3.5 text-sm font-medium text-ink-muted transition-colors hover:text-ink data-[active=true]:border-accent data-[active=true]:text-accent"
+            >
+              {tab.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+
+  <!-- ═══ Main + sidebar ═══ -->
   <section class="bg-surface">
-    <div class="container-site section-y">
-      <div class="grid gap-10 lg:grid-cols-12 lg:gap-12">
-        <!-- Left -->
-        <div class="space-y-10 lg:col-span-7">
-          <div>
-            <h2 class="text-xl font-semibold tracking-tight text-ink">
+    <div class="container-site py-10 sm:py-12 lg:py-14">
+      <div class="grid gap-10 lg:grid-cols-12 lg:gap-10 xl:gap-12">
+        <!-- Main ~68% -->
+        <div class="min-w-0 space-y-14 lg:col-span-8">
+          <!-- Overview -->
+          <section id="overview" class="scroll-mt-36">
+            <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">
               Overview
             </h2>
-            <p class="mt-3.5 text-base leading-relaxed text-ink-muted">
-              {tool.description}
-            </p>
-          </div>
-
-          <!-- Score breakdown -->
-          <div>
-            <h2 class="text-xl font-semibold tracking-tight text-ink">
-              Score breakdown
-            </h2>
-            <p class="mt-1.5 text-sm text-ink-muted">
-              Editorial scores on a 0–10 scale across six buyer-relevant
-              dimensions. See{" "}
-              <a
-                href="/methodology/"
-                class="font-medium text-accent hover:text-accent-hover"
-              >
-                how we evaluate platforms
-              </a>{" "}
-              for the full rubric.
-            </p>
-
-            <ul class="mt-7 space-y-5">
+            <div class="mt-4 space-y-4 text-base leading-relaxed text-ink-muted">
               {
-                scoreDimensions.map(({ key, label, hint }) => {
-                  const value = tool.scores[key];
-                  const pct = Math.max(0, Math.min(100, (value / 10) * 100));
-                  return (
-                    <li>
-                      <div class="flex items-end justify-between gap-3">
-                        <div>
-                          <p class="text-sm font-semibold text-ink">{label}</p>
-                          <p class="mt-0.5 text-xs text-ink-soft">{hint}</p>
-                        </div>
-                        <span class="text-sm font-bold tabular-nums tracking-tight text-ink">
-                          {value.toFixed(1)}
-                        </span>
-                      </div>
-                      <div
-                        class="score-bar-track"
-                        role="meter"
-                        aria-valuenow={value}
-                        aria-valuemin={0}
-                        aria-valuemax={10}
-                        aria-label={`${label}: ${value.toFixed(1)} of 10`}
-                      >
-                        <div
-                          class="score-bar-fill"
-                          style={`width: ${pct}%`}
-                        />
-                      </div>
-                    </li>
-                  );
-                })
+                overviewParagraphs.map((p) => (
+                  <p>{p}</p>
+                ))
               }
-            </ul>
-          </div>
-
-          <!-- Best for -->
-          {
-            tool.bestFor.length > 0 && (
-              <div>
-                <h2 class="text-lg font-semibold tracking-tight text-ink">
-                  Best for
-                </h2>
-                <ul class="mt-4 flex flex-wrap gap-2">
-                  {tool.bestFor.map((item) => (
-                    <li>
-                      <span class="inline-flex rounded-full border border-border bg-surface-muted px-3.5 py-1.5 text-sm font-medium text-ink-muted">
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )
-          }
-        </div>
-
-        <!-- Sidebar -->
-        <aside class="space-y-5 lg:col-span-5">
-          <!-- Feature badges -->
-          <div class="card-surface p-6 sm:p-7">
-            <h2 class="text-base font-semibold tracking-tight text-ink">
-              Key features
-            </h2>
-            <ul class="mt-5 flex flex-wrap gap-2">
               {
-                featureBadges.map(({ key, label }) => {
-                  const on = tool.features[key];
+                tool.bestFor.length > 0 && (
+                  <p>
+                    <strong class="font-semibold text-ink">Best for: </strong>
+                    {tool.bestFor.slice(0, 4).join(" · ")}.
+                  </p>
+                )
+              }
+            </div>
+
+            <!-- Score breakdown (kept from prior page — high value) -->
+            <div class="mt-8 rounded-[var(--radius-card)] border border-border bg-surface-muted/50 p-5 sm:p-6">
+              <div class="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <h3 class="text-base font-semibold text-ink">
+                    Editorial score breakdown
+                  </h3>
+                  <p class="mt-1 text-sm text-ink-muted">
+                    0–10 scale ·{" "}
+                    <a
+                      href="/methodology/"
+                      class="font-medium text-accent hover:text-accent-hover"
+                      >Methodology</a
+                    >
+                  </p>
+                </div>
+                <p class="text-2xl font-bold tabular-nums text-accent">
+                  {overall}<span class="text-base font-semibold text-ink-soft"
+                    >/10</span
+                  >
+                </p>
+              </div>
+              <ul class="mt-6 space-y-4">
+                {
+                  scoreDimensions.map(({ key, label, hint }) => {
+                    const value = tool.scores[key];
+                    const pct = Math.max(0, Math.min(100, (value / 10) * 100));
+                    return (
+                      <li>
+                        <div class="flex items-end justify-between gap-3">
+                          <div>
+                            <p class="text-sm font-semibold text-ink">{label}</p>
+                            <p class="text-xs text-ink-soft">{hint}</p>
+                          </div>
+                          <span class="text-sm font-bold tabular-nums text-ink">
+                            {value.toFixed(1)}
+                          </span>
+                        </div>
+                        <div
+                          class="score-bar-track"
+                          role="meter"
+                          aria-valuenow={value}
+                          aria-valuemin={0}
+                          aria-valuemax={10}
+                          aria-label={`${label}: ${value.toFixed(1)} of 10`}
+                        >
+                          <div
+                            class="score-bar-fill"
+                            style={`width: ${pct}%`}
+                          />
+                        </div>
+                      </li>
+                    );
+                  })
+                }
+              </ul>
+            </div>
+          </section>
+
+          <!-- Key Features -->
+          <section id="features" class="scroll-mt-36">
+            <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">
+              Key Features
+            </h2>
+            <p class="mt-2 text-sm text-ink-muted">
+              Capability flags from our directory profile. Green checks are
+              currently listed as supported.
+            </p>
+            <ul class="mt-6 space-y-3">
+              {
+                featureRows.map((f) => {
+                  const on = tool.features[f.key];
                   return (
-                    <li>
+                    <li
+                      class:list={[
+                        "flex items-start gap-4 rounded-[var(--radius-lg)] border px-4 py-4 sm:px-5",
+                        on
+                          ? "border-border bg-surface-muted/60"
+                          : "border-border/70 bg-surface opacity-70",
+                      ]}
+                    >
                       <span
                         class:list={[
-                          "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold",
+                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold",
                           on
-                            ? "bg-accent-soft text-accent ring-1 ring-accent/12"
-                            : "bg-surface-muted text-ink-soft ring-1 ring-border",
+                            ? "bg-accent-soft text-accent"
+                            : "bg-surface-deep text-ink-soft",
                         ]}
+                        aria-hidden="true"
                       >
-                        <span aria-hidden="true" class="opacity-70">
-                          {on ? "✓" : "—"}
-                        </span>
-                        {label}
-                        <span class="sr-only">{on ? "supported" : "not supported"}</span>
+                        {f.icon === "users" && "◎"}
+                        {f.icon === "code" && "{ }"}
+                        {f.icon === "server" && "▣"}
+                        {f.icon === "plug" && "⚡"}
+                        {f.icon === "monitor" && "▢"}
                       </span>
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-start justify-between gap-3">
+                          <div>
+                            <p class="text-sm font-semibold text-ink">
+                              {f.title}
+                            </p>
+                            <p class="mt-0.5 text-sm text-ink-muted">
+                              {f.description}
+                            </p>
+                          </div>
+                          <span
+                            class:list={[
+                              "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+                              on
+                                ? "bg-emerald-100 text-emerald-700"
+                                : "bg-surface-deep text-ink-soft",
+                            ]}
+                            aria-label={on ? "Supported" : "Not listed"}
+                          >
+                            {on ? "✓" : "—"}
+                          </span>
+                        </div>
+                      </div>
                     </li>
                   );
                 })
               }
             </ul>
-            <p class="mt-4 text-xs leading-relaxed text-ink-soft">
-              Highlighted badges are supported; dimmed badges are not currently
-              listed for this platform.
-            </p>
-          </div>
+
+            {
+              tool.bestFor.length > 0 && (
+                <div class="mt-8">
+                  <h3 class="text-base font-semibold text-ink">Best for</h3>
+                  <ul class="mt-3 flex flex-wrap gap-2">
+                    {tool.bestFor.map((item) => (
+                      <li>
+                        <span class="inline-flex rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm font-medium text-ink-muted">
+                          {item}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
+          </section>
 
           <!-- Pricing -->
-          <div class="card-surface p-6 sm:p-7">
-            <h2 class="text-base font-semibold tracking-tight text-ink">
+          <section id="pricing" class="scroll-mt-36">
+            <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">
               Pricing
             </h2>
-            <dl class="mt-5 space-y-4">
-              <div>
-                <dt
-                  class="text-xs font-semibold uppercase tracking-wider text-ink-soft"
-                >
-                  Model
-                </dt>
-                <dd class="mt-1 text-sm font-semibold text-ink">
-                  {pricingLabels[tool.pricing.model]}
-                </dd>
-              </div>
-              {
-                tool.pricing.startingPrice && (
-                  <div>
-                    <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
-                      Starting at
-                    </dt>
-                    <dd class="mt-1 text-sm font-semibold text-ink">
-                      {tool.pricing.startingPrice}
-                    </dd>
-                  </div>
-                )
-              }
+            <p class="mt-2 text-sm text-ink-muted">
+              Model:{" "}
+              <strong class="font-semibold text-ink"
+                >{pricingLabels[tool.pricing.model]}</strong
+              >
               {
                 tool.pricing.notes && (
-                  <div>
-                    <dt class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
-                      Notes
-                    </dt>
-                    <dd class="mt-1 text-sm leading-relaxed text-ink-muted">
-                      {tool.pricing.notes}
-                    </dd>
-                  </div>
+                  <>
+                    {" "}
+                    · {tool.pricing.notes}
+                  </>
                 )
               }
-            </dl>
-            <p class="mt-5 text-xs leading-relaxed text-ink-soft">
-              Pricing is indicative and may change. Confirm on the vendor site.
             </p>
-          </div>
+            <p class="mt-1 text-xs text-ink-soft">
+              Pricing is indicative and may change. Always confirm on the vendor
+              site before buying.
+            </p>
 
-          <!-- Website -->
-          <div class="card-surface p-6 sm:p-7">
-            <h2 class="text-base font-semibold tracking-tight text-ink">
-              Official site
-            </h2>
-            <p class="mt-2 text-sm leading-relaxed text-ink-muted">
-              Docs, plans, and the latest product releases.
-            </p>
-            <a
-              href={tool.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn-secondary mt-5 w-full"
+            <div
+              class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-2"
             >
-              {websiteHost}
-              <span class="ml-1.5" aria-hidden="true">↗</span>
-            </a>
-          </div>
-
-          <RelatedLinks
-            title={
-              primaryComparison
-                ? "Comparisons & guides"
-                : "Guides & methodology"
-            }
-            eyebrow="Learn more"
-            links={relatedReading}
-          />
-
-          <div class="rounded-2xl border border-border p-5 sm:p-6">
-            <p class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
-              Browse
-            </p>
-            <ul class="mt-3 space-y-2 text-sm">
-              <li>
-                <a
-                  href="/platforms/"
-                  class="font-medium text-accent hover:text-accent-hover"
-                >
-                  All platforms
-                </a>
-              </li>
               {
-                tool.categories.map((cat) => (
-                  <li>
+                pricingPlans.map((plan) => (
+                  <div
+                    class:list={[
+                      "relative flex flex-col rounded-[var(--radius-card)] border bg-surface p-5 sm:p-6",
+                      plan.popular
+                        ? "border-accent shadow-(--shadow-md) ring-1 ring-accent/15"
+                        : "border-border shadow-(--shadow-xs)",
+                    ]}
+                  >
+                    {plan.popular && (
+                      <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-fg">
+                        Most popular
+                      </span>
+                    )}
+                    <p class="text-sm font-semibold text-ink">{plan.name}</p>
+                    <p class="mt-3 flex items-baseline gap-1">
+                      <span class="text-3xl font-bold tracking-tight text-ink">
+                        {plan.price}
+                      </span>
+                      {plan.period && (
+                        <span class="text-sm text-ink-soft">{plan.period}</span>
+                      )}
+                    </p>
+                    {plan.description && (
+                      <p class="mt-2 text-sm text-ink-muted">
+                        {plan.description}
+                      </p>
+                    )}
+                    <ul class="mt-4 flex-1 space-y-2">
+                      {plan.features.map((feat) => (
+                        <li class="flex items-start gap-2 text-sm text-ink-muted">
+                          <span
+                            class="mt-0.5 text-emerald-600"
+                            aria-hidden="true"
+                          >
+                            ✓
+                          </span>
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
                     <a
-                      href={categoryHref(cat)}
-                      class="font-medium text-ink-muted hover:text-accent"
+                      href={tool.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class:list={[
+                        "mt-5 w-full justify-center",
+                        plan.popular ? "btn-primary" : "btn-secondary",
+                      ]}
                     >
-                      More in {cat}
+                      {plan.cta}
                     </a>
+                  </div>
+                ))
+              }
+            </div>
+          </section>
+
+          <!-- Reviews -->
+          <section id="reviews" class="scroll-mt-36">
+            <h2 class="text-xl font-bold tracking-tight text-ink sm:text-2xl">
+              What People Are Saying
+            </h2>
+            <p
+              class="mt-2 rounded-lg border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900/80"
+            >
+              Sample editorial reviews for layout preview — not verified user
+              reviews. Real reviews will replace this section later.
+            </p>
+            <ul class="mt-6 grid gap-4 sm:grid-cols-3">
+              {
+                sampleReviews.map((r) => (
+                  <li class="card-surface flex flex-col p-5">
+                    <div class="flex items-center gap-3">
+                      <span
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-accent-soft text-xs font-bold text-accent"
+                        aria-hidden="true"
+                      >
+                        {r.name
+                          .split(" ")
+                          .map((w) => w[0])
+                          .join("")}
+                      </span>
+                      <div>
+                        <p class="text-sm font-semibold text-ink">{r.name}</p>
+                        <p class="text-xs text-ink-soft">{r.role}</p>
+                      </div>
+                    </div>
+                    <div
+                      class="mt-3 flex gap-0.5 text-amber-500"
+                      aria-label={`${r.stars} of 5 stars`}
+                    >
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <svg
+                          class="h-3.5 w-3.5"
+                          viewBox="0 0 20 20"
+                          fill={i <= r.stars ? "currentColor" : "none"}
+                          stroke="currentColor"
+                          stroke-width="1.2"
+                          aria-hidden="true"
+                        >
+                          <path d="M10 2.5l2.2 4.5 5 .7-3.6 3.5.9 5L10 13.9 5.5 16.2l.9-5L2.8 7.7l5-.7L10 2.5z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <p class="mt-3 flex-1 text-sm leading-relaxed text-ink-muted">
+                      {r.body}
+                    </p>
                   </li>
                 ))
               }
             </ul>
+            <div class="mt-6 flex justify-center">
+              <a
+                href="/contact/"
+                class="btn-secondary"
+              >
+                View More Reviews
+              </a>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Sidebar ~32% -->
+        <aside class="space-y-5 lg:col-span-4">
+          <div class="lg:sticky lg:top-36 space-y-5">
+            <!-- Details card -->
+            <div class="card-surface p-5 sm:p-6">
+              <h2 class="text-base font-semibold tracking-tight text-ink">
+                Details
+              </h2>
+              <dl class="mt-4 space-y-3.5 text-sm">
+                <div class="flex justify-between gap-3">
+                  <dt class="text-ink-soft">Category</dt>
+                  <dd class="text-right font-medium text-ink">
+                    {
+                      tool.categories.map((cat, i) => (
+                        <>
+                          {i > 0 && ", "}
+                          <a
+                            href={categoryHref(cat)}
+                            class="text-accent hover:text-accent-hover"
+                          >
+                            {cat}
+                          </a>
+                        </>
+                      ))
+                    }
+                  </dd>
+                </div>
+                <div class="flex justify-between gap-3">
+                  <dt class="text-ink-soft">Website</dt>
+                  <dd class="text-right font-medium">
+                    <a
+                      href={tool.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-accent hover:text-accent-hover"
+                    >
+                      {websiteHost}
+                    </a>
+                  </dd>
+                </div>
+                <div class="flex justify-between gap-3">
+                  <dt class="text-ink-soft">Last updated</dt>
+                  <dd class="font-medium text-ink">{lastUpdatedLabel}</dd>
+                </div>
+                <div class="flex justify-between gap-3">
+                  <dt class="text-ink-soft">Pricing model</dt>
+                  <dd class="font-medium text-ink">
+                    {pricingLabels[tool.pricing.model]}
+                  </dd>
+                </div>
+                {
+                  tool.pricing.startingPrice && (
+                    <div class="flex justify-between gap-3">
+                      <dt class="text-ink-soft">Starting at</dt>
+                      <dd class="font-medium text-ink">
+                        {tool.pricing.startingPrice}
+                      </dd>
+                    </div>
+                  )
+                }
+                <div class="flex justify-between gap-3">
+                  <dt class="text-ink-soft">Overall score</dt>
+                  <dd class="font-bold tabular-nums text-accent">{overall}/10</dd>
+                </div>
+                <div class="flex justify-between gap-3">
+                  <dt class="text-ink-soft">Last verified</dt>
+                  <dd class="font-medium text-ink">{lastUpdatedLabel}</dd>
+                </div>
+              </dl>
+
+              <div class="mt-5 border-t border-border pt-4">
+                <p class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                  Feature flags
+                </p>
+                <ul class="mt-2.5 flex flex-wrap gap-1.5">
+                  {
+                    featureRows.map((f) => (
+                      <li>
+                        <span
+                          class:list={[
+                            "inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold",
+                            tool.features[f.key]
+                              ? "bg-accent-soft text-accent"
+                              : "bg-surface-muted text-ink-soft",
+                          ]}
+                        >
+                          {f.title}
+                        </span>
+                      </li>
+                    ))
+                  }
+                </ul>
+              </div>
+
+              <div class="mt-5 border-t border-border pt-4">
+                <p class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                  Share this tool
+                </p>
+                <ul class="mt-2.5 flex gap-2">
+                  <li>
+                    <a
+                      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${shareText}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="social-icon"
+                      aria-label="Share on X"
+                    >
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
+                      </svg>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="social-icon"
+                      aria-label="Share on LinkedIn"
+                    >
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                      </svg>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={`mailto:?subject=${encodeURIComponent(tool.name + " on Zoetic AI")}&body=${encodeURIComponent(shareUrl)}`}
+                      class="social-icon"
+                      aria-label="Share by email"
+                    >
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                        <rect x="3" y="5" width="18" height="14" rx="2" />
+                        <path d="M3 7l9 6 9-6" stroke-linecap="round" />
+                      </svg>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="mt-5 space-y-2 border-t border-border pt-4 text-sm">
+                <a
+                  href={`/contact/?subject=${encodeURIComponent("Report incorrect info: " + tool.name)}`}
+                  class="block font-medium text-ink-muted hover:text-accent"
+                >
+                  Report incorrect information
+                </a>
+                <a
+                  href={`/contact/?subject=${encodeURIComponent("Claim listing: " + tool.name)}`}
+                  class="block font-medium text-ink-muted hover:text-accent"
+                >
+                  Claim this listing
+                </a>
+              </div>
+            </div>
+
+            <!-- Related guides -->
+            {
+              (primaryComparison || relatedGuides.length > 0) && (
+                <div class="card-surface p-5 sm:p-6">
+                  <h2 class="text-base font-semibold tracking-tight text-ink">
+                    Guides & comparisons
+                  </h2>
+                  <ul class="mt-3 space-y-2.5">
+                    {primaryComparison && (
+                      <li>
+                        <a
+                          href={guideHref(primaryComparison.slug)}
+                          class="text-sm font-semibold text-accent hover:text-accent-hover"
+                        >
+                          {guideLinkLabel(primaryComparison.slug)} →
+                        </a>
+                      </li>
+                    )}
+                    {relatedGuides
+                      .filter((g) => g.slug !== primaryComparison?.slug)
+                      .slice(0, 4)
+                      .map((g) => (
+                        <li>
+                          <a
+                            href={guideHref(g.slug)}
+                            class="text-sm font-medium text-ink-muted hover:text-accent"
+                          >
+                            {guideLinkLabel(g.slug)}
+                          </a>
+                        </li>
+                      ))}
+                    <li>
+                      <a
+                        href={methodologyLink.href}
+                        class="text-sm font-medium text-ink-muted hover:text-accent"
+                      >
+                        {methodologyLink.title}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )
+            }
+
+            <!-- You might also like (desktop sidebar) -->
+            {
+              similar.length > 0 && (
+                <div class="card-surface hidden p-5 sm:p-6 lg:block">
+                  <div class="flex items-center justify-between gap-2">
+                    <h2 class="text-base font-semibold tracking-tight text-ink">
+                      You Might Also Like
+                    </h2>
+                    {primaryCategory && (
+                      <a
+                        href={categoryHref(primaryCategory)}
+                        class="text-xs font-semibold text-accent hover:text-accent-hover"
+                      >
+                        View more
+                      </a>
+                    )}
+                  </div>
+                  <ul class="mt-4 space-y-3">
+                    {similar.slice(0, 4).map((t) => (
+                      <li>
+                        <a
+                          href={`/tools/${t.slug}/`}
+                          class="flex items-center gap-3 rounded-xl p-1.5 transition-colors hover:bg-surface-muted"
+                        >
+                          <span
+                            class="avatar-mark h-10 w-10 text-xs"
+                            aria-hidden="true"
+                          >
+                            {t.name
+                              .split(/\s+/)
+                              .slice(0, 2)
+                              .map((w) => w[0])
+                              .join("")
+                              .toUpperCase()}
+                          </span>
+                          <span class="min-w-0 flex-1">
+                            <span class="block truncate text-sm font-semibold text-ink">
+                              {t.name}
+                            </span>
+                            <span class="block text-xs text-ink-soft">
+                              {t.categories[0]} · ★{" "}
+                              {(t.scores.overall / 2).toFixed(1)}
+                            </span>
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
           </div>
         </aside>
       </div>
     </div>
   </section>
 
-  <!-- Similar tools -->
-  {
-    similar.length > 0 && (
-      <section class="border-t border-border bg-surface-muted">
-        <div class="container-site section-y">
-          <div class="mb-8 flex flex-col gap-2 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent">
-                Related
-              </p>
-              <h2 class="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]">
-                Similar tools
-              </h2>
-              <p class="mt-2 text-sm text-ink-muted sm:text-base">
-                Platforms in overlapping categories with comparable scores.
-              </p>
-            </div>
-            {primaryCategory && (
-              <a
-                href={categoryHref(primaryCategory)}
-                class="text-sm font-semibold text-accent hover:text-accent-hover"
-              >
-                More in {primaryCategory} →
-              </a>
-            )}
-          </div>
-
-          <div class="grid auto-rows-fr gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
-            {similar.map((t) => (
-              <ToolCard tool={t} maxTags={3} />
-            ))}
-          </div>
+  <!-- Alternatives / You might also like -->
+  <section
+    id="alternatives"
+    class="scroll-mt-36 border-t border-border bg-surface-muted"
+  >
+    <div class="container-site section-y-tight">
+      <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="eyebrow">Alternatives</p>
+          <h2 class="text-section-title mt-2">You Might Also Like</h2>
         </div>
-      </section>
-    )
-  }
-
-  <!-- Strong bottom CTA -->
-  <section class="section-cta">
-    <div
-      class="section-cta-glow"
-      aria-hidden="true"
-    >
+        {
+          primaryCategory && (
+            <a
+              href={categoryHref(primaryCategory)}
+              class="text-sm font-semibold text-accent hover:text-accent-hover"
+            >
+              View more in {primaryCategory} →
+            </a>
+          )
+        }
+      </div>
+      {
+        similar.length > 0 ? (
+          <>
+            {/* Mobile: horizontal scroll */}
+            <div class="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory sm:hidden">
+              {similar.map((t) => (
+                <a
+                  href={`/tools/${t.slug}/`}
+                  class="card-interactive flex w-[15.5rem] shrink-0 snap-start flex-col p-4"
+                >
+                  <div class="flex items-center gap-3">
+                    <span class="avatar-mark h-10 w-10 text-xs" aria-hidden="true">
+                      {t.name
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((w) => w[0])
+                        .join("")
+                        .toUpperCase()}
+                    </span>
+                    <div class="min-w-0">
+                      <p class="truncate text-sm font-semibold text-ink">
+                        {t.name}
+                      </p>
+                      <p class="text-xs text-ink-soft">
+                        {t.categories[0]} · ★ {(t.scores.overall / 2).toFixed(1)}
+                      </p>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+            {/* Desktop grid */}
+            <div class="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+              {similar.map((t) => (
+                <a
+                  href={`/tools/${t.slug}/`}
+                  class="card-interactive flex flex-col p-5"
+                >
+                  <div class="flex items-center gap-3">
+                    <span class="avatar-mark h-11 w-11 text-xs" aria-hidden="true">
+                      {t.name
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((w) => w[0])
+                        .join("")
+                        .toUpperCase()}
+                    </span>
+                    <div class="min-w-0">
+                      <p class="truncate font-semibold text-ink">{t.name}</p>
+                      <p class="text-xs text-ink-soft">
+                        {t.categories[0]} · {t.scores.overall.toFixed(1)}/10
+                      </p>
+                    </div>
+                  </div>
+                  <p class="mt-3 line-clamp-2 text-sm text-ink-muted">
+                    {t.tagline}
+                  </p>
+                </a>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p class="text-sm text-ink-muted">No similar tools listed yet.</p>
+        )
+      }
     </div>
-    <div class="container-site relative section-y">
+  </section>
+
+  <!-- Bottom CTA -->
+  <section class="section-cta">
+    <div class="section-cta-glow" aria-hidden="true"></div>
+    <div class="container-site relative section-y-tight">
       <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
         <p
           class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80"
@@ -577,28 +1135,26 @@ const toolBreadcrumbs = [
         <h2
           class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
         >
-          Need this agent implemented or customized?
+          Need {tool.name} implemented or customized?
         </h2>
         <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
-          We design, build, and ship production systems with platforms like{" "}
-          {tool.name} — including governance, integrations, and ops your team
-          can own.
+          We design, build, and ship production agent systems — including
+          governance, integrations, and ops your team can own.
         </p>
         <div
-          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+          class="mt-8 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row"
         >
           <a
             href={site.cta.href}
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-7 py-3.5 text-base font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] duration-150 hover:shadow-(--shadow-lg) active:scale-[0.98]"
-            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-7 py-3.5 text-base font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] hover:shadow-(--shadow-lg)"
           >
             Talk about implementation
           </a>
           <a
             href={
-              primaryCategory ? categoryHref(primaryCategory) : "/categories/"
+              primaryCategory ? categoryHref(primaryCategory) : "/platforms/"
             }
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-white/55 hover:bg-white/15"
+            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:border-white/55 hover:bg-white/15"
           >
             Back to category
           </a>
@@ -607,3 +1163,105 @@ const toolBreadcrumbs = [
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  /** Sticky tab active state via IntersectionObserver */
+  const tabLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>("[data-tab]"),
+  );
+  const sectionIds = tabLinks.map((a) => a.dataset.tab).filter(Boolean) as string[];
+
+  const setActive = (id: string) => {
+    for (const a of tabLinks) {
+      a.dataset.active = a.dataset.tab === id ? "true" : "false";
+    }
+  };
+
+  if (sectionIds.length && "IntersectionObserver" in window) {
+    const ratios = new Map<string, number>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          ratios.set(entry.target.id, entry.intersectionRatio);
+        }
+        let bestId = sectionIds[0];
+        let best = 0;
+        for (const id of sectionIds) {
+          const r = ratios.get(id) ?? 0;
+          if (r > best) {
+            best = r;
+            bestId = id;
+          }
+        }
+        if (best > 0) setActive(bestId);
+      },
+      {
+        rootMargin: "-30% 0px -55% 0px",
+        threshold: [0, 0.1, 0.25, 0.5, 0.75, 1],
+      },
+    );
+
+    for (const id of sectionIds) {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    }
+
+    // Initial from hash
+    const hash = location.hash.replace("#", "");
+    if (hash && sectionIds.includes(hash)) setActive(hash);
+    else setActive(sectionIds[0]!);
+  }
+
+  /** Favorites (localStorage) */
+  const favBtn = document.querySelector<HTMLButtonElement>("[data-favorite]");
+  if (favBtn) {
+    const slug = favBtn.dataset.tool ?? "";
+    const key = "zoetic-favorites";
+    const read = (): string[] => {
+      try {
+        return JSON.parse(localStorage.getItem(key) ?? "[]");
+      } catch {
+        return [];
+      }
+    };
+    const write = (list: string[]) =>
+      localStorage.setItem(key, JSON.stringify(list));
+    const sync = () => {
+      const on = read().includes(slug);
+      favBtn.setAttribute("aria-pressed", String(on));
+      favBtn.textContent = on ? "Saved to Favorites" : "Add to Favorites";
+    };
+    sync();
+    favBtn.addEventListener("click", () => {
+      const list = read();
+      const i = list.indexOf(slug);
+      if (i >= 0) list.splice(i, 1);
+      else list.push(slug);
+      write(list);
+      sync();
+    });
+  }
+
+  /** Share */
+  const shareBtn = document.querySelector<HTMLButtonElement>("[data-share]");
+  if (shareBtn) {
+    shareBtn.addEventListener("click", async () => {
+      const url = shareBtn.dataset.url ?? location.href;
+      const title = shareBtn.dataset.title ?? document.title;
+      try {
+        if (navigator.share) {
+          await navigator.share({ title, url });
+        } else {
+          await navigator.clipboard.writeText(url);
+          const prev = shareBtn.textContent;
+          shareBtn.textContent = "Link copied";
+          setTimeout(() => {
+            shareBtn.textContent = prev;
+          }, 1600);
+        }
+      } catch {
+        /* user cancelled */
+      }
+    });
+  }
+</script>

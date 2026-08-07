@@ -91,10 +91,8 @@ const primaryCategory = tool.categories[0] ?? "Platform";
           }
           <h3
             class:list={[
-              "font-semibold leading-snug text-ink transition-colors duration-150 group-hover:text-accent",
-              featured
-                ? "text-[1.0625rem] sm:text-lg"
-                : "text-[0.975rem] sm:text-base",
+              "text-card-title transition-colors duration-150 group-hover:text-accent",
+              featured && "sm:text-lg",
             ]}
           >
             <a

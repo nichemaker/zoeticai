@@ -21,6 +21,22 @@ export type PricingModel =
   | "enterprise"
   | "open-source";
 
+/** Optional structured tier for detail-page pricing cards. */
+export interface PricingPlan {
+  id: string;
+  name: string;
+  /** Display price, e.g. "$0", "$20", "Custom". */
+  price: string;
+  /** e.g. "/month", "/seat". */
+  period?: string;
+  /** Short blurb under the price. */
+  description?: string;
+  features: string[];
+  cta: string;
+  /** Highlight as most popular plan. */
+  popular?: boolean;
+}
+
 export interface ToolPricing {
   /** Primary commercial model. */
   model: PricingModel;
@@ -28,6 +44,11 @@ export interface ToolPricing {
   startingPrice?: string;
   /** Optional short pricing note shown on listing cards. */
   notes?: string;
+  /**
+   * Optional explicit tiers for the detail page.
+   * When omitted, the detail page synthesizes cards from model + startingPrice.
+   */
+  plans?: PricingPlan[];
 }
 
 /**
@@ -76,6 +97,8 @@ export interface Tool {
   website: string;
   /** Path or URL to logo asset (placeholder path OK until assets land). */
   logo: string;
+  /** Optional vendor / company line under the product name. */
+  company?: string;
   pricing: ToolPricing;
   scores: ToolScores;
   features: ToolFeatures;

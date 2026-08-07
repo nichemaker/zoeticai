@@ -11,7 +11,7 @@ export const site = {
   url: "https://www.zoeticai.com",
   email: "hello@zoeticai.com",
   locale: "en_US",
-  themeColor: "#5b5ce2",
+  themeColor: "#6657f5",
   /** Default social preview (site-relative path) */
   defaultOgImage: "/images/guides/evaluate-ai-agent-platforms-hero.jpg",
   /** Appended to page titles unless titleAbsolute */
