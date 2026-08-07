@@ -665,16 +665,16 @@ const valueLenses = [
   />
 
   <!-- CTA -->
-  <section class="relative overflow-hidden bg-ink text-accent-fg">
+  <section class="section-cta">
     <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(67_56_202_/_0.28)_0%,_transparent_55%)]"
+      class="section-cta-glow"
       aria-hidden="true"
     >
     </div>
     <div class="container-site relative section-y">
       <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
         <p
-          class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-indigo-300"
+          class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/80"
         >
           Next step
         </p>
@@ -683,18 +683,18 @@ const valueLenses = [
         >
           Score Value honestly — then shortlist
         </h2>
-        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
           Use our{" "}
-          <a href="/methodology/" class="text-indigo-300 hover:text-white"
+          <a href="/methodology/" class="text-white/80 hover:text-white"
             >methodology</a
           >
           , the{" "}
           <a
             href="/guides/how-to-evaluate-ai-agent-platforms/"
-            class="text-indigo-300 hover:text-white">evaluation guide</a
+            class="text-white/80 hover:text-white">evaluation guide</a
           >
           , and{" "}
-          <a href="/platforms/" class="text-indigo-300 hover:text-white"
+          <a href="/platforms/" class="text-white/80 hover:text-white"
             >platform profiles</a
           >{" "}
           with pricing notes.
@@ -704,7 +704,7 @@ const valueLenses = [
         >
           <a
             href="/platforms/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-accent px-6 py-3 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
+            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-6 py-3 text-sm font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] hover:shadow-(--shadow-lg)"
           >
             Browse platforms
           </a>
@@ -721,8 +721,8 @@ const valueLenses = [
             Talk to us
           </a>
         </div>
-        <p class="mt-6 text-sm text-slate-400">
-          <a href={site.cta.href} class="text-indigo-300 hover:text-white"
+        <p class="mt-6 text-sm text-white/70">
+          <a href={site.cta.href} class="text-white/80 hover:text-white"
             >Implementation</a
           >
         </p>

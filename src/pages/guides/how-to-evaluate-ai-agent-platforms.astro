@@ -498,16 +498,16 @@ const decisionRows = [
   />
 
   <!-- CTA -->
-  <section class="relative overflow-hidden bg-ink text-accent-fg">
+  <section class="section-cta">
     <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      class="section-cta-glow"
       aria-hidden="true"
     >
     </div>
     <div class="container-site relative section-y">
       <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
         <p
-          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80"
         >
           Next step
         </p>
@@ -516,7 +516,7 @@ const decisionRows = [
         >
           Shortlist platforms — or ship with help
         </h2>
-        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
           Browse scored profiles across enterprise, frameworks, no-code, and
           coding agents. If you already know the category, we can help design
           and implement production agents with the right guardrails.
@@ -526,13 +526,13 @@ const decisionRows = [
         >
           <a
             href="/platforms/"
-            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-7 py-3.5 text-base font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] duration-150 hover:shadow-(--shadow-lg) active:scale-[0.98]"
           >
             Browse the directory
           </a>
           <a
             href={site.cta.href}
-            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
+            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-white/55 hover:bg-white/15"
             rel="noopener noreferrer"
           >
             Talk about implementation

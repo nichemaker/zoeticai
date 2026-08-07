@@ -11,31 +11,29 @@ function isCurrent(href: string) {
 ---
 
 <header
-  class="sticky top-0 z-50 border-b border-border/80 bg-surface/80 backdrop-blur-xl backdrop-saturate-150"
+  class="sticky top-0 z-50 border-b border-border/70 bg-surface/90 backdrop-blur-xl backdrop-saturate-150"
 >
   <div class="container-site">
-    <div class="flex h-[3.75rem] items-center gap-3 sm:h-16 sm:gap-8">
+    <div class="flex h-16 items-center gap-4 sm:h-[4.25rem] sm:gap-6">
       <!-- Logo -->
       <a
         href="/"
         class="group flex shrink-0 items-center gap-2.5"
-        aria-label={`${site.name} home`}
+        aria-label={`${site.brand} home`}
       >
+        <span class="brand-mark" aria-hidden="true">Z</span>
         <span
-          class="flex h-8 w-8 items-center justify-center rounded-[0.625rem] bg-accent text-[0.7rem] font-bold tracking-wide text-accent-fg shadow-(--shadow-xs) transition-transform duration-200 group-hover:scale-[1.03]"
-          aria-hidden="true"
+          class="text-[0.95rem] font-bold tracking-tight text-ink sm:text-base"
         >
-          AI
-        </span>
-        <span
-          class="hidden text-[0.9375rem] font-semibold tracking-tight text-ink sm:inline"
-        >
-          {site.name}
+          {site.brand}
         </span>
       </a>
 
-      <!-- Desktop nav -->
-      <nav class="hidden items-center gap-0.5 md:flex" aria-label="Primary">
+      <!-- Desktop nav (centered cluster after logo) -->
+      <nav
+        class="hidden flex-1 items-center justify-center gap-0.5 md:flex"
+        aria-label="Primary"
+      >
         {
           primaryNav.map((link) => (
             <a
@@ -49,42 +47,52 @@ function isCurrent(href: string) {
         }
       </nav>
 
-      <!-- Search → platforms listing (?q=) -->
-      <form
-        action="/platforms/"
-        method="get"
-        role="search"
-        class="ml-auto hidden min-w-0 flex-1 max-w-[16rem] sm:block lg:max-w-xs"
-      >
-        <label for="header-search" class="sr-only">Search directory</label>
-        <div class="relative">
-          <svg
-            class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-soft"
-            viewBox="0 0 20 20"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            aria-hidden="true"
-          >
-            <circle cx="8.5" cy="8.5" r="5.5"></circle>
-            <path d="M13 13l3.5 3.5" stroke-linecap="round"></path>
-          </svg>
-          <input
-            id="header-search"
-            type="search"
-            name="q"
-            placeholder="Search platforms…"
-            class="input-search py-2 text-[0.8125rem]"
-            autocomplete="off"
-          />
-        </div>
-      </form>
+      <!-- Search + CTAs -->
+      <div class="ml-auto flex items-center gap-2 sm:gap-2.5 md:ml-0">
+        <form
+          action="/platforms/"
+          method="get"
+          role="search"
+          class="hidden min-w-0 max-w-[11rem] lg:block lg:max-w-[13.5rem]"
+        >
+          <label for="header-search" class="sr-only">Search directory</label>
+          <div class="relative">
+            <svg
+              class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-soft"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              aria-hidden="true"
+            >
+              <circle cx="8.5" cy="8.5" r="5.5"></circle>
+              <path d="M13 13l3.5 3.5" stroke-linecap="round"></path>
+            </svg>
+            <input
+              id="header-search"
+              type="search"
+              name="q"
+              placeholder="Search…"
+              class="input-search py-2 text-[0.8125rem]"
+              autocomplete="off"
+            />
+          </div>
+        </form>
 
-      <!-- Mobile: search icon + menu toggle -->
-      <div class="ml-auto flex items-center gap-0.5 sm:ml-0">
+        <a
+          href="/methodology/"
+          class="btn-header-ghost hidden sm:inline-flex"
+        >
+          Methodology
+        </a>
+        <a href="/contact/" class="btn-primary hidden px-4 py-2 sm:inline-flex">
+          Contact
+        </a>
+
+        <!-- Mobile: search + menu -->
         <a
           href="/platforms/"
-          class="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink sm:hidden"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink lg:hidden"
           aria-label="Search platforms"
         >
           <svg
@@ -102,7 +110,7 @@ function isCurrent(href: string) {
 
         <button
           type="button"
-          class="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] text-ink transition-colors hover:bg-surface-muted md:hidden"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-pill)] text-ink transition-colors hover:bg-surface-muted md:hidden"
           aria-expanded="false"
           aria-controls="mobile-nav"
           data-menu-toggle
@@ -138,16 +146,16 @@ function isCurrent(href: string) {
   <!-- Mobile nav panel -->
   <nav
     id="mobile-nav"
-    class="hidden border-t border-border/80 bg-surface/95 backdrop-blur-xl md:hidden"
+    class="hidden border-t border-border/80 bg-surface/98 backdrop-blur-xl md:hidden"
     aria-label="Mobile"
     data-mobile-nav
   >
-    <div class="container-site py-3">
+    <div class="container-site py-4">
       <form
         action="/platforms/"
         method="get"
         role="search"
-        class="mb-3 sm:hidden"
+        class="mb-3"
       >
         <label for="mobile-search" class="sr-only">Search directory</label>
         <div class="relative">
@@ -173,7 +181,7 @@ function isCurrent(href: string) {
         </div>
       </form>
 
-      <ul class="flex flex-col gap-0.5 pb-1">
+      <ul class="flex flex-col gap-0.5 pb-2">
         {
           primaryNav.map((link) => (
             <li>
@@ -182,7 +190,7 @@ function isCurrent(href: string) {
                 class:list={[
                   "block rounded-[var(--radius-md)] px-3 py-2.5 text-sm font-medium transition-colors",
                   isCurrent(link.href)
-                    ? "bg-surface-muted text-ink"
+                    ? "bg-accent-soft text-accent"
                     : "text-ink-muted hover:bg-surface-muted hover:text-ink",
                 ]}
                 aria-current={isCurrent(link.href) ? "page" : undefined}
@@ -192,6 +200,17 @@ function isCurrent(href: string) {
             </li>
           ))
         }
+        <li class="mt-2 border-t border-border pt-3">
+          <a
+            href="/methodology/"
+            class="block rounded-[var(--radius-md)] px-3 py-2.5 text-sm font-medium text-ink-muted hover:bg-surface-muted hover:text-ink"
+          >
+            Methodology
+          </a>
+        </li>
+        <li class="px-1 pt-1">
+          <a href="/contact/" class="btn-primary w-full">Contact</a>
+        </li>
       </ul>
     </div>
   </nav>

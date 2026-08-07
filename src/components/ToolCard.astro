@@ -54,7 +54,7 @@ const primaryCategory = tool.categories[0] ?? "Platform";
 <article
   class:list={[
     "card-interactive group relative flex h-full flex-col p-5 sm:p-6",
-    featured ? "min-h-[13.75rem]" : "min-h-[11.75rem]",
+    featured ? "min-h-[14rem]" : "min-h-[12rem]",
     scrollItem && "w-[min(100%,18.5rem)] shrink-0 sm:w-72",
   ]}
   data-tool-card
@@ -92,7 +92,9 @@ const primaryCategory = tool.categories[0] ?? "Platform";
           <h3
             class:list={[
               "font-semibold leading-snug text-ink transition-colors duration-150 group-hover:text-accent",
-              featured ? "text-[1.0625rem] sm:text-lg" : "text-[0.975rem] sm:text-base",
+              featured
+                ? "text-[1.0625rem] sm:text-lg"
+                : "text-[0.975rem] sm:text-base",
             ]}
           >
             <a
@@ -140,7 +142,7 @@ const primaryCategory = tool.categories[0] ?? "Platform";
   }
 
   <div
-    class="relative z-10 mt-auto flex items-center justify-between gap-2 border-t border-border/70 pt-4"
+    class="relative z-10 mt-auto flex items-center justify-between gap-2 border-t border-border/80 pt-4"
   >
     {
       secondaryCategory ? (

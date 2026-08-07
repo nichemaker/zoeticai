@@ -17,7 +17,7 @@ const {
 ---
 
 <div
-  class="mb-9 flex flex-col gap-5 sm:mb-11 sm:flex-row sm:items-end sm:justify-between sm:gap-10"
+  class="mb-10 flex flex-col gap-5 sm:mb-12 sm:flex-row sm:items-end sm:justify-between sm:gap-10"
 >
   <div class="max-w-2xl">
     {
@@ -45,7 +45,7 @@ const {
     href && (
       <a
         href={href}
-        class="group inline-flex shrink-0 items-center gap-1.5 self-start text-sm font-semibold text-accent transition-colors hover:text-accent-hover sm:self-auto"
+        class="group inline-flex shrink-0 items-center gap-1.5 self-start rounded-[var(--radius-pill)] border border-border bg-surface px-4 py-2 text-sm font-semibold text-accent shadow-(--shadow-xs) transition-[border-color,box-shadow,colors] duration-200 hover:border-accent/25 hover:bg-accent-soft hover:shadow-(--shadow-sm) sm:self-auto"
       >
         {linkLabel}
         <span

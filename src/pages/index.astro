@@ -96,17 +96,17 @@ const whyItems = [
     <div class="container-site relative section-y">
       <div class="mx-auto max-w-3xl text-center">
         <div
-          class="inline-flex items-center gap-2 rounded-full border border-border/90 bg-surface/90 px-3.5 py-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-accent shadow-(--shadow-xs)"
+          class="inline-flex items-center gap-2 rounded-full border border-accent/15 bg-surface/90 px-3.5 py-1.5 text-[0.6875rem] font-semibold tracking-[0.04em] text-accent shadow-(--shadow-xs)"
         >
           <span
             class="h-1.5 w-1.5 rounded-full bg-accent"
             aria-hidden="true"
           ></span>
-          AI agent platforms directory
+          Your platform shortlist starts here
         </div>
 
         <h1 class="text-display mt-7">
-          Choose AI agent platforms with clarity
+          Discover. Compare. Choose AI agents.
         </h1>
 
         <p class="text-body-lg mx-auto mt-5 max-w-2xl">
@@ -466,15 +466,15 @@ const whyItems = [
   </section>
 
   <!-- 6. Final CTA banner -->
-  <section class="relative overflow-hidden bg-ink text-accent-fg">
+  <section class="section-cta">
     <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(67_56_202_/_0.28)_0%,_transparent_55%)]"
+      class="section-cta-glow"
       aria-hidden="true"
     >
     </div>
     <div class="container-site relative section-y">
       <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-indigo-300">
+        <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/80">
           Implementation
         </p>
         <h2
@@ -482,7 +482,7 @@ const whyItems = [
         >
           Need production AI agents built?
         </h2>
-        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
           Beyond the directory — partner with a team that designs, ships, and
           operates agent systems for real products and enterprise workflows.
         </p>
@@ -491,13 +491,13 @@ const whyItems = [
         >
           <a
             href={site.cta.href}
-            class="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-accent px-7 py-3.5 text-[0.9375rem] font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-200 hover:bg-accent-hover active:translate-y-px"
+            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-7 py-3.5 text-[0.9375rem] font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] duration-200 hover:shadow-(--shadow-lg) active:translate-y-px"
           >
             Talk to us
           </a>
           <a
             href="/contact/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 bg-transparent px-7 py-3.5 text-[0.9375rem] font-semibold text-white transition-colors duration-150 hover:border-white/30 hover:bg-white/5"
+            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-7 py-3.5 text-[0.9375rem] font-semibold text-white transition-colors duration-150 hover:border-white/55 hover:bg-white/15"
           >
             Contact us
           </a>

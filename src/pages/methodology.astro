@@ -533,7 +533,7 @@ const featureFlags = [
   </article>
 
   <!-- CTA -->
-  <section class="border-t border-border bg-ink text-accent-fg">
+  <section class="section-cta border-t border-transparent">
     <div
       class="container-site flex flex-col items-start gap-6 py-12 sm:flex-row sm:items-center sm:justify-between sm:py-14"
     >
@@ -541,7 +541,7 @@ const featureFlags = [
         <h2 class="text-xl font-bold tracking-tight sm:text-2xl">
           Apply the rubric to the catalog
         </h2>
-        <p class="mt-2 text-sm leading-relaxed text-slate-300 sm:text-base">
+        <p class="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
           Browse scored platforms, open dimension breakdowns on each profile,
           and shortlist against your workload.
         </p>
@@ -549,13 +549,13 @@ const featureFlags = [
       <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
         <a
           href="/platforms/"
-          class="inline-flex items-center justify-center rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
+          class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-6 py-3 text-sm font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] hover:shadow-(--shadow-lg)"
         >
           All platforms
         </a>
         <a
           href="/guides/how-to-evaluate-ai-agent-platforms/"
-          class="inline-flex items-center justify-center rounded-xl border border-slate-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-slate-400 hover:bg-white/5"
+          class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/55 hover:bg-white/15"
         >
           Evaluation guide
         </a>

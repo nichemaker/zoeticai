@@ -11,7 +11,7 @@ export const site = {
   url: "https://www.zoeticai.com",
   email: "hello@zoeticai.com",
   locale: "en_US",
-  themeColor: "#4338ca",
+  themeColor: "#5b5ce2",
   /** Default social preview (site-relative path) */
   defaultOgImage: "/images/guides/evaluate-ai-agent-platforms-hero.jpg",
   /** Appended to page titles unless titleAbsolute */
@@ -39,26 +39,28 @@ export type FooterGroup = {
   links: NavLink[];
 };
 
+/** Footer link columns — compact structure matching a clean directory layout */
 export const footerGroups: FooterGroup[] = [
   {
-    heading: "Explore",
+    heading: "Quick Links",
     links: [
-      { href: "/platforms/", label: "All platforms" },
+      { href: "/", label: "Home" },
+      { href: "/platforms/", label: "Platforms" },
       { href: "/categories/", label: "Categories" },
       { href: "/guides/", label: "Guides" },
       { href: "/methodology/", label: "Methodology" },
     ],
   },
   {
-    heading: "Learn",
+    heading: "Resources",
     links: [
       {
         href: "/guides/ai-agent-platforms-guide/",
-        label: "AI Agent Platforms Guide 2026",
+        label: "Platforms Guide 2026",
       },
       {
         href: "/guides/best-ai-coding-agents-2026/",
-        label: "Best AI coding agents 2026",
+        label: "Coding agents 2026",
       },
       {
         href: "/guides/how-to-evaluate-ai-agent-platforms/",
@@ -66,58 +68,22 @@ export const footerGroups: FooterGroup[] = [
       },
       {
         href: "/guides/ai-agent-platforms-tco-2026/",
-        label: "AI agent platform TCO 2026",
-      },
-      {
-        href: "/guides/best-open-source-ai-agent-frameworks-2026/",
-        label: "Best OSS frameworks 2026",
+        label: "TCO guide",
       },
       {
         href: "/guides/best-ai-agent-platforms-for-smbs-2026/",
-        label: "Best AI agents for SMBs 2026",
+        label: "Best for SMBs",
       },
-      { href: "/guides/langgraph-vs-crewai/", label: "LangGraph vs CrewAI" },
-      {
-        href: "/guides/claude-code-vs-cursor/",
-        label: "Claude Code vs Cursor",
-      },
-      {
-        href: "/guides/copilot-studio-vs-agentforce/",
-        label: "Copilot Studio vs Agentforce",
-      },
-      {
-        href: "/guides/n8n-vs-make-vs-zapier-agents/",
-        label: "n8n vs Make vs Zapier Agents",
-      },
-      {
-        href: "/guides/lindy-vs-relevance-ai-vs-dust/",
-        label: "Lindy vs Relevance AI vs Dust",
-      },
-      {
-        href: "/guides/frameworks-vs-enterprise-platforms/",
-        label: "Frameworks vs enterprise",
-      },
-      {
-        href: "/guides/mcp-and-tool-calling-explained/",
-        label: "MCP & tool calling",
-      },
-    ],
-  },
-  {
-    heading: "Company",
-    links: [
       { href: "/about/", label: "About" },
       { href: "/contact/", label: "Contact" },
-      { href: "/methodology/", label: "Methodology" },
     ],
   },
 ];
 
-/** Always shown in the footer legal row */
+/** Legal column links */
 export const footerLegal: NavLink[] = [
-  { href: "/about/", label: "About" },
-  { href: "/methodology/", label: "Methodology" },
+  { href: "/privacy/", label: "Privacy Policy" },
+  { href: "/terms/", label: "Terms of Use" },
   { href: "/contact/", label: "Contact" },
-  { href: "/privacy/", label: "Privacy" },
-  { href: "/terms/", label: "Terms" },
+  { href: "/about/", label: "About" },
 ];

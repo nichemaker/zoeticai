@@ -330,9 +330,9 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
   />
 
   <!-- Bottom CTA -->
-  <section class="relative overflow-hidden border-t border-border bg-ink text-accent-fg">
+  <section class="section-cta border-t border-transparent">
     <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.22)_0%,_transparent_55%)]"
+      class="section-cta-glow"
       aria-hidden="true"
     >
     </div>
@@ -341,7 +341,7 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
     >
       <div class="max-w-xl">
         <p
-          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80"
         >
           Implementation
         </p>
@@ -350,7 +350,7 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
         >
           Need help implementing any of these agents?
         </h2>
-        <p class="mt-2 text-sm leading-relaxed text-slate-300 sm:text-base">
+        <p class="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
           We design, build, and ship production AI agent systems — from
           platform selection through secure deployment and ops.
         </p>
@@ -358,14 +358,14 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
       <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
         <a
           href={site.cta.href}
-          class="inline-flex items-center justify-center rounded-xl bg-accent px-6 py-3.5 text-sm font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+          class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-6 py-3.5 text-sm font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] duration-150 hover:shadow-(--shadow-lg) active:scale-[0.98]"
           rel="noopener noreferrer"
         >
           Talk about implementation
         </a>
         <a
           href="/platforms/"
-          class="inline-flex items-center justify-center rounded-xl border border-slate-600 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-slate-400 hover:bg-white/5"
+          class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/55 hover:bg-white/15"
         >
           All platforms
         </a>
