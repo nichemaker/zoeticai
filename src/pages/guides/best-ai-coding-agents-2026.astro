@@ -2,12 +2,15 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import GuideExplore from "../../components/GuideExplore.astro";
+import HubSpokes from "../../components/HubSpokes.astro";
+import HubBacklink from "../../components/HubBacklink.astro";
 import { site } from "../../data/site";
 import { getToolBySlug } from "../../data/tools";
+import { guideHref } from "../../data/guides";
 
 const title = "Best AI Coding Agents in 2026";
 const description =
-  "Practical 2026 guide to AI coding agents for developers and eng teams: evaluation criteria, IDE vs CLI vs cloud vs open-source picks, comparison table, pricing, and who should use what.";
+  "Practical 2026 guide to AI coding agents for developers and eng teams: evaluation criteria, IDE vs CLI vs cloud vs open-source picks, comparison table, pricing, and who should use what. Hub for our coding-agents topic cluster.";
 const published = "2026-04-01";
 const readTime = "14 min";
 
@@ -297,9 +300,16 @@ const pricingNotes = [
         ]}
       />
 
+      <div class="mt-6 max-w-3xl">
+        <HubBacklink guideSlug="best-ai-coding-agents-2026" />
+      </div>
+
       <div class="mt-8 max-w-3xl">
         <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <span class="pill-accent">Roundup</span>
+          <span class="pill-accent">Pillar hub</span>
+          <span class="rounded-full bg-surface px-3 py-1 text-ink-soft ring-1 ring-border">
+            Topic cluster
+          </span>
           <span class="text-ink-soft">
             <time datetime={published}>Apr 1, 2026</time>
             <span aria-hidden="true"> · </span>
@@ -313,10 +323,12 @@ const pricingNotes = [
         <p class="text-body-lg mt-4">
           An opinionated shortlist for developers and engineering teams —
           IDE-native, CLI, cloud autonomous, and open-source agents that ship
-          real changes, not only autocomplete.
+          real changes, not only autocomplete. This page is the hub for our AI
+          Coding Agents topic cluster.
         </p>
         <div class="mt-7 flex flex-wrap gap-3">
           <a href="#ranked" class="btn-primary">Ranked picks</a>
+          <a href="#cluster" class="btn-secondary">Cluster & profiles</a>
           <a href="/categories/coding/" class="btn-secondary"
             >Coding category</a
           >
@@ -327,6 +339,13 @@ const pricingNotes = [
             href="/guides/claude-code-vs-cursor/"
             class="font-semibold text-accent hover:text-accent-hover"
             >Claude Code vs Cursor comparison</a
+          >
+          {" · "}
+          Related platforms hub:{" "}
+          <a
+            href={guideHref("ai-agent-platforms-guide")}
+            class="font-semibold text-accent hover:text-accent-hover"
+            >AI Agent Platforms Guide</a
           >
           {" · "}
           <a
@@ -693,7 +712,12 @@ const pricingNotes = [
           </div>
           <p class="mt-8 text-base leading-relaxed text-ink-muted">
             Coding agents are not business process agents. If you’re automating
-            ops instead of shipping code, see{" "}
+            ops instead of shipping code, start from the{" "}
+            <a
+              href={guideHref("ai-agent-platforms-guide")}
+              class="font-semibold text-accent hover:text-accent-hover"
+              >AI Agent Platforms Guide</a
+            >, then see{" "}
             <a
               href="/guides/best-ai-agent-platforms-for-smbs-2026/"
               class="font-semibold text-accent hover:text-accent-hover"
@@ -712,6 +736,14 @@ const pricingNotes = [
             >.
           </p>
         </section>
+
+        <HubSpokes
+          hubId="coding-agents"
+          title="In this coding agents cluster"
+          description="Head-to-head comparison and scored platform profiles that hang off this hub. Every spoke links back here."
+          showTools={true}
+          id="cluster"
+        />
       </div>
     </div>
   </article>

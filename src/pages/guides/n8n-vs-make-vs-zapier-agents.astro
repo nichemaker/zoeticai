@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
+import HubBacklink from "../../components/HubBacklink.astro";
 import GuideExplore from "../../components/GuideExplore.astro";
 import RelatedComparisons from "../../components/RelatedComparisons.astro";
 import { site } from "../../data/site";
@@ -210,6 +211,10 @@ const decisionSteps = [
           { label: "n8n vs Make vs Zapier Agents" },
         ]}
       />
+
+      <div class="mt-6 max-w-3xl">
+        <HubBacklink guideSlug="n8n-vs-make-vs-zapier-agents" />
+      </div>
 
       <div class="mt-8 max-w-3xl">
         <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">

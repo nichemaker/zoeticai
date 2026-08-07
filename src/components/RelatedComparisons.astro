@@ -8,6 +8,7 @@ import {
   comparisonToolProfiles,
   getRelatedComparisons,
   getRelatedGuidesForArticle,
+  getHubsForGuide,
   guideHref,
   comparisonLinkLabel,
   guideLinkLabel,
@@ -24,6 +25,7 @@ interface Props {
 }
 
 const { slug, categories = [] } = Astro.props;
+const parentHubs = getHubsForGuide(slug);
 
 const profiles = isComparisonGuide(slug)
   ? comparisonToolProfiles[slug]
@@ -160,6 +162,24 @@ const profileGridClass =
       }
 
       <p class="mt-8 text-sm text-ink-muted">
+        {
+          parentHubs.length > 0 && (
+            <>
+              {parentHubs.map((hub, i) => (
+                <>
+                  {i > 0 && " · "}
+                  <a
+                    href={guideHref(hub.slug)}
+                    class="font-semibold text-accent hover:text-accent-hover"
+                  >
+                    {hub.backlinkLabel}
+                  </a>
+                </>
+              ))}
+              {" · "}
+            </>
+          )
+        }
         Also see{" "}
         <a
           href={methodologyLink.href}

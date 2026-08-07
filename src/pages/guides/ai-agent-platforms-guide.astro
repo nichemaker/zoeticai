@@ -1,0 +1,817 @@
+---
+/**
+ * Pillar hub: AI Agent Platforms Guide 2026
+ * Central entry point for researching, comparing, and evaluating agent platforms.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import GuideExplore from "../../components/GuideExplore.astro";
+import HubSpokes from "../../components/HubSpokes.astro";
+import { site } from "../../data/site";
+import { categories, categoryHref, getCategoryCounts } from "../../data/categories";
+import { guideHref, guideLinkLabel, getGuideBySlug } from "../../data/guides";
+
+const title =
+  "AI Agent Platforms Guide 2026 — How to Choose, Compare & Evaluate";
+const description =
+  "Definitive 2026 guide to AI agent platforms: what they are, how to evaluate them, decision paths by team type, and clear links to every comparison, roundup, and TCO deep-dive on Zoetic AI.";
+const published = "2026-08-01";
+const readTime = "18 min";
+
+const categoryCounts = Object.fromEntries(
+  getCategoryCounts().map(({ meta, count }) => [meta.id, count]),
+);
+
+/** Orientation cards — main buyer-facing lanes */
+const orientationLanes = [
+  {
+    id: "Enterprise" as const,
+    title: "Enterprise",
+    body: "Governed agent suites on CRM, M365, ITSM, or cloud estates — SSO, admin, and systems of record first.",
+  },
+  {
+    id: "Frameworks" as const,
+    title: "Frameworks",
+    body: "Developer kits for multi-agent systems — graphs, crews, SDKs, and full control over orchestration.",
+  },
+  {
+    id: "No-Code" as const,
+    title: "No-Code",
+    body: "Visual builders so ops and GTM teams can ship agents without staffing a platform squad.",
+  },
+  {
+    id: "Coding" as const,
+    title: "Coding agents",
+    body: "IDE, CLI, and cloud agents for software delivery — a different buy than business process agents.",
+  },
+  {
+    id: "Workflow" as const,
+    title: "Workflow",
+    body: "iPaaS and automation suites adding agentic steps to triggers, connectors, and approvals.",
+  },
+];
+
+const evalCriteria = [
+  {
+    title: "Autonomy & multi-agent",
+    body: "Single assistant vs multi-step agent vs multi-agent crews with handoffs and durable runs.",
+  },
+  {
+    title: "Tools & integrations",
+    body: "Connectors, APIs, auth, and MCP-style tool servers for the systems you actually touch.",
+  },
+  {
+    title: "Memory & state",
+    body: "Session vs long-term memory, tenant isolation, retention, and export/delete paths.",
+  },
+  {
+    title: "Guardrails & HITL",
+    body: "Approvals, allowlists, policy checks, and audit trails for high-stakes actions.",
+  },
+  {
+    title: "Observability & evals",
+    body: "Traces, cost metrics, golden tasks, and a path to continuous quality review.",
+  },
+  {
+    title: "Deployment & governance",
+    body: "SaaS vs self-host/VPC, SSO, RBAC, residency, and change management.",
+  },
+  {
+    title: "Total cost of ownership",
+    body: "Seats, runs, tokens, connectors, support, and the people cost to build and operate.",
+  },
+];
+
+type DecisionPath = {
+  id: string;
+  title: string;
+  body: string;
+  href: string;
+  /** Visible primary CTA with descriptive anchor text */
+  label: string;
+  meta: ReturnType<typeof getGuideBySlug>;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+};
+
+const decisionPaths: DecisionPath[] = [
+  {
+    id: "frameworks-vs-enterprise",
+    title: "Frameworks vs enterprise platforms",
+    body: "Build on code you own, or buy a managed suite on the systems you already run? This is the first strategic fork for most companies.",
+    href: guideHref("frameworks-vs-enterprise-platforms"),
+    label: "Read Frameworks vs Enterprise",
+    meta: getGuideBySlug("frameworks-vs-enterprise-platforms"),
+  },
+  {
+    id: "smbs",
+    title: "Best for SMBs & startups",
+    body: "Founder-friendly shortlist: evaluation criteria that fit small teams, no-code vs technical picks, and a simple decision framework.",
+    href: guideHref("best-ai-agent-platforms-for-smbs-2026"),
+    label: "Read SMB & startups guide",
+    meta: getGuideBySlug("best-ai-agent-platforms-for-smbs-2026"),
+  },
+  {
+    id: "oss",
+    title: "Best open-source frameworks",
+    body: "Ranked OSS options for control, multi-agent topology, state, and production readiness — plus when OSS beats enterprise suites.",
+    href: guideHref("best-open-source-ai-agent-frameworks-2026"),
+    label: "Read OSS frameworks guide",
+    meta: getGuideBySlug("best-open-source-ai-agent-frameworks-2026"),
+  },
+  {
+    id: "nocode",
+    title: "No-code agent builders",
+    body: "Personal productivity vs multi-agent workforces vs team knowledge agents — without writing orchestration code.",
+    href: guideHref("lindy-vs-relevance-ai-vs-dust"),
+    label: "Read Lindy vs Relevance vs Dust",
+    meta: getGuideBySlug("lindy-vs-relevance-ai-vs-dust"),
+  },
+  {
+    id: "workflow",
+    title: "Workflow automation with agents",
+    body: "When agents sit inside automation platforms: capabilities, self-hosting, integrations, pricing, and real TCO.",
+    href: guideHref("n8n-vs-make-vs-zapier-agents"),
+    label: "Read n8n vs Make vs Zapier",
+    meta: getGuideBySlug("n8n-vs-make-vs-zapier-agents"),
+  },
+  {
+    id: "coding",
+    title: "Coding agents",
+    body: "Software-delivery agents are a separate lane. Start with the coding hub, then the Cursor vs Claude Code deep-dive.",
+    href: guideHref("best-ai-coding-agents-2026"),
+    label: "Read Best AI Coding Agents",
+    secondaryHref: guideHref("claude-code-vs-cursor"),
+    secondaryLabel: "Claude Code vs Cursor",
+    meta: getGuideBySlug("best-ai-coding-agents-2026"),
+  },
+  {
+    id: "tco",
+    title: "Cost & TCO considerations",
+    body: "List price is not the cost. Model seats, runs, tokens, hidden fees, and people time by company size.",
+    href: guideHref("ai-agent-platforms-tco-2026"),
+    label: "Read the TCO guide",
+    meta: getGuideBySlug("ai-agent-platforms-tco-2026"),
+  },
+];
+
+const comparisons = [
+  {
+    slug: "langgraph-vs-crewai",
+    focus: "Multi-agent frameworks",
+    blurb:
+      "Graph-first vs role-first orchestration — architecture, state, HITL, DX, and when to pick each.",
+  },
+  {
+    slug: "copilot-studio-vs-agentforce",
+    focus: "Enterprise suites",
+    blurb:
+      "Microsoft vs Salesforce agent platforms — grounding, governance, lock-in, pricing, and TCO.",
+  },
+  {
+    slug: "claude-code-vs-cursor",
+    focus: "Coding agents",
+    blurb:
+      "IDE-first vs terminal-first daily drivers — workflow, autonomy, refactors, and stack fit.",
+  },
+  {
+    slug: "n8n-vs-make-vs-zapier-agents",
+    focus: "Workflow automation",
+    blurb:
+      "Three automation platforms compared for real AI agents, integrations, self-hosting, and cost.",
+  },
+  {
+    slug: "lindy-vs-relevance-ai-vs-dust",
+    focus: "No-code builders",
+    blurb:
+      "Personal agents vs multi-agent workforces vs knowledge-centric team agents.",
+  },
+];
+
+const startingPoints = [
+  {
+    title: "If you’re a technical team…",
+    body: "You need control over graphs, tools, evals, and deploy. Start with strategy, then frameworks.",
+    links: [
+      {
+        href: guideHref("frameworks-vs-enterprise-platforms"),
+        label: "Frameworks vs enterprise",
+      },
+      {
+        href: guideHref("langgraph-vs-crewai"),
+        label: "LangGraph vs CrewAI",
+      },
+      {
+        href: guideHref("best-open-source-ai-agent-frameworks-2026"),
+        label: "Best open-source frameworks",
+      },
+      {
+        href: guideHref("best-ai-coding-agents-2026"),
+        label: "Best coding agents",
+      },
+    ],
+  },
+  {
+    title: "If you’re a non-technical / ops team…",
+    body: "Prioritize time-to-first-agent, connectors, and ownership without a platform squad.",
+    links: [
+      {
+        href: guideHref("lindy-vs-relevance-ai-vs-dust"),
+        label: "Lindy vs Relevance AI vs Dust",
+      },
+      {
+        href: guideHref("n8n-vs-make-vs-zapier-agents"),
+        label: "n8n vs Make vs Zapier Agents",
+      },
+      {
+        href: guideHref("best-ai-agent-platforms-for-smbs-2026"),
+        label: "Best platforms for SMBs",
+      },
+    ],
+  },
+  {
+    title: "If you’re an enterprise buyer…",
+    body: "Lead with governance, systems of record, and vendor fit — then model capacity cost.",
+    links: [
+      {
+        href: guideHref("copilot-studio-vs-agentforce"),
+        label: "Copilot Studio vs Agentforce",
+      },
+      {
+        href: guideHref("frameworks-vs-enterprise-platforms"),
+        label: "Frameworks vs enterprise",
+      },
+      {
+        href: guideHref("how-to-evaluate-ai-agent-platforms"),
+        label: "Full evaluation checklist",
+      },
+      {
+        href: guideHref("ai-agent-platforms-tco-2026"),
+        label: "TCO guide",
+      },
+    ],
+  },
+  {
+    title: "If budget is the main constraint…",
+    body: "Separate license line items from model spend and eng months before you shortlist.",
+    links: [
+      {
+        href: guideHref("ai-agent-platforms-tco-2026"),
+        label: "What platforms actually cost",
+      },
+      {
+        href: guideHref("best-ai-agent-platforms-for-smbs-2026"),
+        label: "SMB-friendly shortlist",
+      },
+      {
+        href: guideHref("best-open-source-ai-agent-frameworks-2026"),
+        label: "Open-source frameworks",
+      },
+      {
+        href: guideHref("how-to-evaluate-ai-agent-platforms"),
+        label: "Score on TCO criteria",
+      },
+    ],
+  },
+];
+
+const toc = [
+  { href: "#introduction", label: "Introduction" },
+  { href: "#orientation", label: "Quick orientation" },
+  { href: "#evaluate", label: "How to evaluate" },
+  { href: "#decision-paths", label: "Decision paths" },
+  { href: "#comparisons", label: "Head-to-head comparisons" },
+  { href: "#starting-points", label: "Recommended starting points" },
+  { href: "#cluster", label: "Full cluster map" },
+  { href: "#next", label: "Explore the directory" },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical="/guides/ai-agent-platforms-guide/"
+  isArticle
+  breadcrumbs={[
+    { name: "Home", path: "/" },
+    { name: "Guides", path: "/guides/" },
+    {
+      name: "AI Agent Platforms Guide",
+      path: "/guides/ai-agent-platforms-guide/",
+    },
+  ]}
+  article={{
+    headline: title,
+    description,
+    datePublished: published,
+    dateModified: published,
+  }}
+>
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="page-hero-glow" aria-hidden="true"></div>
+    <div class="container-site relative py-11 sm:py-14">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Guides", href: "/guides/" },
+          { label: "AI Agent Platforms Guide" },
+        ]}
+      />
+
+      <div class="mt-8 max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+          <span class="pill-accent">Pillar hub</span>
+          <span
+            class="rounded-full bg-surface px-3 py-1 text-ink-soft ring-1 ring-border"
+          >
+            Topic cluster
+          </span>
+          <span class="text-ink-soft">
+            <time datetime={published}>Aug 1, 2026</time>
+            <span aria-hidden="true"> · </span>
+            {readTime} read
+          </span>
+        </div>
+
+        <h1 class="text-page-title mt-4 lg:text-[2.35rem]">
+          AI Agent Platforms Guide 2026 — How to Choose, Compare & Evaluate
+        </h1>
+        <p class="text-body-lg mt-4">
+          The definitive starting point on Zoetic AI for researching AI agent
+          platforms: what the market looks like, how to evaluate options, which
+          decision path fits your team, and every deep-dive comparison in this
+          topic cluster.
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#decision-paths" class="btn-primary">Decision paths</a>
+          <a href="#comparisons" class="btn-secondary">Comparisons</a>
+          <a href="#starting-points" class="btn-secondary">Start by role</a>
+        </div>
+      </div>
+
+      <!-- Jump nav -->
+      <nav
+        class="mt-10 max-w-4xl rounded-2xl border border-border bg-surface/90 p-4 sm:p-5"
+        aria-label="On this page"
+      >
+        <p class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+          On this page
+        </p>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          {
+            toc.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="inline-flex items-center rounded-full border border-border bg-surface-muted px-3 py-1.5 text-sm font-medium text-ink-muted transition-colors hover:border-accent/30 hover:bg-accent-soft hover:text-accent"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <article class="bg-surface">
+    <div class="container-site section-y">
+      <div class="mx-auto max-w-3xl">
+        <!-- 1. Introduction -->
+        <section class="prose-guide" id="introduction">
+          <h2 class="guide-h2">What AI agent platforms are in 2026</h2>
+          <p>
+            An <strong class="font-semibold text-ink">AI agent platform</strong>{" "}
+            is software that lets models plan, call tools, keep state, and finish
+            multi-step work — not only chat. In 2026 that includes developer
+            frameworks, enterprise suites on CRM or cloud estates, no-code
+            builders for ops teams, workflow products with agent steps, and coding
+            agents for software delivery. Marketing language often collapses these
+            into one “agent” claim. They are not interchangeable products.
+          </p>
+          <p>
+            Choosing well is hard for three reasons. First,{" "}
+            <strong class="font-semibold text-ink">category mistakes</strong>:
+            comparing LangGraph-class control to Copilot Studio-class governance
+            as if they solve the same job. Second,{" "}
+            <strong class="font-semibold text-ink">demo bias</strong>: polished
+            chat UIs hide weak permissions, memory, and operate cost. Third,{" "}
+            <strong class="font-semibold text-ink">opaque TCO</strong>: seats,
+            runs, tokens, connectors, and eng months rarely appear on one quote.
+          </p>
+          <p>
+            <strong class="font-semibold text-ink">What this guide covers:</strong
+            >{" "}
+            a clear map of the market, a practical evaluation checklist, major
+            decision paths with links to full spoke guides, the key head-to-head
+            comparisons on this site, and recommended starting points by team
+            type. Use this page as the hub; open a spoke when you need a decision.
+          </p>
+        </section>
+
+        <!-- 2. Quick orientation -->
+        <section class="mt-14 sm:mt-16" id="orientation">
+          <h2 class="guide-h2">Quick orientation: the main categories</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Start by matching{" "}
+            <em class="not-italic font-medium text-ink"
+              >who builds and operates the agent</em
+            >{" "}
+            and{" "}
+            <em class="not-italic font-medium text-ink"
+              >where the system of record lives</em
+            >. Then browse scored listings in that lane.
+          </p>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              orientationLanes.map((lane) => {
+                const meta = categories.find((c) => c.id === lane.id);
+                const count = categoryCounts[lane.id] ?? 0;
+                return meta ? (
+                  <li>
+                    <a
+                      href={categoryHref(meta)}
+                      class="card-interactive group flex h-full flex-col p-5 sm:p-6"
+                    >
+                      <span class="flex items-center justify-between gap-2">
+                        <span class="text-base font-semibold text-ink group-hover:text-accent">
+                          {lane.title}
+                        </span>
+                        <span class="text-[11px] font-semibold tabular-nums text-ink-soft">
+                          {count} platforms
+                        </span>
+                      </span>
+                      <span class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
+                        {lane.body}
+                      </span>
+                      <span class="mt-4 text-sm font-semibold text-accent">
+                        Browse {meta.name} →
+                      </span>
+                    </a>
+                  </li>
+                ) : null;
+              })
+            }
+          </ul>
+          <p class="mt-6 text-sm text-ink-muted">
+            Prefer filters across all lanes?{" "}
+            <a
+              href="/platforms/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >All platforms</a
+            >{" "}
+            ·{" "}
+            <a
+              href="/categories/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >All categories</a
+            >.
+          </p>
+        </section>
+
+        <!-- 3. How to evaluate -->
+        <section class="mt-14 sm:mt-16" id="evaluate">
+          <h2 class="guide-h2">How to evaluate AI agent platforms</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Fix the workload and success metric first. Then score every finalist
+            on the same criteria — not on the vendor’s demo script. We use seven
+            buyer-facing dimensions (details and a copyable scoring sheet live
+            in the full evaluation guide).
+          </p>
+          <ol class="mt-8 space-y-3">
+            {
+              evalCriteria.map((c, i) => (
+                <li class="flex gap-4 rounded-2xl border border-border bg-surface-muted/40 p-4 sm:p-5">
+                  <span
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-xs font-bold tabular-nums text-accent"
+                    aria-hidden="true"
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 class="text-base font-semibold text-ink">{c.title}</h3>
+                    <p class="mt-1 text-sm leading-relaxed text-ink-muted">
+                      {c.body}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+          <div
+            class="mt-8 grid gap-3 rounded-2xl border border-accent/20 bg-accent-soft/30 p-5 sm:grid-cols-2 sm:p-6"
+          >
+            <div>
+              <p class="text-sm font-semibold text-ink">Full evaluation playbook</p>
+              <p class="mt-1 text-sm text-ink-muted">
+                Seven criteria, scoring sheet, common mistakes, and category
+                decision rules.
+              </p>
+              <a
+                href={guideHref("how-to-evaluate-ai-agent-platforms")}
+                class="mt-3 inline-flex text-sm font-semibold text-accent hover:text-accent-hover"
+              >
+                How to Evaluate AI Agent Platforms →
+              </a>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-ink">How we score the directory</p>
+              <p class="mt-1 text-sm text-ink-muted">
+                Six dimensions, overall score derivation, and production-readiness
+                criteria.
+              </p>
+              <a
+                href="/methodology/"
+                class="mt-3 inline-flex text-sm font-semibold text-accent hover:text-accent-hover"
+              >
+                Methodology →
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Major decision paths -->
+        <section class="mt-14 sm:mt-16" id="decision-paths">
+          <h2 class="guide-h2">Major decision paths</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Pick the path that matches your constraint, then open the full spoke
+            guide. Each link is a dedicated article — not a buried footnote.
+          </p>
+          <ul class="mt-8 space-y-4">
+            {
+              decisionPaths.map((path, i) => (
+                <li
+                  class="card-surface overflow-hidden p-0"
+                  id={path.id}
+                >
+                  <div class="flex flex-col sm:flex-row">
+                    <div class="flex items-start gap-4 p-5 sm:flex-1 sm:p-6">
+                      <span
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-fg"
+                        aria-hidden="true"
+                      >
+                        {i + 1}
+                      </span>
+                      <div class="min-w-0">
+                        <h3 class="text-lg font-semibold tracking-tight text-ink">
+                          {path.title}
+                        </h3>
+                        <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                          {path.body}
+                        </p>
+                        {path.meta && (
+                          <p class="mt-2 text-xs font-medium text-ink-soft">
+                            {path.meta.category} · {path.meta.readTime} read
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div class="flex shrink-0 flex-col justify-center gap-2 border-t border-border bg-surface-muted/50 px-5 py-4 sm:w-60 sm:border-l sm:border-t-0 sm:px-5">
+                      <a
+                        href={path.href}
+                        class="inline-flex items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-center text-sm font-semibold text-accent-fg transition-colors hover:bg-accent-hover"
+                      >
+                        {path.label} →
+                      </a>
+                      {path.secondaryHref && path.secondaryLabel && (
+                        <a
+                          href={path.secondaryHref}
+                          class="text-center text-sm font-semibold text-accent hover:text-accent-hover"
+                        >
+                          {path.secondaryLabel} →
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <!-- 5. Key head-to-head comparisons -->
+        <section class="mt-14 sm:mt-16" id="comparisons">
+          <h2 class="guide-h2">Key head-to-head comparisons</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            When you already know the two or three products in play, go straight
+            to a comparison. These are the primary head-to-heads in this cluster.
+          </p>
+          <ul class="mt-8 space-y-3">
+            {
+              comparisons.map((c) => {
+                const g = getGuideBySlug(c.slug);
+                return (
+                  <li>
+                    <a
+                      href={guideHref(c.slug)}
+                      class="card-interactive group flex flex-col p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-6"
+                    >
+                      <span class="min-w-0">
+                        <span class="text-[11px] font-semibold uppercase tracking-wider text-accent">
+                          {c.focus}
+                        </span>
+                        <span class="mt-1 block text-base font-semibold text-ink transition-colors group-hover:text-accent sm:text-lg">
+                          {guideLinkLabel(c.slug)}
+                        </span>
+                        <span class="mt-1.5 block text-sm leading-relaxed text-ink-muted">
+                          {c.blurb}
+                        </span>
+                        {g && (
+                          <span class="mt-2 block text-xs font-medium text-ink-soft">
+                            {g.readTime} read
+                          </span>
+                        )}
+                      </span>
+                      <span class="mt-4 shrink-0 text-sm font-semibold text-accent sm:mt-0">
+                        Compare →
+                      </span>
+                    </a>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </section>
+
+        <!-- 6. Recommended starting points -->
+        <section class="mt-14 sm:mt-16" id="starting-points">
+          <h2 class="guide-h2">Recommended starting points</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            If you only open three pages after this hub, use the set that matches
+            how your team buys and ships.
+          </p>
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            {
+              startingPoints.map((sp) => (
+                <div class="card-surface flex flex-col p-5 sm:p-6">
+                  <h3 class="text-base font-semibold text-ink">{sp.title}</h3>
+                  <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
+                    {sp.body}
+                  </p>
+                  <ul class="mt-4 space-y-2 border-t border-border pt-4">
+                    {sp.links.map((l) => (
+                      <li>
+                        <a
+                          href={l.href}
+                          class="text-sm font-semibold text-accent hover:text-accent-hover"
+                        >
+                          {l.label} →
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+          </div>
+        </section>
+
+        <!-- Full cluster (spokes) -->
+        <HubSpokes
+          hubId="agent-platforms"
+          title="Full cluster map — every spoke guide"
+          description="Complete list of guides that hang off this hub. Each spoke links back here so you never lose the overview."
+          showTools={false}
+          id="cluster"
+        />
+
+        <!-- 7. Final section -->
+        <section class="mt-14 sm:mt-16" id="next">
+          <h2 class="guide-h2">Explore the directory — or get help shipping</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            When you have a shortlist, validate features, scores, and similar
+            tools in the directory. Profiles are scored against our{" "}
+            <a
+              href="/methodology/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >methodology</a
+            >{" "}
+            so you can compare apples to apples.
+          </p>
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            <a
+              href="/platforms/"
+              class="card-interactive group flex flex-col p-6"
+            >
+              <span class="text-lg font-semibold text-ink group-hover:text-accent">
+                All platforms
+              </span>
+              <span class="mt-2 text-sm text-ink-muted">
+                Filter the full catalog by category, features, pricing, and score.
+              </span>
+              <span class="mt-4 text-sm font-semibold text-accent">Browse →</span>
+            </a>
+            <a
+              href="/categories/"
+              class="card-interactive group flex flex-col p-6"
+            >
+              <span class="text-lg font-semibold text-ink group-hover:text-accent">
+                Browse by category
+              </span>
+              <span class="mt-2 text-sm text-ink-muted">
+                Enterprise, frameworks, no-code, coding, browser, and workflow
+                hubs.
+              </span>
+              <span class="mt-4 text-sm font-semibold text-accent">
+                Categories →
+              </span>
+            </a>
+          </div>
+          <p class="mt-8 text-base leading-relaxed text-ink-muted">
+            Need a shortlist and an implementation plan — not only research?
+            Zoetic AI helps teams design, build, and operate production agent
+            systems with clear boundaries and governance.{" "}
+            <a
+              href={site.cta.href}
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Talk about implementation</a
+            >{" "}
+            or{" "}
+            <a
+              href="/contact/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >contact us</a
+            >.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <GuideExplore
+    slug="ai-agent-platforms-guide"
+    categories={["Frameworks", "Enterprise", "No-Code", "Workflow", "Coding"]}
+  />
+
+  <!-- CTA banner -->
+  <section class="relative overflow-hidden bg-ink text-accent-fg">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgb(79_70_229_/_0.25)_0%,_transparent_55%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-site relative section-y">
+      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300"
+        >
+          Next step
+        </p>
+        <h2
+          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
+        >
+          Shortlist with scores — then ship with confidence
+        </h2>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-300">
+          Use the directory for comparable profiles, or partner with a team that
+          has already implemented production agents under real constraints.
+        </p>
+        <div
+          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
+        >
+          <a
+            href="/platforms/"
+            class="inline-flex items-center justify-center rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-fg shadow-(--shadow-md) transition-[background-color,transform] duration-150 hover:bg-accent-hover active:scale-[0.98]"
+          >
+            Browse all platforms
+          </a>
+          <a
+            href={site.cta.href}
+            class="inline-flex items-center justify-center rounded-xl border border-slate-600 bg-transparent px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-slate-400 hover:bg-white/5"
+            rel="noopener noreferrer"
+          >
+            Talk about implementation
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+    line-height: 1.25;
+  }
+  @media (min-width: 640px) {
+    .guide-h2 {
+      font-size: 1.75rem;
+    }
+  }
+  .prose-guide p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+  }
+  @media (min-width: 640px) {
+    .prose-guide p {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

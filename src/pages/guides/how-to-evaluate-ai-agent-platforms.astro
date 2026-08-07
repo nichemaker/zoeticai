@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
+import HubBacklink from "../../components/HubBacklink.astro";
 import GuideExplore from "../../components/GuideExplore.astro";
 import { site } from "../../data/site";
 
@@ -173,6 +174,10 @@ const decisionRows = [
           { label: "Evaluate platforms" },
         ]}
       />
+
+      <div class="mt-6 max-w-3xl">
+        <HubBacklink guideSlug="how-to-evaluate-ai-agent-platforms" />
+      </div>
 
       <div class="mt-8 grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
         <div class="lg:col-span-6">

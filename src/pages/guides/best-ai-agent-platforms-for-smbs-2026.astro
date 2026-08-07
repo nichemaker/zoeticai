@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
+import HubBacklink from "../../components/HubBacklink.astro";
 import GuideExplore from "../../components/GuideExplore.astro";
 import { site } from "../../data/site";
 import { getToolBySlug } from "../../data/tools";
@@ -419,6 +420,10 @@ const decisionSteps = [
           { label: "Best AI agents for SMBs 2026" },
         ]}
       />
+
+      <div class="mt-6 max-w-3xl">
+        <HubBacklink guideSlug="best-ai-agent-platforms-for-smbs-2026" />
+      </div>
 
       <div class="mt-8 max-w-3xl">
         <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">

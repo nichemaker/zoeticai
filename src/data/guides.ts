@@ -16,6 +16,16 @@ export type GuidePreview = {
  */
 export const latestGuides: GuidePreview[] = [
   {
+    slug: "ai-agent-platforms-guide",
+    title:
+      "AI Agent Platforms Guide 2026 — How to Choose, Compare & Evaluate",
+    excerpt:
+      "Definitive hub for AI agent platforms: market lanes, evaluation criteria, decision paths, and every comparison and TCO deep-dive in this cluster.",
+    category: "Pillar",
+    readTime: "18 min",
+    date: "2026-08-01",
+  },
+  {
     slug: "best-ai-coding-agents-2026",
     title: "Best AI Coding Agents in 2026",
     excerpt:
@@ -200,9 +210,23 @@ export function getRelatedComparisons(currentSlug: string): GuidePreview[] {
 /**
  * Contextual related guides per article — newest high-signal pieces first,
  * only where they make sense. Used by RelatedComparisons + GuideExplore.
+ * Hub pillar pages are listed first on their spokes.
  */
 const relatedGuidesBySlug: Record<string, string[]> = {
+  "ai-agent-platforms-guide": [
+    "how-to-evaluate-ai-agent-platforms",
+    "ai-agent-platforms-tco-2026",
+    "frameworks-vs-enterprise-platforms",
+    "langgraph-vs-crewai",
+    "copilot-studio-vs-agentforce",
+    "n8n-vs-make-vs-zapier-agents",
+    "lindy-vs-relevance-ai-vs-dust",
+    "best-ai-agent-platforms-for-smbs-2026",
+    "best-open-source-ai-agent-frameworks-2026",
+    "best-ai-coding-agents-2026",
+  ],
   "langgraph-vs-crewai": [
+    "ai-agent-platforms-guide",
     "best-open-source-ai-agent-frameworks-2026",
     "ai-agent-platforms-tco-2026",
     "best-ai-agent-platforms-for-smbs-2026",
@@ -212,29 +236,34 @@ const relatedGuidesBySlug: Record<string, string[]> = {
   ],
   "claude-code-vs-cursor": [
     "best-ai-coding-agents-2026",
+    "ai-agent-platforms-guide",
     "ai-agent-platforms-tco-2026",
     "how-to-evaluate-ai-agent-platforms",
     "mcp-and-tool-calling-explained",
   ],
   "copilot-studio-vs-agentforce": [
+    "ai-agent-platforms-guide",
     "ai-agent-platforms-tco-2026",
     "frameworks-vs-enterprise-platforms",
     "how-to-evaluate-ai-agent-platforms",
     "best-ai-agent-platforms-for-smbs-2026",
   ],
   "n8n-vs-make-vs-zapier-agents": [
+    "ai-agent-platforms-guide",
     "lindy-vs-relevance-ai-vs-dust",
     "best-ai-agent-platforms-for-smbs-2026",
     "ai-agent-platforms-tco-2026",
     "how-to-evaluate-ai-agent-platforms",
   ],
   "lindy-vs-relevance-ai-vs-dust": [
+    "ai-agent-platforms-guide",
     "n8n-vs-make-vs-zapier-agents",
     "best-ai-agent-platforms-for-smbs-2026",
     "ai-agent-platforms-tco-2026",
     "how-to-evaluate-ai-agent-platforms",
   ],
   "how-to-evaluate-ai-agent-platforms": [
+    "ai-agent-platforms-guide",
     "ai-agent-platforms-tco-2026",
     "best-ai-agent-platforms-for-smbs-2026",
     "best-ai-coding-agents-2026",
@@ -246,6 +275,7 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "copilot-studio-vs-agentforce",
   ],
   "frameworks-vs-enterprise-platforms": [
+    "ai-agent-platforms-guide",
     "langgraph-vs-crewai",
     "copilot-studio-vs-agentforce",
     "best-open-source-ai-agent-frameworks-2026",
@@ -254,12 +284,14 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "how-to-evaluate-ai-agent-platforms",
   ],
   "mcp-and-tool-calling-explained": [
+    "ai-agent-platforms-guide",
     "best-ai-coding-agents-2026",
     "best-open-source-ai-agent-frameworks-2026",
     "how-to-evaluate-ai-agent-platforms",
     "langgraph-vs-crewai",
   ],
   "best-open-source-ai-agent-frameworks-2026": [
+    "ai-agent-platforms-guide",
     "langgraph-vs-crewai",
     "ai-agent-platforms-tco-2026",
     "frameworks-vs-enterprise-platforms",
@@ -267,12 +299,14 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "how-to-evaluate-ai-agent-platforms",
   ],
   "best-ai-coding-agents-2026": [
+    "ai-agent-platforms-guide",
     "claude-code-vs-cursor",
     "ai-agent-platforms-tco-2026",
     "mcp-and-tool-calling-explained",
     "how-to-evaluate-ai-agent-platforms",
   ],
   "ai-agent-platforms-tco-2026": [
+    "ai-agent-platforms-guide",
     "how-to-evaluate-ai-agent-platforms",
     "best-ai-agent-platforms-for-smbs-2026",
     "n8n-vs-make-vs-zapier-agents",
@@ -281,6 +315,7 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "copilot-studio-vs-agentforce",
   ],
   "best-ai-agent-platforms-for-smbs-2026": [
+    "ai-agent-platforms-guide",
     "n8n-vs-make-vs-zapier-agents",
     "lindy-vs-relevance-ai-vs-dust",
     "ai-agent-platforms-tco-2026",
@@ -413,7 +448,12 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
     if (!ordered.includes(slug)) ordered.push(slug);
   };
 
-  // Primary head-to-head first (when this tool is in one)
+  // Topic hubs first (coding agents hub and/or platforms pillar)
+  for (const hub of getHubsForTool(tool.slug)) {
+    add(hub.slug);
+  }
+
+  // Primary head-to-head (when this tool is in one)
   const primary = getPrimaryComparisonForTool(tool.slug);
   if (primary) add(primary.slug);
 
@@ -463,6 +503,7 @@ export function getRelatedGuidesForCategory(
 ): GuidePreview[] {
   const byCat: Record<ToolCategory, string[]> = {
     Enterprise: [
+      "ai-agent-platforms-guide",
       "copilot-studio-vs-agentforce",
       "ai-agent-platforms-tco-2026",
       "frameworks-vs-enterprise-platforms",
@@ -470,6 +511,7 @@ export function getRelatedGuidesForCategory(
       "best-ai-agent-platforms-for-smbs-2026",
     ],
     Frameworks: [
+      "ai-agent-platforms-guide",
       "best-open-source-ai-agent-frameworks-2026",
       "langgraph-vs-crewai",
       "ai-agent-platforms-tco-2026",
@@ -479,6 +521,7 @@ export function getRelatedGuidesForCategory(
       "how-to-evaluate-ai-agent-platforms",
     ],
     "No-Code": [
+      "ai-agent-platforms-guide",
       "lindy-vs-relevance-ai-vs-dust",
       "best-ai-agent-platforms-for-smbs-2026",
       "n8n-vs-make-vs-zapier-agents",
@@ -489,16 +532,19 @@ export function getRelatedGuidesForCategory(
     Coding: [
       "best-ai-coding-agents-2026",
       "claude-code-vs-cursor",
+      "ai-agent-platforms-guide",
       "ai-agent-platforms-tco-2026",
       "mcp-and-tool-calling-explained",
       "how-to-evaluate-ai-agent-platforms",
     ],
     Browser: [
+      "ai-agent-platforms-guide",
       "mcp-and-tool-calling-explained",
       "ai-agent-platforms-tco-2026",
       "how-to-evaluate-ai-agent-platforms",
     ],
     Workflow: [
+      "ai-agent-platforms-guide",
       "n8n-vs-make-vs-zapier-agents",
       "best-ai-agent-platforms-for-smbs-2026",
       "lindy-vs-relevance-ai-vs-dust",
@@ -508,7 +554,10 @@ export function getRelatedGuidesForCategory(
     ],
   };
 
-  const slugs = byCat[category] ?? ["how-to-evaluate-ai-agent-platforms"];
+  const slugs = byCat[category] ?? [
+    "ai-agent-platforms-guide",
+    "how-to-evaluate-ai-agent-platforms",
+  ];
   return resolveGuideSlugs(slugs);
 }
 
@@ -519,11 +568,292 @@ export function getFeaturedGuideForCategory(
   return getRelatedGuidesForCategory(category)[0];
 }
 
+/* -------------------------------------------------------------------------- */
+/* Topic clusters (hub & spoke)                                               */
+/* -------------------------------------------------------------------------- */
+
+export type TopicHubId = "coding-agents" | "agent-platforms";
+
+export type HubSpokeGuide = {
+  slug: string;
+  /** Short blurb for hub navigation cards */
+  blurb: string;
+};
+
+export type HubSpokeTool = {
+  slug: string;
+  blurb: string;
+};
+
+export type HubSpokeBacklink = {
+  label: string;
+  detail: string;
+};
+
+export type TopicHub = {
+  id: TopicHubId;
+  /** Hub page guide slug */
+  slug: string;
+  /** Short label for badges / chips */
+  name: string;
+  /** Full hub title */
+  title: string;
+  description: string;
+  /** Spoke → hub anchor text, e.g. “Part of our AI Agent Platforms Guide” */
+  backlinkLabel: string;
+  /** Secondary line under the backlink */
+  backlinkDetail: string;
+  /** Optional per-spoke natural language for hub backlinks */
+  spokeBacklinks?: Record<string, HubSpokeBacklink>;
+  spokeGuides: HubSpokeGuide[];
+  spokeTools?: HubSpokeTool[];
+};
+
+/** Resolve natural backlink copy for a spoke (guide or tool) on a hub. */
+export function getHubBacklinkCopy(
+  hub: TopicHub,
+  spokeSlug?: string,
+): HubSpokeBacklink {
+  if (spokeSlug && hub.spokeBacklinks?.[spokeSlug]) {
+    return hub.spokeBacklinks[spokeSlug];
+  }
+  return { label: hub.backlinkLabel, detail: hub.backlinkDetail };
+}
+
+/**
+ * Editorial topic clusters. Hubs are central overview pages; spokes link back.
+ */
+export const topicHubs: TopicHub[] = [
+  {
+    id: "coding-agents",
+    slug: "best-ai-coding-agents-2026",
+    name: "AI Coding Agents",
+    title: "Best AI Coding Agents in 2026",
+    description:
+      "Hub for IDE, CLI, cloud, and open-source coding agents — ranked picks, the Claude Code vs Cursor deep-dive, and scored tool profiles.",
+    backlinkLabel: "See the full Best AI Coding Agents guide",
+    backlinkDetail:
+      "Part of our AI Coding Agents topic cluster — ranked picks, comparison, and directory profiles.",
+    spokeGuides: [
+      {
+        slug: "claude-code-vs-cursor",
+        blurb:
+          "Head-to-head: IDE-first Cursor vs terminal-first Claude Code — workflow, autonomy, pricing, and when to use both.",
+      },
+    ],
+    spokeTools: [
+      { slug: "cursor", blurb: "AI-native IDE — default daily driver for many product teams." },
+      {
+        slug: "claude-code",
+        blurb: "Terminal coding agent for multi-file refactors and long sessions.",
+      },
+      {
+        slug: "github-copilot-agents",
+        blurb: "Agentic coding in the GitHub + Copilot ecosystem.",
+      },
+      {
+        slug: "cline",
+        blurb: "Open-source VS Code agent with plan/act and MCP.",
+      },
+      {
+        slug: "openai-codex",
+        blurb: "Cloud coding agent in the OpenAI stack.",
+      },
+      {
+        slug: "devin",
+        blurb: "Autonomous software engineer for scoped tickets.",
+      },
+    ],
+  },
+  {
+    id: "agent-platforms",
+    slug: "ai-agent-platforms-guide",
+    name: "AI Agent Platforms",
+    title:
+      "AI Agent Platforms Guide 2026 — How to Choose, Compare & Evaluate",
+    description:
+      "Pillar hub for choosing, comparing, and evaluating AI agent platforms — frameworks, enterprise suites, no-code, workflow, TCO, and head-to-heads.",
+    backlinkLabel: "See the full AI Agent Platforms Guide",
+    backlinkDetail:
+      "More comparisons, decision frameworks, evaluation criteria, and TCO guidance in one place.",
+    /** Natural copy keyed by spoke slug (falls back to backlinkLabel / Detail). */
+    spokeBacklinks: {
+      "langgraph-vs-crewai": {
+        label:
+          "This comparison is part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for frameworks vs enterprise, OSS roundups, and more head-to-heads.",
+      },
+      "copilot-studio-vs-agentforce": {
+        label:
+          "This comparison is part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for enterprise buying paths, TCO, and related comparisons.",
+      },
+      "n8n-vs-make-vs-zapier-agents": {
+        label:
+          "This comparison is part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for workflow vs no-code lanes and SMB shortlists.",
+      },
+      "lindy-vs-relevance-ai-vs-dust": {
+        label:
+          "This comparison is part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for no-code vs frameworks and evaluation checklists.",
+      },
+      "claude-code-vs-cursor": {
+        label:
+          "This comparison is part of our complete AI Agent Platforms Guide",
+        detail:
+          "Coding agents sit in a separate lane — the full guide maps every platform category.",
+      },
+      "best-ai-agent-platforms-for-smbs-2026": {
+        label: "Part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for decision paths, comparisons, and how to evaluate any platform.",
+      },
+      "best-open-source-ai-agent-frameworks-2026": {
+        label: "Part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for frameworks vs enterprise and multi-agent comparisons.",
+      },
+      "ai-agent-platforms-tco-2026": {
+        label: "Part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for cost-aware decision paths and platform shortlists.",
+      },
+      "frameworks-vs-enterprise-platforms": {
+        label: "Part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for lane orientation and every related comparison.",
+      },
+      "how-to-evaluate-ai-agent-platforms": {
+        label: "Part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for decision paths and head-to-head comparisons after you score options.",
+      },
+      "best-ai-coding-agents-2026": {
+        label:
+          "See the full AI Agent Platforms Guide for more comparisons and decision frameworks",
+        detail:
+          "Coding agents are one lane — the platforms pillar maps frameworks, enterprise, no-code, and workflow too.",
+      },
+    },
+    spokeGuides: [
+      {
+        slug: "langgraph-vs-crewai",
+        blurb:
+          "Graph-first vs role-first multi-agent frameworks for engineering teams.",
+      },
+      {
+        slug: "copilot-studio-vs-agentforce",
+        blurb:
+          "Microsoft vs Salesforce enterprise agent platforms — grounding, governance, lock-in, TCO.",
+      },
+      {
+        slug: "n8n-vs-make-vs-zapier-agents",
+        blurb:
+          "Workflow automation platforms compared for real AI agents and ops automations.",
+      },
+      {
+        slug: "lindy-vs-relevance-ai-vs-dust",
+        blurb:
+          "No-code agent builders: personal productivity vs multi-agent workforces vs team knowledge.",
+      },
+      {
+        slug: "best-ai-agent-platforms-for-smbs-2026",
+        blurb:
+          "Founder-friendly shortlist and decision framework for SMBs and startups.",
+      },
+      {
+        slug: "best-open-source-ai-agent-frameworks-2026",
+        blurb:
+          "Ranked OSS frameworks for control, multi-agent, and production readiness.",
+      },
+      {
+        slug: "ai-agent-platforms-tco-2026",
+        blurb:
+          "What platforms actually cost — seats, runs, models, people, and hidden spend.",
+      },
+      {
+        slug: "frameworks-vs-enterprise-platforms",
+        blurb:
+          "When to build on frameworks vs buy a managed enterprise suite.",
+      },
+      {
+        slug: "how-to-evaluate-ai-agent-platforms",
+        blurb:
+          "Seven-criteria evaluation checklist and scoring sheet you can copy.",
+      },
+      {
+        slug: "best-ai-coding-agents-2026",
+        blurb:
+          "IDE, CLI, and cloud coding agents — separate buying lane for software teams.",
+      },
+      {
+        slug: "claude-code-vs-cursor",
+        blurb:
+          "IDE-first vs terminal-first coding agents — the two most common daily drivers.",
+      },
+    ],
+  },
+];
+
+export function getTopicHub(id: TopicHubId): TopicHub {
+  const hub = topicHubs.find((h) => h.id === id);
+  if (!hub) throw new Error(`Unknown topic hub: ${id}`);
+  return hub;
+}
+
+export function getHubBySlug(slug: string): TopicHub | undefined {
+  return topicHubs.find((h) => h.slug === slug);
+}
+
+export function isHubPage(slug: string): boolean {
+  return topicHubs.some((h) => h.slug === slug);
+}
+
+/** Hubs that list this guide as a spoke (excludes the hub page itself). */
+export function getHubsForGuide(guideSlug: string): TopicHub[] {
+  return topicHubs.filter(
+    (h) =>
+      h.slug !== guideSlug &&
+      h.spokeGuides.some((s) => s.slug === guideSlug),
+  );
+}
+
+/** Hubs that list this tool as a spoke. */
+export function getHubsForTool(toolSlug: string): TopicHub[] {
+  return topicHubs.filter((h) =>
+    h.spokeTools?.some((s) => s.slug === toolSlug),
+  );
+}
+
+export function getHubSpokeGuides(hub: TopicHub): GuidePreview[] {
+  return resolveGuideSlugs(hub.spokeGuides.map((s) => s.slug));
+}
+
+export function getHubPreview(hub: TopicHub): GuidePreview | undefined {
+  return getGuideBySlug(hub.slug);
+}
+
 /** Example tools to surface from guides (stable slugs). */
 export const guideExampleTools: Record<
   string,
   { label: string; slugs: string[] }
 > = {
+  "ai-agent-platforms-guide": {
+    label: "Example platforms across lanes",
+    slugs: [
+      "langgraph",
+      "microsoft-copilot-studio",
+      "n8n",
+      "lindy",
+      "cursor",
+      "relevance-ai",
+    ],
+  },
   "how-to-evaluate-ai-agent-platforms": {
     label: "Start with a few scored profiles",
     slugs: ["cursor", "langgraph", "aws-bedrock-agents", "n8n"],

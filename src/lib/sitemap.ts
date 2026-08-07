@@ -52,14 +52,19 @@ export function getSitemapMeta(pageUrl: string): SitemapMeta {
     };
   }
 
-  // Guide article — use guide date
+  // Guide article — use guide date; topic hubs get higher priority
   const guideMatch = path.match(/^\/guides\/([^/]+)$/);
   if (guideMatch && guideMatch[1]) {
     const guide = latestGuides.find((g) => g.slug === guideMatch[1]);
+    const hubSlugs = new Set([
+      "ai-agent-platforms-guide",
+      "best-ai-coding-agents-2026",
+    ]);
+    const isHub = hubSlugs.has(guideMatch[1]);
     return {
       lastmod: guide ? parseDate(guide.date) : BUILD_DATE,
-      changefreq: "monthly",
-      priority: 0.8,
+      changefreq: isHub ? "weekly" : "monthly",
+      priority: isHub ? 0.92 : 0.8,
     };
   }
 

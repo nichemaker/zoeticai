@@ -11,6 +11,8 @@ import {
 import { getCategoryCounts, categoryHref } from "../data/categories";
 import {
   getLatestGuides,
+  getGuideBySlug,
+  getTopicHub,
   guideHref,
   HOMEPAGE_LATEST_GUIDES_COUNT,
 } from "../data/guides";
@@ -24,6 +26,10 @@ const categoryCards = getCategoryCounts();
 const catalogCount = tools.length || 0;
 /** Newest-first subset for the homepage strip */
 const guideList = getLatestGuides(HOMEPAGE_LATEST_GUIDES_COUNT);
+
+const platformsPillar = getTopicHub("agent-platforms");
+const platformsPillarPreview = getGuideBySlug(platformsPillar.slug);
+const codingHub = getTopicHub("coding-agents");
 
 /** High-signal comparisons called out near Latest guides */
 const featuredComparisons = [
@@ -66,9 +72,9 @@ const whyItems = [
   },
   {
     title: "Compare-first design",
-    body: "Listings and guides are written to help you shortlist and defend a choice with stakeholders.",
-    href: "/guides/",
-    linkLabel: "Read guides",
+    body: "Start from the AI Agent Platforms Guide, then open head-to-heads and roundups that match your decision.",
+    href: guideHref(platformsPillar.slug),
+    linkLabel: "AI Agent Platforms Guide",
   },
 ];
 ---
@@ -119,10 +125,10 @@ const whyItems = [
             Browse platforms
           </a>
           <a
-            href="/guides/how-to-evaluate-ai-agent-platforms/"
+            href={guideHref(platformsPillar.slug)}
             class="btn-secondary px-7 py-3 text-[0.9375rem]"
           >
-            Evaluation guide
+            Platforms guide
           </a>
         </div>
 
@@ -335,10 +341,51 @@ const whyItems = [
       <SectionHeader
         eyebrow="Guides"
         title="Latest guides"
-        description="Newest roundups, TCO models, and head-to-head comparisons for buyers and builders."
+        description="Start with the platforms pillar, then open newest roundups, TCO models, and head-to-head comparisons."
         href="/guides/"
         linkLabel="All guides"
       />
+
+      {
+        platformsPillarPreview && (
+          <div class="mb-8 rounded-2xl border border-accent/20 bg-surface p-6 shadow-(--shadow-xs) sm:p-8">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div class="max-w-2xl">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="pill-accent">Start here</span>
+                  <span class="text-[11px] font-medium text-ink-soft">
+                    Pillar hub · {platformsPillarPreview.readTime} read
+                  </span>
+                </div>
+                <h3 class="mt-3 text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+                  <a
+                    href={guideHref(platformsPillar.slug)}
+                    class="hover:text-accent"
+                  >
+                    {platformsPillarPreview.title}
+                  </a>
+                </h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  {platformsPillar.description} Also see the{" "}
+                  <a
+                    href={guideHref(codingHub.slug)}
+                    class="font-semibold text-accent hover:text-accent-hover"
+                  >
+                    Best AI Coding Agents
+                  </a>{" "}
+                  hub for software-delivery tools.
+                </p>
+              </div>
+              <a
+                href={guideHref(platformsPillar.slug)}
+                class="btn-primary shrink-0 self-start lg:self-center"
+              >
+                Open platforms guide →
+              </a>
+            </div>
+          </div>
+        )
+      }
 
       {
         guideList.length > 0 ? (

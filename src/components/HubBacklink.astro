@@ -1,0 +1,106 @@
+---
+/**
+ * Spoke → hub backlink. Place near the top of spoke guides and tool pages.
+ * Uses natural, spoke-specific copy when defined on the topic hub.
+ */
+import {
+  guideHref,
+  getHubsForGuide,
+  getHubsForTool,
+  getTopicHub,
+  getHubBacklinkCopy,
+  type TopicHub,
+  type TopicHubId,
+} from "../data/guides";
+
+interface Props {
+  /** Current guide slug (spoke article) */
+  guideSlug?: string;
+  /** Current tool slug (coding agent profile, etc.) */
+  toolSlug?: string;
+  /** Optional: force a single hub */
+  hubId?: TopicHubId;
+  /** Inline under hero vs card in article body */
+  variant?: "banner" | "inline";
+}
+
+const {
+  guideSlug,
+  toolSlug,
+  hubId,
+  variant = "banner",
+} = Astro.props;
+
+let hubs: TopicHub[] = [];
+if (hubId) {
+  hubs = [getTopicHub(hubId)];
+} else if (guideSlug) {
+  hubs = getHubsForGuide(guideSlug);
+} else if (toolSlug) {
+  hubs = getHubsForTool(toolSlug);
+}
+
+/** Prefer agent-platforms hub first when a page sits in multiple clusters. */
+hubs = [...hubs].sort((a, b) => {
+  if (a.id === "agent-platforms") return -1;
+  if (b.id === "agent-platforms") return 1;
+  return 0;
+});
+
+const spokeKey = guideSlug ?? toolSlug;
+---
+
+{
+  hubs.length > 0 &&
+    (variant === "banner" ? (
+      <aside
+        class="rounded-2xl border border-accent/25 bg-accent-soft/50 px-4 py-4 sm:px-5 sm:py-4"
+        aria-label="Topic cluster"
+      >
+        {
+          hubs.map((hub, i) => {
+            const copy = getHubBacklinkCopy(hub, spokeKey);
+            return (
+              <div
+                class:list={[
+                  i > 0 && "mt-3 border-t border-accent/15 pt-3",
+                ]}
+              >
+                <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">
+                  {hub.name} hub
+                </p>
+                <p class="mt-1.5 text-sm leading-relaxed text-ink">
+                  <a
+                    href={guideHref(hub.slug)}
+                    class="font-semibold text-accent underline decoration-accent/35 underline-offset-[3px] transition-colors hover:text-accent-hover hover:decoration-accent"
+                  >
+                    {copy.label}
+                  </a>
+                </p>
+                <p class="mt-1 text-xs leading-relaxed text-ink-muted sm:text-sm">
+                  {copy.detail}
+                </p>
+              </div>
+            );
+          })
+        }
+      </aside>
+    ) : (
+      <p class="text-sm leading-relaxed text-ink-muted">
+        {hubs.map((hub, i) => {
+          const copy = getHubBacklinkCopy(hub, spokeKey);
+          return (
+            <>
+              {i > 0 && " · "}
+              <a
+                href={guideHref(hub.slug)}
+                class="font-semibold text-accent hover:text-accent-hover"
+              >
+                {copy.label}
+              </a>
+            </>
+          );
+        })}
+      </p>
+    ))
+}

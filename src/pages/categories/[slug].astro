@@ -11,6 +11,7 @@ import { getToolsByCategory } from "../../data/tools";
 import {
   getRelatedGuidesForCategory,
   getFeaturedGuideForCategory,
+  getGuideBySlug,
   guideHref,
   guideLinkLabel,
   methodologyLink,
@@ -18,6 +19,15 @@ import {
 import RelatedLinks from "../../components/RelatedLinks.astro";
 import { site } from "../../data/site";
 import type { Tool } from "../../types/tool";
+
+/** Categories where the platforms pillar is the natural “start here”. */
+const PILLAR_CATEGORY_IDS = new Set([
+  "Enterprise",
+  "Frameworks",
+  "No-Code",
+  "Workflow",
+]);
+const PLATFORMS_PILLAR_SLUG = "ai-agent-platforms-guide";
 
 /** Static paths for the six supported category slugs. */
 export function getStaticPaths() {
@@ -45,17 +55,31 @@ const otherCategories = categories.filter((c) => c.slug !== resolved.slug);
 
 const relatedGuides = getRelatedGuidesForCategory(resolved.id);
 const featuredGuide = getFeaturedGuideForCategory(resolved.id);
+const showPlatformsPillar = PILLAR_CATEGORY_IDS.has(resolved.id);
+const platformsPillar = getGuideBySlug(PLATFORMS_PILLAR_SLUG);
 const relatedLinks = [
   {
     href: "/platforms/",
     title: "All AI agent platforms",
     excerpt: "Filter the full catalog by category, features, pricing, and score.",
   },
-  ...relatedGuides.map((g) => ({
-    href: guideHref(g.slug),
-    title: guideLinkLabel(g.slug),
-    excerpt: g.excerpt,
-  })),
+  ...(showPlatformsPillar && platformsPillar
+    ? [
+        {
+          href: guideHref(platformsPillar.slug),
+          title: platformsPillar.title,
+          excerpt:
+            "Central hub: how to choose, compare, and evaluate platforms — plus every related comparison.",
+        },
+      ]
+    : []),
+  ...relatedGuides
+    .filter((g) => g.slug !== PLATFORMS_PILLAR_SLUG)
+    .map((g) => ({
+      href: guideHref(g.slug),
+      title: guideLinkLabel(g.slug),
+      excerpt: g.excerpt,
+    })),
   {
     href: methodologyLink.href,
     title: methodologyLink.title,
@@ -110,6 +134,20 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
           <p class="text-body-lg mt-3.5 max-w-xl">
             {resolved.description}
           </p>
+          {
+            showPlatformsPillar && platformsPillar && (
+              <p class="mt-4 max-w-xl text-sm leading-relaxed text-ink-muted">
+                New to the market? Start with the{" "}
+                <a
+                  href={guideHref(platformsPillar.slug)}
+                  class="font-semibold text-accent hover:text-accent-hover"
+                >
+                  AI Agent Platforms Guide 2026
+                </a>{" "}
+                — then shortlist tools in this category.
+              </p>
+            )
+          }
         </div>
 
         <div
@@ -124,48 +162,69 @@ const pageDescription = `${resolved.description} Compare ${toolsInCategory.lengt
     </div>
   </section>
 
-  <!-- Featured guide for this category -->
+  <!-- Featured guide for this category (prefer platforms pillar when relevant) -->
   {
-    featuredGuide && (
+    (showPlatformsPillar && platformsPillar
+      ? platformsPillar
+      : featuredGuide) && (
       <section class="border-b border-border bg-surface-muted">
         <div class="container-site py-8 sm:py-10">
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div class="max-w-2xl">
-              <p class="eyebrow">Featured guide</p>
-              <h2 class="mt-2 text-lg font-semibold tracking-tight text-ink sm:text-xl">
-                <a
-                  href={guideHref(featuredGuide.slug)}
-                  class="hover:text-accent"
-                >
-                  {featuredGuide.title}
-                </a>
-              </h2>
-              <p class="mt-2 text-sm leading-relaxed text-ink-muted">
-                {featuredGuide.excerpt}
-              </p>
-            </div>
-            <a
-              href={guideHref(featuredGuide.slug)}
-              class="btn-secondary shrink-0 self-start sm:self-center"
-            >
-              Read guide →
-            </a>
-          </div>
           {
-            relatedGuides.length > 1 && (
-              <ul class="mt-6 flex flex-wrap gap-2 border-t border-border pt-5">
-                {relatedGuides.slice(1, 5).map((g) => (
-                  <li>
+            (() => {
+              const primary =
+                showPlatformsPillar && platformsPillar
+                  ? platformsPillar
+                  : featuredGuide!;
+              const chipLinks = relatedGuides
+                .filter((g) => g.slug !== primary.slug)
+                .slice(0, 5);
+              return (
+                <>
+                  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="max-w-2xl">
+                      <p class="eyebrow">
+                        {primary.slug === PLATFORMS_PILLAR_SLUG
+                          ? "Start here · Pillar hub"
+                          : "Featured guide"}
+                      </p>
+                      <h2 class="mt-2 text-lg font-semibold tracking-tight text-ink sm:text-xl">
+                        <a
+                          href={guideHref(primary.slug)}
+                          class="hover:text-accent"
+                        >
+                          {primary.title}
+                        </a>
+                      </h2>
+                      <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+                        {primary.excerpt}
+                      </p>
+                    </div>
                     <a
-                      href={guideHref(g.slug)}
-                      class="inline-flex items-center rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm font-medium text-ink-muted transition-colors hover:border-accent/30 hover:bg-accent-soft hover:text-accent"
+                      href={guideHref(primary.slug)}
+                      class="btn-secondary shrink-0 self-start sm:self-center"
                     >
-                      {guideLinkLabel(g.slug)}
+                      {primary.slug === PLATFORMS_PILLAR_SLUG
+                        ? "Open platforms guide →"
+                        : "Read guide →"}
                     </a>
-                  </li>
-                ))}
-              </ul>
-            )
+                  </div>
+                  {chipLinks.length > 0 && (
+                    <ul class="mt-6 flex flex-wrap gap-2 border-t border-border pt-5">
+                      {chipLinks.map((g) => (
+                        <li>
+                          <a
+                            href={guideHref(g.slug)}
+                            class="inline-flex items-center rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm font-medium text-ink-muted transition-colors hover:border-accent/30 hover:bg-accent-soft hover:text-accent"
+                          >
+                            {guideLinkLabel(g.slug)}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              );
+            })()
           }
         </div>
       </section>

@@ -53,6 +53,14 @@ export const footerGroups: FooterGroup[] = [
     heading: "Learn",
     links: [
       {
+        href: "/guides/ai-agent-platforms-guide/",
+        label: "AI Agent Platforms Guide 2026",
+      },
+      {
+        href: "/guides/best-ai-coding-agents-2026/",
+        label: "Best AI coding agents 2026",
+      },
+      {
         href: "/guides/how-to-evaluate-ai-agent-platforms/",
         label: "Evaluation guide",
       },
@@ -72,10 +80,6 @@ export const footerGroups: FooterGroup[] = [
       {
         href: "/guides/claude-code-vs-cursor/",
         label: "Claude Code vs Cursor",
-      },
-      {
-        href: "/guides/best-ai-coding-agents-2026/",
-        label: "Best AI coding agents 2026",
       },
       {
         href: "/guides/copilot-studio-vs-agentforce/",
