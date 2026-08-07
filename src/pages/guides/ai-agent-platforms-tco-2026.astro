@@ -1,15 +1,27 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
-import HubBacklink from "../../components/HubBacklink.astro";
-import GuideExplore from "../../components/GuideExplore.astro";
-import { site } from "../../data/site";
+import GuideLayout from "../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../components/guide/ComparisonTable.astro";
+import ToolReviewCard from "../../components/guide/ToolReviewCard.astro";
 
 const title = "What AI Agent Platforms Actually Cost in 2026 (A Practical TCO Guide)";
 const description =
   "Practical 2026 TCO guide for AI agent platforms: full cost stack, no-code vs frameworks vs enterprise vs coding agents, hidden costs, buyer questions, and rough cost reality by company size.";
 const published = "2026-04-01";
 const readTime = "13 min";
+
+const toc = [
+  { id: "introduction", label: "Why cost comparisons are incomplete" },
+  { id: "cost-stack", label: "The full cost stack" },
+  { id: "by-category", label: "Cost by category" },
+  { id: "hidden", label: "Hidden costs" },
+  { id: "questions", label: "Practical cost questions" },
+  { id: "by-size", label: "Cost reality by company size" },
+  { id: "value", label: "Value vs cost" },
+  { id: "pricing-guides", label: "Pricing deep-dives" },
+  { id: "bottom-line", label: "Bottom line" },
+];
 
 const costStack = [
   {
@@ -231,91 +243,17 @@ const valueLenses = [
 ];
 ---
 
-<BaseLayout
+<GuideLayout
   title={title}
   description={description}
-  canonical="/guides/ai-agent-platforms-tco-2026/"
-  isArticle
-  breadcrumbs={[
-    { name: "Home", path: "/" },
-    { name: "Guides", path: "/guides/" },
-    {
-      name: "AI agent platform TCO 2026",
-      path: "/guides/ai-agent-platforms-tco-2026/",
-    },
-  ]}
-  article={{
-    headline: title,
-    description,
-    datePublished: published,
-    dateModified: published,
-  }}
+  category="Buying"
+  published={published}
+  readTime={readTime}
+  slug="ai-agent-platforms-tco-2026"
+  breadcrumbLabel="AI agent platform TCO"
+  exploreCategories={["Frameworks", "Enterprise", "No-Code", "Coding"]}
+  toc={toc}
 >
-  <!-- Hero -->
-  <section class="page-hero">
-    <div class="page-hero-glow" aria-hidden="true"></div>
-    <div class="container-site relative py-11 sm:py-14">
-      <Breadcrumb
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Guides", href: "/guides/" },
-          { label: "AI agent platform TCO 2026" },
-        ]}
-      />
-
-      <div class="mt-6 max-w-3xl">
-        <HubBacklink guideSlug="ai-agent-platforms-tco-2026" />
-      </div>
-
-      <div class="mt-8 max-w-3xl">
-        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <span class="pill-accent">Buying</span>
-          <span class="text-ink-soft">
-            <time datetime={published}>Apr 1, 2026</time>
-            <span aria-hidden="true"> · </span>
-            {readTime} read
-          </span>
-        </div>
-
-        <h1 class="text-page-title mt-4 lg:text-[2.25rem]">
-          What AI Agent Platforms Actually Cost in 2026 (A Practical TCO Guide)
-        </h1>
-        <p class="text-body-lg mt-4">
-          A no-nonsense map of total cost of ownership for AI agents —
-          subscriptions, meters, models, people, and failure — for technical and
-          non-technical buyers who distrust pricing pages.
-        </p>
-        <div class="mt-7 flex flex-wrap gap-3">
-          <a href="#cost-stack" class="btn-primary">Full cost stack</a>
-          <a href="#by-size" class="btn-secondary">Cost by company size</a>
-        </div>
-        <p class="mt-6 text-sm text-ink-muted">
-          Related:{" "}
-          <a
-            href="/guides/how-to-evaluate-ai-agent-platforms/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >Evaluation guide</a
-          >
-          {" · "}
-          <a
-            href="/methodology/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >Methodology</a
-          >
-          {" · "}
-          <a
-            href="/platforms/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >All platforms</a
-          >
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <article class="bg-surface">
-    <div class="container-site section-y">
-      <div class="mx-auto max-w-3xl">
         <!-- 1. Intro -->
         <section class="prose-guide">
           <h2 id="introduction" class="guide-h2">
@@ -351,10 +289,16 @@ const valueLenses = [
             (Value is one of six dimensions) and the pricing sections of our
             comparison articles linked below.
           </p>
+          <KeyTakeaway>
+            Model <strong>cost per successful outcome at 3× pilot volume</strong> —
+            including meters, people, and failure risk — not free-tier sticker
+            price. If two options are close on software, choose the one your team
+            will actually maintain.
+          </KeyTakeaway>
         </section>
 
         <!-- 2. Cost stack -->
-        <section class="mt-14 sm:mt-16" id="cost-stack">
+        <section class="mt-12 sm:mt-14" id="cost-stack">
           <h2 class="guide-h2">The full cost stack of AI agent platforms</h2>
           <p class="mt-3 text-base leading-relaxed text-ink-muted">
             Add every layer that applies. If a line is “N/A,” write zero
@@ -380,14 +324,15 @@ const valueLenses = [
               ))
             }
           </ol>
-          <p class="mt-6 text-sm text-ink-muted">
-            Rule of thumb: if you only model layers 1–2, you’re shopping
-            marketing. Production TCO almost always needs 3–8.
-          </p>
+          <InfoCallout title="If you only model layers 1–2, you’re shopping marketing" variant="warning">
+            Production TCO almost always needs layers 3–8: model tokens,
+            infrastructure, builder time, observability, HITL staffing, and
+            failure cost. List price alone is not a shortlist.
+          </InfoCallout>
         </section>
 
         <!-- 3. By category -->
-        <section class="mt-14 sm:mt-16" id="by-category">
+        <section class="mt-12 sm:mt-14" id="by-category">
           <h2 class="guide-h2">Cost characteristics by category</h2>
           <div class="mt-8 space-y-6">
             {
@@ -430,7 +375,7 @@ const valueLenses = [
         </section>
 
         <!-- 4. Hidden costs -->
-        <section class="mt-14 sm:mt-16" id="hidden">
+        <section class="mt-12 sm:mt-14" id="hidden">
           <h2 class="guide-h2">
             Hidden costs teams consistently underestimate
           </h2>
@@ -449,7 +394,7 @@ const valueLenses = [
         </section>
 
         <!-- 5. Questions -->
-        <section class="mt-14 sm:mt-16" id="questions">
+        <section class="mt-12 sm:mt-14" id="questions">
           <h2 class="guide-h2">
             Practical questions when evaluating total cost
           </h2>
@@ -480,7 +425,7 @@ const valueLenses = [
         </section>
 
         <!-- 6. By size -->
-        <section class="mt-14 sm:mt-16" id="by-size">
+        <section class="mt-12 sm:mt-14" id="by-size">
           <h2 class="guide-h2">
             Rough cost reality by company size / use case
           </h2>
@@ -491,59 +436,47 @@ const valueLenses = [
             in 2026 — not including full engineering payroll unless noted.
             Your mileage will vary; treat as order-of-magnitude, not quotes.
           </p>
-          <div class="mt-6 overflow-x-auto rounded-[var(--radius-card)] border border-border">
-            <table class="w-full min-w-[40rem] text-left text-sm">
-              <thead
-                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
-              >
-                <tr>
-                  <th class="px-4 py-3 font-semibold">Company size</th>
-                  <th class="px-4 py-3 font-semibold">Typical pattern</th>
-                  <th class="px-4 py-3 font-semibold">Rough software reality</th>
-                  <th class="px-4 py-3 font-semibold">Note</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border bg-surface">
-                {
-                  sizeRows.map((row) => (
-                    <tr>
-                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
-                        {row.size}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.pattern}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.rough}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.note}
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
-          <p class="mt-4 text-sm text-ink-muted">
-            Example profiles to sanity-check list prices:{" "}
-            <a href="/tools/n8n/" class="font-semibold text-accent hover:text-accent-hover">n8n</a>
-            ,{" "}
-            <a href="/tools/make/" class="font-semibold text-accent hover:text-accent-hover">Make</a>
-            ,{" "}
-            <a href="/tools/cursor/" class="font-semibold text-accent hover:text-accent-hover">Cursor</a>
-            ,{" "}
-            <a href="/tools/langgraph/" class="font-semibold text-accent hover:text-accent-hover">LangGraph</a>
-            ,{" "}
-            <a href="/tools/microsoft-copilot-studio/" class="font-semibold text-accent hover:text-accent-hover">Copilot Studio</a>
-            ,{" "}
-            <a href="/tools/relevance-ai/" class="font-semibold text-accent hover:text-accent-hover">Relevance AI</a>
-            .
+          <ComparisonTable
+            caption="Directional software + meter cost (2026)"
+            headers={["Typical pattern", "Rough software reality", "Note"]}
+            rows={sizeRows.map((row) => ({
+              label: row.size,
+              cells: [row.pattern, row.rough, row.note],
+            }))}
+          />
+          <InfoCallout title="Sanity-check list prices on real profiles" variant="tip">
+            Open scored listings for{" "}
+            <a href="/tools/n8n/">n8n</a>,{" "}
+            <a href="/tools/make/">Make</a>,{" "}
+            <a href="/tools/cursor/">Cursor</a>,{" "}
+            <a href="/tools/langgraph/">LangGraph</a>,{" "}
+            <a href="/tools/microsoft-copilot-studio/">Copilot Studio</a>, and{" "}
+            <a href="/tools/relevance-ai/">Relevance AI</a> — then map one golden
+            path into their actual meters.
+          </InfoCallout>
+
+          <p class="mt-6 text-sm font-semibold text-ink">
+            Representative cost shapes
           </p>
+          <ToolReviewCard
+            slug="n8n"
+            badge="Workflow / hybrid"
+            blurb="Self-host free + model APIs, or Cloud execution fees — classic SMB automation cost shape."
+          />
+          <ToolReviewCard
+            slug="cursor"
+            badge="Coding seats"
+            blurb="Predictable seats with agent-intensity overages — model heavy weeks, not free-tier demos."
+          />
+          <ToolReviewCard
+            slug="microsoft-copilot-studio"
+            badge="Enterprise suite"
+            blurb="Marginal cost of suite agents vs greenfield vendors — procurement and CoE often dominate year one."
+          />
         </section>
 
         <!-- 7. Value vs cost -->
-        <section class="mt-14 sm:mt-16" id="value">
+        <section class="mt-12 sm:mt-14" id="value">
           <h2 class="guide-h2">How to think about value vs cost</h2>
           <ul class="mt-8 space-y-4">
             {
@@ -574,7 +507,7 @@ const valueLenses = [
         </section>
 
         <!-- 8. Internal links hub -->
-        <section class="mt-14 sm:mt-16" id="pricing-guides">
+        <section class="mt-12 sm:mt-14" id="pricing-guides">
           <h2 class="guide-h2">Pricing deep-dives and related guides</h2>
           <ul class="mt-6 space-y-3 text-sm sm:text-base">
             <li>
@@ -645,7 +578,7 @@ const valueLenses = [
           </ul>
         </section>
 
-        <section class="mt-14 sm:mt-16 prose-guide">
+        <section class="mt-12 sm:mt-14 prose-guide" id="bottom-line">
           <h2 class="guide-h2">Bottom line</h2>
           <p>
             AI agent TCO in 2026 is a{" "}
@@ -655,104 +588,4 @@ const valueLenses = [
             own — and re-check the bill at 3× volume before you standardize.
           </p>
         </section>
-      </div>
-    </div>
-  </article>
-
-  <GuideExplore
-    slug="ai-agent-platforms-tco-2026"
-    categories={["No-Code", "Enterprise", "Frameworks", "Coding"]}
-  />
-
-  <!-- CTA -->
-  <section class="section-cta">
-    <div
-      class="section-cta-glow"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="container-site relative section-y">
-      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <p
-          class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/80"
-        >
-          Next step
-        </p>
-        <h2
-          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
-        >
-          Score Value honestly — then shortlist
-        </h2>
-        <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
-          Use our{" "}
-          <a href="/methodology/" class="text-white/80 hover:text-white"
-            >methodology</a
-          >
-          , the{" "}
-          <a
-            href="/guides/how-to-evaluate-ai-agent-platforms/"
-            class="text-white/80 hover:text-white">evaluation guide</a
-          >
-          , and{" "}
-          <a href="/platforms/" class="text-white/80 hover:text-white"
-            >platform profiles</a
-          >{" "}
-          with pricing notes.
-        </p>
-        <div
-          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center"
-        >
-          <a
-            href="/platforms/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-6 py-3 text-sm font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] hover:shadow-(--shadow-lg)"
-          >
-            Browse platforms
-          </a>
-          <a
-            href="/guides/how-to-evaluate-ai-agent-platforms/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
-          >
-            Evaluation guide
-          </a>
-          <a
-            href="/contact/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
-          >
-            Talk to us
-          </a>
-        </div>
-        <p class="mt-6 text-sm text-white/70">
-          <a href={site.cta.href} class="text-white/80 hover:text-white"
-            >Implementation</a
-          >
-        </p>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
-
-<style>
-  .guide-h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    color: var(--color-ink);
-    line-height: 1.25;
-  }
-  @media (min-width: 640px) {
-    .guide-h2 {
-      font-size: 1.75rem;
-    }
-  }
-  .prose-guide p {
-    margin-top: 1rem;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--color-ink-muted);
-  }
-  @media (min-width: 640px) {
-    .prose-guide p {
-      font-size: 1.0625rem;
-    }
-  }
-</style>
+</GuideLayout>

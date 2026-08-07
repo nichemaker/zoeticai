@@ -1,10 +1,10 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
-import GuideExplore from "../../components/GuideExplore.astro";
+import GuideLayout from "../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../components/guide/ComparisonTable.astro";
+import ToolReviewCard from "../../components/guide/ToolReviewCard.astro";
 import HubSpokes from "../../components/HubSpokes.astro";
-import HubBacklink from "../../components/HubBacklink.astro";
-import { site } from "../../data/site";
 import { getToolBySlug } from "../../data/tools";
 import { guideHref } from "../../data/guides";
 
@@ -13,6 +13,18 @@ const description =
   "Practical 2026 guide to AI coding agents for developers and eng teams: evaluation criteria, IDE vs CLI vs cloud vs open-source picks, comparison table, pricing, and who should use what. Hub for our coding-agents topic cluster.";
 const published = "2026-04-01";
 const readTime = "14 min";
+
+const toc = [
+  { id: "introduction", label: "From assistants to agents" },
+  { id: "criteria", label: "Evaluation criteria" },
+  { id: "categories", label: "Categories of coding agents" },
+  { id: "ranked", label: "Ranked recommendations" },
+  { id: "comparison", label: "Comparison table" },
+  { id: "by-type", label: "Which agent by developer type" },
+  { id: "pricing", label: "Pricing and value notes" },
+  { id: "final", label: "Final recommendations" },
+  { id: "cluster", label: "Coding agents cluster" },
+];
 
 const codingSlugs = [
   "cursor",
@@ -268,99 +280,17 @@ const pricingNotes = [
 ];
 ---
 
-<BaseLayout
+<GuideLayout
   title={title}
   description={description}
-  canonical="/guides/best-ai-coding-agents-2026/"
-  isArticle
-  breadcrumbs={[
-    { name: "Home", path: "/" },
-    { name: "Guides", path: "/guides/" },
-    {
-      name: "Best AI coding agents 2026",
-      path: "/guides/best-ai-coding-agents-2026/",
-    },
-  ]}
-  article={{
-    headline: title,
-    description,
-    datePublished: published,
-    dateModified: published,
-  }}
+  category="Roundup"
+  published={published}
+  readTime={readTime}
+  slug="best-ai-coding-agents-2026"
+  breadcrumbLabel="Best coding agents 2026"
+  exploreCategories={["Frameworks", "Enterprise", "No-Code", "Coding"]}
+  toc={toc}
 >
-  <!-- Hero -->
-  <section class="page-hero">
-    <div class="page-hero-glow" aria-hidden="true"></div>
-    <div class="container-site relative py-11 sm:py-14">
-      <Breadcrumb
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Guides", href: "/guides/" },
-          { label: "Best AI coding agents 2026" },
-        ]}
-      />
-
-      <div class="mt-6 max-w-3xl">
-        <HubBacklink guideSlug="best-ai-coding-agents-2026" />
-      </div>
-
-      <div class="mt-8 max-w-3xl">
-        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <span class="pill-accent">Pillar hub</span>
-          <span class="rounded-full bg-surface px-3 py-1 text-ink-soft ring-1 ring-border">
-            Topic cluster
-          </span>
-          <span class="text-ink-soft">
-            <time datetime={published}>Apr 1, 2026</time>
-            <span aria-hidden="true"> · </span>
-            {readTime} read
-          </span>
-        </div>
-
-        <h1 class="text-page-title mt-4 lg:text-[2.35rem]">
-          Best AI Coding Agents in 2026
-        </h1>
-        <p class="text-body-lg mt-4">
-          An opinionated shortlist for developers and engineering teams —
-          IDE-native, CLI, cloud autonomous, and open-source agents that ship
-          real changes, not only autocomplete. This page is the hub for our AI
-          Coding Agents topic cluster.
-        </p>
-        <div class="mt-7 flex flex-wrap gap-3">
-          <a href="#ranked" class="btn-primary">Ranked picks</a>
-          <a href="#cluster" class="btn-secondary">Cluster & profiles</a>
-          <a href="/categories/coding/" class="btn-secondary"
-            >Coding category</a
-          >
-        </div>
-        <p class="mt-6 text-sm text-ink-muted">
-          Deep dive:{" "}
-          <a
-            href="/guides/claude-code-vs-cursor/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >Claude Code vs Cursor comparison</a
-          >
-          {" · "}
-          Related platforms hub:{" "}
-          <a
-            href={guideHref("ai-agent-platforms-guide")}
-            class="font-semibold text-accent hover:text-accent-hover"
-            >AI Agent Platforms Guide</a
-          >
-          {" · "}
-          <a
-            href="/methodology/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >Methodology</a
-          >
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <article class="bg-surface">
-    <div class="container-site section-y">
-      <div class="mx-auto max-w-3xl">
         <!-- 1. Intro -->
         <section class="prose-guide">
           <h2 id="introduction" class="guide-h2">
@@ -394,14 +324,26 @@ const pricingNotes = [
               >Claude Code vs Cursor</a
             >.
           </p>
+          <KeyTakeaway>
+            Pick the <strong>surface first</strong> (IDE, CLI, cloud, or OSS/BYO),
+            then the vendor. Cursor is the default daily driver for most product
+            teams; Claude Code wins CLI-first deep work; Copilot Agents wins
+            GitHub-centric enterprise fleets.
+          </KeyTakeaway>
         </section>
 
         <!-- 2. Criteria -->
-        <section class="mt-14 sm:mt-16" id="criteria">
+        <section class="mt-12 sm:mt-14" id="criteria">
           <h2 class="guide-h2">Evaluation criteria</h2>
           <p class="mt-3 text-base leading-relaxed text-ink-muted">
             We weight these over feature checklists and launch demos.
           </p>
+          <InfoCallout title="How to evaluate coding agents" variant="tip">
+            Hold the same three tasks constant: a small feature, a multi-file
+            refactor, and a failing test fix. Score review time and rework — not
+            demo wow. Cross-check directory scores against our{" "}
+            <a href="/methodology/">methodology</a>.
+          </InfoCallout>
           <ul class="mt-8 grid gap-4 sm:grid-cols-2">
             {
               criteria.map((c, i) => (
@@ -425,7 +367,7 @@ const pricingNotes = [
         </section>
 
         <!-- 3. Categories -->
-        <section class="mt-14 sm:mt-16" id="categories">
+        <section class="mt-12 sm:mt-14" id="categories">
           <h2 class="guide-h2">Categories of coding agents</h2>
           <div class="mt-8 space-y-5">
             {
@@ -468,12 +410,32 @@ const pricingNotes = [
         </section>
 
         <!-- 4. Ranked -->
-        <section class="mt-14 sm:mt-16" id="ranked">
+        <section class="mt-12 sm:mt-14" id="ranked">
           <h2 class="guide-h2">Ranked recommendations</h2>
           <p class="mt-3 text-base leading-relaxed text-ink-muted">
             Opinionated order for most product/engineering orgs. Your stack and
             risk tolerance can rearrange the bottom half.
           </p>
+
+          <ToolReviewCard
+            slug="cursor"
+            rank={1}
+            badge="Daily driver"
+            blurb="AI-native IDE with strong multi-file agent mode — highest floor for shipping features without changing your whole job."
+          />
+          <ToolReviewCard
+            slug="claude-code"
+            rank={2}
+            badge="CLI power"
+            blurb="Terminal-native agent for plan/edit/run loops and deep multi-file refactors. Common pair with Cursor for seniors."
+          />
+          <ToolReviewCard
+            slug="github-copilot-agents"
+            rank={3}
+            badge="Enterprise GitHub"
+            blurb="Agentic coding inside GitHub + existing editors — path of least resistance for fleets already on Copilot and SSO."
+          />
+
           <ol class="mt-8 space-y-5">
             {
               ranked.map((r) => (
@@ -513,59 +475,30 @@ const pricingNotes = [
         </section>
 
         <!-- 5. Table -->
-        <section class="mt-14 sm:mt-16" id="comparison">
+        <section class="mt-12 sm:mt-14" id="comparison">
           <h2 class="guide-h2">Comparison table</h2>
-          <div class="mt-6 overflow-x-auto rounded-[var(--radius-card)] border border-border">
-            <table class="w-full min-w-[48rem] text-left text-sm">
-              <thead
-                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
-              >
-                <tr>
-                  <th class="px-4 py-3 font-semibold">Agent</th>
-                  <th class="px-4 py-3 font-semibold">Score</th>
-                  <th class="px-4 py-3 font-semibold">Autonomy</th>
-                  <th class="px-4 py-3 font-semibold">Workflow</th>
-                  <th class="px-4 py-3 font-semibold">Pricing model</th>
-                  <th class="px-4 py-3 font-semibold">Best use case</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border bg-surface">
-                {
-                  comparisonRows.map((row) => (
-                    <tr>
-                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
-                        <a
-                          href={`/tools/${row.slug}/`}
-                          class="hover:text-accent"
-                        >
-                          {row.name}
-                        </a>
-                      </td>
-                      <td class="px-4 py-3.5 align-top tabular-nums text-ink">
-                        {score(row.slug)}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.autonomy}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.workflow}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.pricing}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.best}
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Scores are directory overall ratings. Pricing is directional for
+            2026 planning — verify on vendor sites before you budget.
+          </p>
+          <ComparisonTable
+            caption="Coding agents at a glance"
+            headers={["Score", "Autonomy", "Workflow", "Pricing model", "Best use case"]}
+            rows={comparisonRows.map((row) => ({
+              label: row.name,
+              cells: [
+                score(row.slug),
+                row.autonomy,
+                row.workflow,
+                row.pricing,
+                row.best,
+              ],
+            }))}
+          />
         </section>
 
         <!-- 6. By developer type -->
-        <section class="mt-14 sm:mt-16" id="by-type">
+        <section class="mt-12 sm:mt-14" id="by-type">
           <h2 class="guide-h2">Which agent by developer type</h2>
           <div class="mt-8 space-y-4">
             {
@@ -595,8 +528,13 @@ const pricingNotes = [
         </section>
 
         <!-- 7. Pricing -->
-        <section class="mt-14 sm:mt-16" id="pricing">
+        <section class="mt-12 sm:mt-14" id="pricing">
           <h2 class="guide-h2">Pricing and value notes</h2>
+          <InfoCallout title="Model heavy agent weeks, not free-tier weeks" variant="warning">
+            Seat prices look cheap until a whole team runs agent mode all day —
+            or until you stack Cursor + Copilot + Devin for every engineer.
+            Segment by role and measure review cost on autonomous PR pilots.
+          </InfoCallout>
           <ul class="mt-8 space-y-4">
             {
               pricingNotes.map((n) => (
@@ -648,7 +586,7 @@ const pricingNotes = [
         </section>
 
         <!-- 8. Final recommendations -->
-        <section class="mt-14 sm:mt-16" id="final">
+        <section class="mt-12 sm:mt-14" id="final">
           <h2 class="guide-h2">Final recommendations</h2>
           <div
             class="mt-6 rounded-[var(--radius-card)] border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
@@ -744,108 +682,4 @@ const pricingNotes = [
           showTools={true}
           id="cluster"
         />
-      </div>
-    </div>
-  </article>
-
-  <GuideExplore
-    slug="best-ai-coding-agents-2026"
-    categories={["Coding"]}
-  />
-
-  <!-- CTA -->
-  <section class="section-cta">
-    <div
-      class="section-cta-glow"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="container-site relative section-y">
-      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <p
-          class="text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/80"
-        >
-          Next step
-        </p>
-        <h2
-          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
-        >
-          Compare Cursor and Claude Code — then standardize
-        </h2>
-        <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
-          Open the{" "}
-          <a
-            href="/categories/coding/"
-            class="text-white/80 hover:text-white">Coding category</a
-          >, read the{" "}
-          <a
-            href="/guides/claude-code-vs-cursor/"
-            class="text-white/80 hover:text-white"
-            >Claude Code vs Cursor comparison</a
-          >
-          , and score options with our{" "}
-          <a href="/methodology/" class="text-white/80 hover:text-white"
-            >methodology</a
-          >.
-        </p>
-        <div
-          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center"
-        >
-          <a
-            href="/tools/cursor/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-6 py-3 text-sm font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] hover:shadow-(--shadow-lg)"
-          >
-            Cursor profile
-          </a>
-          <a
-            href="/tools/claude-code/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
-          >
-            Claude Code profile
-          </a>
-          <a
-            href="/guides/claude-code-vs-cursor/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-white/15 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
-          >
-            Full comparison
-          </a>
-        </div>
-        <p class="mt-6 text-sm text-white/70">
-          <a href="/contact/" class="text-white/80 hover:text-white"
-            >Contact</a
-          >
-          {" · "}
-          <a href={site.cta.href} class="text-white/80 hover:text-white"
-            >Implementation</a
-          >
-        </p>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
-
-<style>
-  .guide-h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    color: var(--color-ink);
-    line-height: 1.25;
-  }
-  @media (min-width: 640px) {
-    .guide-h2 {
-      font-size: 1.75rem;
-    }
-  }
-  .prose-guide p {
-    margin-top: 1rem;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--color-ink-muted);
-  }
-  @media (min-width: 640px) {
-    .prose-guide p {
-      font-size: 1.0625rem;
-    }
-  }
-</style>
+</GuideLayout>

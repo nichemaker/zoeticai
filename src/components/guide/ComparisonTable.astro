@@ -1,0 +1,84 @@
+---
+/**
+ * Responsive comparison table for guide content.
+ * Pass headers + rows; first column is the dimension label.
+ */
+export type ComparisonRow = {
+  /** Row label (first column) */
+  label: string;
+  /** Cell values aligned with headers (excluding the label column) */
+  cells: string[];
+};
+
+interface Props {
+  /** Column headers for the compared options (not including the label col) */
+  headers: string[];
+  rows: ComparisonRow[];
+  caption?: string;
+  /** Highlight a header index (0-based among headers) */
+  highlightIndex?: number;
+}
+
+const { headers, rows, caption, highlightIndex } = Astro.props;
+---
+
+<div class="my-8 overflow-x-auto rounded-[var(--radius-card)] border border-border shadow-(--shadow-xs)">
+  <table class="w-full min-w-[32rem] border-collapse text-left text-sm">
+    {
+      caption && (
+        <caption class="border-b border-border bg-surface-muted px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">
+          {caption}
+        </caption>
+      )
+    }
+    <thead>
+      <tr class="bg-surface-muted">
+        <th
+          scope="col"
+          class="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-ink-soft"
+        >
+          Dimension
+        </th>
+        {
+          headers.map((h, i) => (
+            <th
+              scope="col"
+              class:list={[
+                "px-4 py-3 text-xs font-semibold uppercase tracking-wider",
+                i === highlightIndex
+                  ? "bg-accent-soft text-accent"
+                  : "text-ink-soft",
+              ]}
+            >
+              {h}
+            </th>
+          ))
+        }
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-border bg-surface">
+      {
+        rows.map((row) => (
+          <tr class="align-top">
+            <th
+              scope="row"
+              class="px-4 py-3.5 text-sm font-semibold text-ink"
+            >
+              {row.label}
+            </th>
+            {row.cells.map((cell, i) => (
+              <td
+                class:list={[
+                  "px-4 py-3.5 text-sm leading-relaxed text-ink-muted",
+                  i === highlightIndex && "bg-accent-soft/30",
+                ]}
+              >
+                {cell}
+              </td>
+            ))}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

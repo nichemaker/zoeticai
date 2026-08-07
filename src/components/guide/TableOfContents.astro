@@ -1,0 +1,97 @@
+---
+/**
+ * “In This Article” TOC — prefers explicit items; otherwise hydrates from H2s in the article body.
+ */
+export type TocItem = {
+  id: string;
+  label: string;
+};
+
+interface Props {
+  items?: TocItem[];
+  title?: string;
+  /** Selector for the article body that contains H2s (client-side fallback). */
+  bodySelector?: string;
+}
+
+const {
+  items = [],
+  title = "In This Article",
+  bodySelector = "[data-guide-body]",
+} = Astro.props;
+
+const hasStatic = items.length > 0;
+---
+
+<nav
+  class="guide-toc card-surface p-5 sm:p-6"
+  aria-label="Table of contents"
+  data-guide-toc
+  data-body-selector={bodySelector}
+>
+  <p class="text-sm font-semibold tracking-tight text-ink">{title}</p>
+  <ol
+    class="mt-4 grid gap-2 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-2"
+    data-toc-list
+  >
+    {
+      hasStatic
+        ? items.map((item, i) => (
+            <li>
+              <a
+                href={`#${item.id}`}
+                class="group flex items-start gap-2.5 text-sm text-ink-muted transition-colors hover:text-accent"
+              >
+                <span class="mt-0.5 font-semibold tabular-nums text-accent/80">
+                  {String(i + 1).padStart(2, "0")}.
+                </span>
+                <span class="leading-snug group-hover:underline group-hover:decoration-accent/30 group-hover:underline-offset-2">
+                  {item.label}
+                </span>
+              </a>
+            </li>
+          ))
+        : null
+    }
+  </ol>
+  {
+    !hasStatic && (
+      <p class="mt-2 text-xs text-ink-soft" data-toc-empty>
+        Loading sections…
+      </p>
+    )
+  }
+</nav>
+
+{
+  !hasStatic && (
+    <script>
+      const root = document.querySelector("[data-guide-toc]");
+      if (root) {
+        const bodySel = root.getAttribute("data-body-selector") || "[data-guide-body]";
+        const body = document.querySelector(bodySel);
+        const list = root.querySelector("[data-toc-list]");
+        const empty = root.querySelector("[data-toc-empty]");
+        if (body && list) {
+          const headings = Array.from(
+            body.querySelectorAll<HTMLHeadingElement>("h2[id]"),
+          );
+          if (headings.length === 0) {
+            if (empty) empty.textContent = "";
+            root.classList.add("hidden");
+          } else {
+            list.innerHTML = headings
+              .map((h, i) => {
+                const id = h.id;
+                const label = (h.textContent || "").trim();
+                const n = String(i + 1).padStart(2, "0");
+                return `<li><a href="#${id}" class="group flex items-start gap-2.5 text-sm text-ink-muted transition-colors hover:text-accent"><span class="mt-0.5 font-semibold tabular-nums text-accent/80">${n}.</span><span class="leading-snug group-hover:underline group-hover:decoration-accent/30 group-hover:underline-offset-2">${label.replace(/</g, "&lt;")}</span></a></li>`;
+              })
+              .join("");
+            empty?.remove();
+          }
+        }
+      }
+    </script>
+  )
+}

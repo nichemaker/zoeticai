@@ -1,0 +1,118 @@
+---
+/**
+ * Embed a directory tool inside a guide — ranked review-style card.
+ */
+import { getToolBySlug } from "../../data/tools";
+import { categoryHref } from "../../data/categories";
+
+interface Props {
+  /** Tool slug from the directory */
+  slug: string;
+  /** Optional rank number (1, 2, 3…) */
+  rank?: number;
+  /** Optional badge, e.g. “Most Popular”, “Best for OSS” */
+  badge?: string;
+  /** Override blurb (defaults to tool.tagline) */
+  blurb?: string;
+  /** Highlight bullets (defaults to first 3 bestFor) */
+  highlights?: string[];
+}
+
+const { slug, rank, badge, blurb, highlights } = Astro.props;
+const tool = getToolBySlug(slug);
+
+if (!tool) {
+  // Silent skip if slug missing — avoids breaking builds during content edits
+}
+const initials = tool
+  ? tool.name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase()
+  : "";
+const score = tool ? (tool.scores.overall / 2).toFixed(1) : "—";
+const bullets =
+  highlights ??
+  (tool ? tool.bestFor.slice(0, 3) : []);
+const pricingBadge =
+  tool?.pricing.model === "free" || tool?.pricing.model === "freemium"
+    ? tool.pricing.model === "free"
+      ? "Free plan available"
+      : "Freemium"
+    : tool?.pricing.startingPrice;
+---
+
+{
+  tool && (
+    <article class="card-surface my-6 overflow-hidden p-5 sm:p-6">
+      <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex min-w-0 flex-1 items-start gap-3.5">
+          <span
+            class="avatar-mark h-12 w-12 text-sm sm:h-14 sm:w-14"
+            aria-hidden="true"
+          >
+            {initials}
+          </span>
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="text-base font-bold tracking-tight text-ink sm:text-lg">
+                {rank != null && (
+                  <span class="text-accent">{rank}. </span>
+                )}
+                {tool.name}
+              </h3>
+              {badge && (
+                <span class="pill-accent normal-case tracking-normal">
+                  {badge}
+                </span>
+              )}
+            </div>
+            <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">
+              {blurb ?? tool.tagline}
+            </p>
+            <a
+              href={`/tools/${tool.slug}/`}
+              class="mt-3 inline-flex text-sm font-semibold text-accent hover:text-accent-hover"
+            >
+              Read full profile →
+            </a>
+          </div>
+        </div>
+
+        <div class="shrink-0 sm:max-w-[14rem] sm:text-right">
+          <div class="inline-flex items-center gap-1 text-amber-500">
+            <span class="text-sm font-bold tabular-nums text-ink">{score}</span>
+            <span class="text-xs text-ink-soft">/ 5</span>
+            <span class="ml-1 text-xs text-ink-soft">
+              ({tool.scores.overall.toFixed(1)}/10)
+            </span>
+          </div>
+          {bullets.length > 0 && (
+            <ul class="mt-2 space-y-1 text-left text-xs text-ink-muted sm:text-right">
+              {bullets.map((b) => (
+                <li class="flex items-start gap-1.5 sm:justify-end">
+                  <span class="text-emerald-600" aria-hidden="true">
+                    ✓
+                  </span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div class="mt-2 flex flex-wrap gap-1.5 sm:justify-end">
+            {tool.categories.slice(0, 2).map((c) => (
+              <a href={categoryHref(c)} class="tag-chip">
+                {c}
+              </a>
+            ))}
+            {pricingBadge && (
+              <span class="tag-chip normal-case">{pricingBadge}</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+  )
+}

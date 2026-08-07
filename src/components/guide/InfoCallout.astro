@@ -1,0 +1,43 @@
+---
+/**
+ * Soft informational callout for guide body content.
+ */
+interface Props {
+  title?: string;
+  variant?: "info" | "tip" | "warning";
+}
+
+const { title, variant = "info" } = Astro.props;
+
+const styles = {
+  info: {
+    wrap: "border-accent/20 bg-accent-soft/40",
+    label: "text-accent",
+    defaultTitle: "Note",
+  },
+  tip: {
+    wrap: "border-emerald-200 bg-emerald-50/80",
+    label: "text-emerald-800",
+    defaultTitle: "Tip",
+  },
+  warning: {
+    wrap: "border-amber-200 bg-amber-50/90",
+    label: "text-amber-900",
+    defaultTitle: "Watch out",
+  },
+}[variant];
+---
+
+<aside
+  class:list={[
+    "my-8 rounded-[var(--radius-card)] border px-5 py-4 sm:px-6 sm:py-5",
+    styles.wrap,
+  ]}
+>
+  <p class:list={["text-xs font-bold uppercase tracking-wider", styles.label]}>
+    {title ?? styles.defaultTitle}
+  </p>
+  <div class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-[0.9375rem] [&_a]:font-semibold [&_a]:text-accent [&_p+p]:mt-2">
+    <slot />
+  </div>
+</aside>

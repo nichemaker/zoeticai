@@ -1,0 +1,31 @@
+---
+/**
+ * Highlighted key takeaway block for evaluation / comparison guides.
+ */
+interface Props {
+  title?: string;
+}
+
+const { title = "Key takeaway" } = Astro.props;
+---
+
+<aside
+  class="my-8 rounded-[var(--radius-card)] border border-accent/25 bg-gradient-to-br from-accent-soft/80 to-surface p-5 shadow-(--shadow-xs) sm:p-6"
+>
+  <div class="flex items-start gap-3">
+    <span
+      class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-fg"
+      aria-hidden="true"
+    >
+      ✓
+    </span>
+    <div class="min-w-0">
+      <p class="text-sm font-bold tracking-tight text-ink">{title}</p>
+      <div
+        class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-[0.9375rem] [&_a]:font-semibold [&_a]:text-accent [&_strong]:text-ink"
+      >
+        <slot />
+      </div>
+    </div>
+  </div>
+</aside>

@@ -1,10 +1,10 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
-import HubBacklink from "../../components/HubBacklink.astro";
-import GuideExplore from "../../components/GuideExplore.astro";
+import GuideLayout from "../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../components/guide/ComparisonTable.astro";
+import ToolReviewCard from "../../components/guide/ToolReviewCard.astro";
 import RelatedComparisons from "../../components/RelatedComparisons.astro";
-import { site } from "../../data/site";
 import { getToolBySlug } from "../../data/tools";
 
 const title =
@@ -201,118 +201,33 @@ const decisionSteps = [
     body: "Pick a default tool for the org, document exceptions, and revisit quarterly as pricing and agent quality move.",
   },
 ];
+const toc = [
+  { id: "introduction", label: "Why this comparison matters" },
+  { id: "verdict", label: "Quick verdict" },
+  { id: "philosophy", label: "Core philosophy difference" },
+  { id: "comparison", label: "Detailed comparison" },
+  { id: "pricing", label: "Pricing comparison" },
+  { id: "scores", label: "Directory scores" },
+  { id: "choose-cursor", label: "Choose Cursor if…" },
+  { id: "choose-claude-code", label: "Choose Claude Code if…" },
+  { id: "both", label: "Using both effectively" },
+  { id: "profiles", label: "Platform profiles" },
+  { id: "decision", label: "Final recommendation" },
+];
 ---
 
-<BaseLayout
+<GuideLayout
   title={title}
   description={description}
-  canonical="/guides/claude-code-vs-cursor/"
-  isArticle
-  breadcrumbs={[
-    { name: "Home", path: "/" },
-    { name: "Guides", path: "/guides/" },
-    { name: "Claude Code vs Cursor", path: "/guides/claude-code-vs-cursor/" },
-  ]}
-  article={{
-    headline: title,
-    description,
-    datePublished: published,
-    dateModified: published,
-  }}
+  category="Comparison"
+  published={published}
+  readTime={readTime}
+  slug="claude-code-vs-cursor"
+  breadcrumbLabel="Claude Code vs Cursor"
+  exploreCategories={["Frameworks", "Enterprise", "No-Code", "Coding"]}
+  toc={toc}
 >
-  <!-- Hero -->
-  <section
-    class="relative overflow-hidden border-b border-border bg-surface-muted"
-  >
-    <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="container-site relative py-10 sm:py-12 lg:py-14">
-      <Breadcrumb
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Guides", href: "/guides/" },
-          { label: "Claude Code vs Cursor" },
-        ]}
-      />
-
-      <div class="mt-6 max-w-3xl">
-        <HubBacklink guideSlug="claude-code-vs-cursor" />
-      </div>
-
-      <div class="mt-8 max-w-3xl">
-        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <span class="rounded-full bg-accent-soft px-3 py-1 text-accent">
-            Comparison
-          </span>
-          <span class="text-ink-soft">
-            <time datetime={published}>Apr 1, 2026</time>
-            <span aria-hidden="true"> · </span>
-            {readTime} read
-          </span>
-        </div>
-
-        <h1
-          class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.35rem]"
-        >
-          Claude Code vs Cursor in 2026: Which AI Coding Agent Should You Use?
-        </h1>
-        <p class="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
-          Two of the most common AI coding agents on engineering teams — one
-          lives in your IDE, the other in your terminal. Pick for how you
-          actually ship code, not for the loudest demo.
-        </p>
-        <div class="mt-7 flex flex-wrap gap-3">
-          <a href="#verdict" class="btn-primary">Quick verdict</a>
-          <a href="#pricing" class="btn-secondary">Pricing</a>
-          <a href="/categories/coding/" class="btn-secondary">Coding agents</a>
-        </div>
-        <p class="mt-6 text-sm text-ink-muted">
-          Profiles:{" "}
-          <a
-            href="/tools/cursor/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >Cursor</a
-          >
-          {
-            cursor && (
-              <span class="text-ink-soft">
-                {" "}
-                ({cursor.scores.overall.toFixed(1)}/10)
-              </span>
-            )
-          }
-          {" · "}
-          <a
-            href="/tools/claude-code/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >Claude Code</a
-          >
-          {
-            claudeCode && (
-              <span class="text-ink-soft">
-                {" "}
-                ({claudeCode.scores.overall.toFixed(1)}/10)
-              </span>
-            )
-          }
-          {" · "}
-          <a
-            href="/methodology/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >Methodology</a
-          >
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <article class="bg-surface">
-    <div class="container-site section-y">
-      <div class="mx-auto max-w-3xl">
-        <!-- 1. Intro -->
+<!-- 1. Intro -->
         <section class="prose-guide">
           <h2 id="introduction" class="guide-h2">
             Why this comparison matters right now
@@ -346,7 +261,11 @@ const decisionSteps = [
             practical default — and a clear story for when the other tool still
             makes sense.
           </p>
-        </section>
+        
+          <KeyTakeaway>
+            Cursor optimizes the <strong>daily IDE loop</strong>; Claude Code optimizes <strong>terminal-first autonomous coding sessions</strong>. Many strong teams run both with one review bar.
+          </KeyTakeaway>
+</section>
 
         <!-- 2. Verdict -->
         <section class="mt-12 sm:mt-14" id="verdict">
@@ -393,7 +312,13 @@ const decisionSteps = [
               >.
             </p>
           </div>
-        </section>
+        
+          <InfoCallout title="How to use this guide" variant="tip">
+            Hold the same workload constant when you pilot. Compare failure modes and operate cost — not only happy-path demos. Cross-check scores against our{" "}
+            <a href="/methodology/">methodology</a>{" "}
+            and full platform profiles in the directory.
+          </InfoCallout>
+</section>
 
         <!-- 3. Philosophy -->
         <section class="mt-14 sm:mt-16" id="philosophy">
@@ -434,36 +359,13 @@ const decisionSteps = [
             Dimensions that show up in real rollouts — not feature bingo.
           </p>
 
-          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
-            <table class="w-full min-w-[42rem] text-left text-sm">
-              <thead
-                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
-              >
-                <tr>
-                  <th class="px-4 py-3 font-semibold">Area</th>
-                  <th class="px-4 py-3 font-semibold">Cursor</th>
-                  <th class="px-4 py-3 font-semibold">Claude Code</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border bg-surface">
-                {
-                  comparisonRows.map((row) => (
-                    <tr>
-                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
-                        {row.dimension}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.cursor}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.claudeCode}
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+          
+          <ComparisonTable
+            caption="Side-by-side comparison"
+            headers={["Cursor", "Claude Code"]}
+            rows={comparisonRows.map((row) => ({ label: row.dimension, cells: [row.cursor, row.claudeCode] }))}
+          />
+
 
           <div class="mt-10 space-y-8">
             <div>
@@ -567,36 +469,13 @@ const decisionSteps = [
             before you buy or roll out.
           </p>
 
-          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
-            <table class="w-full min-w-[44rem] text-left text-sm">
-              <thead
-                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
-              >
-                <tr>
-                  <th class="px-4 py-3 font-semibold">Plan / scenario</th>
-                  <th class="px-4 py-3 font-semibold">Cursor</th>
-                  <th class="px-4 py-3 font-semibold">Claude Code</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border bg-surface">
-                {
-                  pricingRows.map((row) => (
-                    <tr>
-                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
-                        {row.aspect}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.cursor}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.claudeCode}
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+          
+          <ComparisonTable
+            caption="Pricing comparison (verify on vendor sites)"
+            headers={["Cursor", "Claude Code"]}
+            rows={pricingRows.map((row) => ({ label: row.aspect, cells: [row.cursor, row.claudeCode] }))}
+          />
+
 
           <div
             class="mt-6 rounded-2xl border border-border bg-surface-muted/60 p-5 sm:p-6"
@@ -788,6 +667,16 @@ const decisionSteps = [
         </section>
 
         <!-- 8. Decision framework -->
+        
+        <section class="mt-14 sm:mt-16" id="profiles">
+          <h2 class="guide-h2">Platform profiles</h2>
+          <p class="mt-3 text-base leading-relaxed text-ink-muted">
+            Open the full directory listings for scores, features, and similar tools.
+          </p>
+          <ToolReviewCard slug="cursor" rank={1} badge="IDE-first" />
+          <ToolReviewCard slug="claude-code" rank={2} badge="CLI-first" />
+        </section>
+
         <section class="mt-14 sm:mt-16" id="decision">
           <h2 class="guide-h2">Final recommendation framework</h2>
           <ol class="mt-8 space-y-4">
@@ -832,107 +721,11 @@ const decisionSteps = [
             >.
           </p>
         </section>
-      </div>
-    </div>
-  </article>
 
-  <div class="bg-surface">
-    <div class="container-site pb-4">
-      <div class="mx-auto max-w-3xl">
-        <RelatedComparisons
+  <div class="mt-10 border-t border-border pt-10">
+    <RelatedComparisons
           slug="claude-code-vs-cursor"
           categories={["Coding"]}
         />
-      </div>
-    </div>
   </div>
-
-  <GuideExplore
-    slug="claude-code-vs-cursor"
-    categories={["Coding", "Frameworks"]}
-  />
-
-  <!-- CTA -->
-  <section class="section-cta">
-    <div
-      class="section-cta-glow"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="container-site relative section-y">
-      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <p
-          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80"
-        >
-          Next step
-        </p>
-        <h2
-          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
-        >
-          Compare profiles — then pick a default
-        </h2>
-        <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
-          Open the Cursor and Claude Code listings, scan the{" "}
-          <a href="/categories/coding/" class="text-white/80 hover:text-white"
-            >Coding category</a
-          >, and use our{" "}
-          <a href="/methodology/" class="text-white/80 hover:text-white"
-            >methodology</a
-          >{" "}
-          when you score other agents.
-        </p>
-        <div
-          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
-        >
-          <a
-            href="/tools/cursor/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-7 py-3.5 text-base font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] duration-150 hover:shadow-(--shadow-lg) active:scale-[0.98]"
-          >
-            Cursor profile
-          </a>
-          <a
-            href="/tools/claude-code/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-white/55 hover:bg-white/15"
-          >
-            Claude Code profile
-          </a>
-        </div>
-        <p class="mt-6 text-sm text-white/70">
-          <a href="/contact/" class="text-white/80 hover:text-white"
-            >Contact</a
-          >
-          {" · "}
-          <a href={site.cta.href} class="text-white/80 hover:text-white"
-            >Implementation</a
-          >
-        </p>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
-
-<style>
-  .guide-h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    color: var(--color-ink);
-    line-height: 1.25;
-  }
-  @media (min-width: 640px) {
-    .guide-h2 {
-      font-size: 1.75rem;
-    }
-  }
-  .prose-guide p {
-    margin-top: 1rem;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--color-ink-muted);
-  }
-  @media (min-width: 640px) {
-    .prose-guide p {
-      font-size: 1.0625rem;
-    }
-  }
-</style>
+</GuideLayout>

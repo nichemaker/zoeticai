@@ -1,9 +1,9 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
-import HubBacklink from "../../components/HubBacklink.astro";
-import GuideExplore from "../../components/GuideExplore.astro";
-import { site } from "../../data/site";
+import GuideLayout from "../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../components/guide/ComparisonTable.astro";
+import ToolReviewCard from "../../components/guide/ToolReviewCard.astro";
 import { getToolBySlug } from "../../data/tools";
 
 const title = "Best Open-Source AI Agent Frameworks in 2026";
@@ -11,6 +11,16 @@ const description =
   "A practical 2026 guide to open-source AI agent frameworks: evaluation criteria, ranked profiles for LangGraph, CrewAI, and other strong options, a comparison table, and when OSS beats enterprise suites.";
 const published = "2026-04-01";
 const readTime = "14 min";
+
+const toc = [
+  { id: "introduction", label: "Why OSS frameworks still matter" },
+  { id: "criteria", label: "Evaluation criteria" },
+  { id: "ranked", label: "Top frameworks (ranked)" },
+  { id: "comparison", label: "Comparison table" },
+  { id: "use-cases", label: "Choose by use case" },
+  { id: "oss-vs-enterprise", label: "OSS vs enterprise" },
+  { id: "recommendations", label: "Final recommendations" },
+];
 
 const frameworkSlugs = [
   "langgraph",
@@ -264,97 +274,17 @@ const ossVsEnterprise = [
 ];
 ---
 
-<BaseLayout
+<GuideLayout
   title={title}
   description={description}
-  canonical="/guides/best-open-source-ai-agent-frameworks-2026/"
-  isArticle
-  breadcrumbs={[
-    { name: "Home", path: "/" },
-    { name: "Guides", path: "/guides/" },
-    {
-      name: "Best open-source frameworks 2026",
-      path: "/guides/best-open-source-ai-agent-frameworks-2026/",
-    },
-  ]}
-  article={{
-    headline: title,
-    description,
-    datePublished: published,
-    dateModified: published,
-  }}
+  category="Roundup"
+  published={published}
+  readTime={readTime}
+  slug="best-open-source-ai-agent-frameworks-2026"
+  breadcrumbLabel="Best OSS frameworks"
+  exploreCategories={["Frameworks", "Enterprise", "No-Code", "Coding"]}
+  toc={toc}
 >
-  <!-- Hero -->
-  <section
-    class="relative overflow-hidden border-b border-border bg-surface-muted"
-  >
-    <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="container-site relative py-10 sm:py-12 lg:py-14">
-      <Breadcrumb
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Guides", href: "/guides/" },
-          { label: "Best OSS frameworks 2026" },
-        ]}
-      />
-
-      <div class="mt-6 max-w-3xl">
-        <HubBacklink guideSlug="best-open-source-ai-agent-frameworks-2026" />
-      </div>
-
-      <div class="mt-8 max-w-3xl">
-        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <span class="rounded-full bg-accent-soft px-3 py-1 text-accent">
-            Roundup
-          </span>
-          <span class="text-ink-soft">
-            <time datetime={published}>Apr 1, 2026</time>
-            <span aria-hidden="true"> · </span>
-            {readTime} read
-          </span>
-        </div>
-
-        <h1
-          class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.35rem]"
-        >
-          Best Open-Source AI Agent Frameworks in 2026
-        </h1>
-        <p class="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
-          An opinionated shortlist for developers and technical teams — what to
-          use when you need control, multi-agent patterns, and a path to
-          production without buying a CRM suite to get an agent.
-        </p>
-        <div class="mt-7 flex flex-wrap gap-3">
-          <a href="#ranked" class="btn-primary">See rankings</a>
-          <a href="/categories/frameworks/" class="btn-secondary"
-            >Frameworks category</a
-          >
-        </div>
-        <p class="mt-6 text-sm text-ink-muted">
-          Deep dive:{" "}
-          <a
-            href="/guides/langgraph-vs-crewai/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >LangGraph vs CrewAI comparison</a
-          >
-          {" · "}
-          <a
-            href="/methodology/"
-            class="font-semibold text-accent hover:text-accent-hover"
-            >Methodology</a
-          >
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <article class="bg-surface">
-    <div class="container-site section-y">
-      <div class="mx-auto max-w-3xl">
         <!-- 1. Intro -->
         <section class="prose-guide">
           <h2 id="introduction" class="guide-h2">
@@ -383,10 +313,17 @@ const ossVsEnterprise = [
             >. Treat them as structured editorial judgment; re-verify against
             your workload.
           </p>
+          <KeyTakeaway>
+            Default shortlist: <strong>LangGraph</strong> for controlled
+            production workflows; <strong>CrewAI</strong> for role-based
+            multi-agent velocity. Prefer official model SDKs when you are
+            model-locked; prefer Mastra / Microsoft Agent Framework when language
+            or cloud estate is the real constraint.
+          </KeyTakeaway>
         </section>
 
         <!-- 2. Criteria -->
-        <section class="mt-14 sm:mt-16" id="criteria">
+        <section class="mt-12 sm:mt-14" id="criteria">
           <h2 class="guide-h2">Evaluation criteria we used</h2>
           <p class="mt-3 text-base leading-relaxed text-ink-muted">
             We weighted production control and operate path higher than demo
@@ -394,6 +331,12 @@ const ossVsEnterprise = [
             cannot pause for approval or resume after failure ranks lower for
             serious product work.
           </p>
+          <InfoCallout title="Open source ≠ free operate cost" variant="tip">
+            License is usually free; real cost is models, eng time, tracing, and
+            on-call. Score frameworks with the same golden tasks you would use for
+            a paid platform — see{" "}
+            <a href="/guides/how-to-evaluate-ai-agent-platforms/">how to evaluate platforms</a>.
+          </InfoCallout>
           <ul class="mt-8 grid gap-4 sm:grid-cols-2">
             {
               criteria.map((c) => (
@@ -409,7 +352,7 @@ const ossVsEnterprise = [
         </section>
 
         <!-- 3. Ranked -->
-        <section class="mt-14 sm:mt-16" id="ranked">
+        <section class="mt-12 sm:mt-14" id="ranked">
           <h2 class="guide-h2">Top frameworks (ranked)</h2>
           <p class="mt-3 text-base leading-relaxed text-ink-muted">
             Rankings are opinionated for{" "}
@@ -418,6 +361,25 @@ const ossVsEnterprise = [
             >. Your #1 may differ if you are locked to a single model vendor or
             language.
           </p>
+
+          <ToolReviewCard
+            slug="langgraph"
+            rank={1}
+            badge="Production control"
+            blurb="Explicit graphs, cycles, checkpoints — the default when durable multi-step agents and HITL matter more than demo speed."
+          />
+          <ToolReviewCard
+            slug="crewai"
+            rank={2}
+            badge="Role crews"
+            blurb="Readable multi-agent crews for research, content, and specialist pipelines — faster first demo than most graph frameworks."
+          />
+          <ToolReviewCard
+            slug="openai-agents-sdk"
+            rank={3}
+            badge="OpenAI-first"
+            blurb="Lightweight official loops, tools, handoffs, and tracing if you standardize on OpenAI models."
+          />
 
           <ol class="mt-8 space-y-5">
             {
@@ -520,7 +482,7 @@ const ossVsEnterprise = [
         </section>
 
         <!-- 4. Comparison table -->
-        <section class="mt-14 sm:mt-16" id="comparison">
+        <section class="mt-12 sm:mt-14" id="comparison">
           <h2 class="guide-h2">Comparison table</h2>
           <p class="mt-3 text-base leading-relaxed text-ink-muted">
             LangGraph and CrewAI get dedicated columns because they are the
@@ -531,44 +493,18 @@ const ossVsEnterprise = [
               >LangGraph vs CrewAI comparison</a
             >.
           </p>
-          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
-            <table class="w-full min-w-[48rem] text-left text-sm">
-              <thead
-                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
-              >
-                <tr>
-                  <th class="px-4 py-3 font-semibold">Dimension</th>
-                  <th class="px-4 py-3 font-semibold">LangGraph</th>
-                  <th class="px-4 py-3 font-semibold">CrewAI</th>
-                  <th class="px-4 py-3 font-semibold">Other OSS options</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border bg-surface">
-                {
-                  tableRows.map((row) => (
-                    <tr>
-                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
-                        {row.dimension}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.langgraph}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.crewai}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.others}
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+          <ComparisonTable
+            caption="LangGraph vs CrewAI vs other OSS"
+            headers={["LangGraph", "CrewAI", "Other OSS options"]}
+            rows={tableRows.map((row) => ({
+              label: row.dimension,
+              cells: [row.langgraph, row.crewai, row.others],
+            }))}
+          />
         </section>
 
         <!-- 5. Use cases -->
-        <section class="mt-14 sm:mt-16" id="use-cases">
+        <section class="mt-12 sm:mt-14" id="use-cases">
           <h2 class="guide-h2">Which framework to choose by use case</h2>
           <ul class="mt-8 space-y-4">
             {
@@ -591,10 +527,17 @@ const ossVsEnterprise = [
         </section>
 
         <!-- 6. OSS vs enterprise -->
-        <section class="mt-14 sm:mt-16" id="oss-vs-enterprise">
+        <section class="mt-12 sm:mt-14" id="oss-vs-enterprise">
           <h2 class="guide-h2">
             When open-source is better vs managed enterprise platforms
           </h2>
+          <InfoCallout title="Category choice before framework choice" variant="warning">
+            If agents must live inside Salesforce, M365, or ServiceNow under IT
+            governance, an OSS graph may be the wrong category — not a weak
+            framework. Read{" "}
+            <a href="/guides/frameworks-vs-enterprise-platforms/">frameworks vs enterprise</a>{" "}
+            before you shortlist libraries.
+          </InfoCallout>
           <div class="mt-6 grid gap-4 sm:grid-cols-2">
             {
               ossVsEnterprise.map((col) => (
@@ -635,7 +578,7 @@ const ossVsEnterprise = [
         </section>
 
         <!-- 7. Final recommendations -->
-        <section class="mt-14 sm:mt-16" id="recommendations">
+        <section class="mt-12 sm:mt-14" id="recommendations">
           <h2 class="guide-h2">Final recommendations</h2>
           <div
             class="mt-6 space-y-4 text-base leading-relaxed text-ink-muted sm:text-[1.0625rem]"
@@ -703,103 +646,4 @@ const ossVsEnterprise = [
             </p>
           </div>
         </section>
-      </div>
-    </div>
-  </article>
-
-  <GuideExplore
-    slug="best-open-source-ai-agent-frameworks-2026"
-    categories={["Frameworks", "Enterprise"]}
-  />
-
-  <!-- CTA -->
-  <section class="section-cta">
-    <div
-      class="section-cta-glow"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="container-site relative section-y">
-      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <p
-          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80"
-        >
-          Next step
-        </p>
-        <h2
-          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
-        >
-          Browse frameworks — or go deep on LangGraph vs CrewAI
-        </h2>
-        <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
-          Open the{" "}
-          <a
-            href="/categories/frameworks/"
-            class="text-white/80 hover:text-white">Frameworks category</a
-          >, compare scored profiles, and read the{" "}
-          <a
-            href="/guides/langgraph-vs-crewai/"
-            class="text-white/80 hover:text-white"
-            >LangGraph vs CrewAI comparison</a
-          >{" "}
-          before you standardize.
-        </p>
-        <div
-          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
-        >
-          <a
-            href="/categories/frameworks/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-7 py-3.5 text-base font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] duration-150 hover:shadow-(--shadow-lg) active:scale-[0.98]"
-          >
-            Frameworks category
-          </a>
-          <a
-            href="/guides/langgraph-vs-crewai/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-white/55 hover:bg-white/15"
-          >
-            LangGraph vs CrewAI
-          </a>
-        </div>
-        <p class="mt-6 text-sm text-white/70">
-          <a href="/methodology/" class="text-white/80 hover:text-white"
-            >Methodology</a
-          >
-          {" · "}
-          <a href="/platforms/" class="text-white/80 hover:text-white"
-            >All platforms</a
-          >
-          {" · "}
-          <a href={site.cta.href} class="text-white/80 hover:text-white"
-            >Contact</a
-          >
-        </p>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
-
-<style>
-  .guide-h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    color: var(--color-ink);
-    line-height: 1.25;
-  }
-  @media (min-width: 640px) {
-    .guide-h2 {
-      font-size: 1.75rem;
-    }
-  }
-  .prose-guide p {
-    margin-top: 1rem;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--color-ink-muted);
-  }
-  @media (min-width: 640px) {
-    .prose-guide p {
-      font-size: 1.0625rem;
-    }
-  }
-</style>
+</GuideLayout>

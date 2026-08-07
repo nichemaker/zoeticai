@@ -1,9 +1,9 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
-import HubBacklink from "../../components/HubBacklink.astro";
-import GuideExplore from "../../components/GuideExplore.astro";
-import { site } from "../../data/site";
+import GuideLayout from "../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../components/guide/ComparisonTable.astro";
+import ToolReviewCard from "../../components/guide/ToolReviewCard.astro";
 
 const title =
   "Frameworks vs Enterprise AI Agent Platforms — When to Choose Which";
@@ -12,6 +12,16 @@ const description =
 const heroImage = "/images/guides/frameworks-vs-enterprise-hero.jpg";
 const published = "2026-04-01";
 const readTime = "10 min";
+
+const toc = [
+  { id: "introduction", label: "Start with the job" },
+  { id: "frameworks", label: "What frameworks are good at" },
+  { id: "enterprise", label: "What enterprise platforms are good at" },
+  { id: "comparison", label: "Side-by-side comparison" },
+  { id: "decision", label: "Decision matrix" },
+  { id: "hybrid", label: "Hybrid approaches" },
+  { id: "recommendation", label: "Final recommendation" },
+];
 
 const frameworkStrengths = [
   {
@@ -147,100 +157,19 @@ const recommendations = [
 ];
 ---
 
-<BaseLayout
+<GuideLayout
   title={title}
   description={description}
-  image={heroImage}
-  canonical="/guides/frameworks-vs-enterprise-platforms/"
-  isArticle
-  breadcrumbs={[
-    { name: "Home", path: "/" },
-    { name: "Guides", path: "/guides/" },
-    {
-      name: "Frameworks vs enterprise",
-      path: "/guides/frameworks-vs-enterprise-platforms/",
-    },
-  ]}
-  article={{
-    headline: title,
-    description,
-    datePublished: published,
-    dateModified: published,
-  }}
+  category="Comparison"
+  published={published}
+  readTime={readTime}
+  slug="frameworks-vs-enterprise-platforms"
+  breadcrumbLabel="Frameworks vs enterprise"
+  heroImage={heroImage}
+  heroImageAlt="Illustration comparing developer frameworks and enterprise AI agent platforms"
+  exploreCategories={["Frameworks", "Enterprise", "No-Code", "Coding"]}
+  toc={toc}
 >
-  <!-- Hero -->
-  <section
-    class="relative overflow-hidden border-b border-border bg-surface-muted"
-  >
-    <div
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,_var(--color-accent-soft)_0%,_transparent_55%)]"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="container-site relative py-10 sm:py-12 lg:py-14">
-      <Breadcrumb
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Guides", href: "/guides/" },
-          { label: "Frameworks vs enterprise" },
-        ]}
-      />
-
-      <div class="mt-6 max-w-3xl">
-        <HubBacklink guideSlug="frameworks-vs-enterprise-platforms" />
-      </div>
-
-      <div class="mt-8 grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
-        <div class="lg:col-span-6">
-          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
-            <span class="rounded-full bg-accent-soft px-3 py-1 text-accent">
-              Strategy
-            </span>
-            <span class="text-ink-soft">
-              <time datetime={published}>Apr 1, 2026</time>
-              <span aria-hidden="true"> · </span>
-              {readTime} read
-            </span>
-          </div>
-
-          <h1
-            class="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl sm:leading-tight lg:text-[2.35rem]"
-          >
-            Frameworks vs Enterprise AI Agent Platforms — When to Choose Which
-          </h1>
-          <p class="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
-            LangGraph and CrewAI maximize control. Copilot Studio, Agentforce,
-            and Bedrock maximize fit inside the systems you already run. The
-            right answer is a workload decision — not a brand preference.
-          </p>
-          <div class="mt-7 flex flex-wrap gap-3">
-            <a href="#comparison" class="btn-primary">See comparison</a>
-            <a href="/platforms/" class="btn-secondary">Browse platforms</a>
-          </div>
-        </div>
-
-        <div class="lg:col-span-6">
-          <figure
-            class="overflow-hidden rounded-2xl border border-border bg-surface shadow-(--shadow-md)"
-          >
-            <img
-              src={heroImage}
-              alt="Split illustration: developer agent frameworks with code and graphs on the left, enterprise platforms with modern buildings on the right"
-              width="1600"
-              height="900"
-              class="h-auto w-full object-cover"
-              loading="eager"
-              decoding="async"
-            />
-          </figure>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <article class="bg-surface">
-    <div class="container-site section-y">
-      <div class="mx-auto max-w-3xl">
         <!-- Intro -->
         <section class="prose-guide">
           <h2 id="introduction" class="guide-h2">Start with the job, not the logo</h2>
@@ -266,10 +195,16 @@ const recommendations = [
             owners who need a defensible choice under real constraints —
             staffing, security, systems of record, and time-to-value.
           </p>
+          <KeyTakeaway>
+            Pick <strong>frameworks</strong> when you are building agent software
+            (control and IP in the loop). Pick <strong>enterprise platforms</strong>{" "}
+            when you are automating work inside a system of record under enterprise
+            constraints. Hybrid only with an explicit boundary.
+          </KeyTakeaway>
         </section>
 
         <!-- Frameworks -->
-        <section class="mt-14 sm:mt-16" id="frameworks">
+        <section class="mt-12 sm:mt-14" id="frameworks">
           <h2 class="guide-h2">
             What developer frameworks are good at
           </h2>
@@ -303,10 +238,15 @@ const recommendations = [
             — LangGraph, CrewAI, OpenAI Agents SDK, Anthropic Claude Agent SDK,
             and more.
           </p>
+          <ToolReviewCard
+            slug="langgraph"
+            badge="Framework archetype"
+            blurb="Production graphs, checkpoints, and HITL — what “own the loop” looks like when engineers will operate quality."
+          />
         </section>
 
         <!-- Enterprise -->
-        <section class="mt-14 sm:mt-16" id="enterprise">
+        <section class="mt-12 sm:mt-14" id="enterprise">
           <h2 class="guide-h2">
             What enterprise platforms are good at
           </h2>
@@ -341,51 +281,41 @@ const recommendations = [
             — Copilot Studio, Agentforce, Bedrock Agents, Vertex Agent Builder,
             and peers.
           </p>
+          <ToolReviewCard
+            slug="microsoft-copilot-studio"
+            badge="Enterprise archetype"
+            blurb="Agents on the Microsoft estate — governance, connectors, and maker velocity when M365 is already the trust boundary."
+          />
         </section>
 
         <!-- Comparison table -->
-        <section class="mt-14 sm:mt-16" id="comparison">
+        <section class="mt-12 sm:mt-14" id="comparison">
           <h2 class="guide-h2">Side-by-side comparison</h2>
           <p class="mt-3 text-base leading-relaxed text-ink-muted">
             Relative defaults for a typical mid-market or enterprise team. Your
             scores will shift with staffing and which system of record you
             already pay for.
           </p>
-
-          <div class="mt-6 overflow-x-auto rounded-2xl border border-border">
-            <table class="w-full min-w-[40rem] text-left text-sm">
-              <thead
-                class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft"
-              >
-                <tr>
-                  <th class="px-4 py-3 font-semibold">Dimension</th>
-                  <th class="px-4 py-3 font-semibold">Frameworks</th>
-                  <th class="px-4 py-3 font-semibold">Enterprise platforms</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border bg-surface">
-                {
-                  comparisonRows.map((row) => (
-                    <tr>
-                      <td class="px-4 py-3.5 align-top font-semibold text-ink">
-                        {row.dimension}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.frameworks}
-                      </td>
-                      <td class="px-4 py-3.5 align-top text-ink-muted">
-                        {row.enterprise}
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+          <ComparisonTable
+            caption="Frameworks vs enterprise platforms"
+            headers={["Frameworks", "Enterprise platforms"]}
+            rows={comparisonRows.map((row) => ({
+              label: row.dimension,
+              cells: [row.frameworks, row.enterprise],
+            }))}
+          />
+          <InfoCallout title="How to use this matrix" variant="tip">
+            Score <em>your</em> workload, not the abstract category. A CRM refund
+            agent and a multi-step product research crew will flip almost every
+            row. Pair with{" "}
+            <a href="/guides/how-to-evaluate-ai-agent-platforms/">the evaluation guide</a>{" "}
+            and{" "}
+            <a href="/guides/ai-agent-platforms-tco-2026/">TCO checklist</a>.
+          </InfoCallout>
         </section>
 
         <!-- Decision matrix -->
-        <section class="mt-14 sm:mt-16" id="decision">
+        <section class="mt-12 sm:mt-14" id="decision">
           <h2 class="guide-h2">Decision matrix</h2>
           <div class="mt-8 grid gap-6 lg:grid-cols-2">
             <div class="card-surface p-6 sm:p-7">
@@ -432,13 +362,18 @@ const recommendations = [
         </section>
 
         <!-- Hybrid -->
-        <section class="mt-14 sm:mt-16" id="hybrid">
+        <section class="mt-12 sm:mt-14" id="hybrid">
           <h2 class="guide-h2">Hybrid approaches that work in 2026</h2>
           <p class="mt-3 text-base leading-relaxed text-ink-muted">
             Most serious orgs will not run a single agent product. Hybrids work
             when the boundary is explicit — not when two teams independently
             invent the same agent twice.
           </p>
+          <InfoCallout title="Hybrid without a contract becomes two half-finished systems" variant="warning">
+            Write the interface: what the suite owns, what your service owns, how
+            auth and logs cross the boundary. Pilot hybrid only after that
+            boundary is documented.
+          </InfoCallout>
           <ul class="mt-8 space-y-4">
             {
               hybrids.map((h) => (
@@ -454,7 +389,7 @@ const recommendations = [
         </section>
 
         <!-- Final recommendation -->
-        <section class="mt-14 sm:mt-16" id="recommendation">
+        <section class="mt-12 sm:mt-14" id="recommendation">
           <h2 class="guide-h2">Final recommendation framework</h2>
           <p class="mt-3 text-base leading-relaxed text-ink-muted">
             Use this sequence in planning docs and vendor conversations. It
@@ -535,93 +470,4 @@ const recommendations = [
             .
           </p>
         </section>
-      </div>
-    </div>
-  </article>
-
-  <GuideExplore
-    slug="frameworks-vs-enterprise-platforms"
-    categories={["Frameworks", "Enterprise"]}
-  />
-
-  <!-- CTA -->
-  <section class="section-cta">
-    <div
-      class="section-cta-glow"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="container-site relative section-y">
-      <div class="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <p
-          class="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80"
-        >
-          Next step
-        </p>
-        <h2
-          class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl sm:leading-tight"
-        >
-          Compare options — or design the hybrid
-        </h2>
-        <p class="mt-4 max-w-xl text-base leading-relaxed text-white/85">
-          Browse frameworks and enterprise platforms side by side in the
-          directory. If you need a shortlist and an implementation plan, we help
-          teams ship production agents with clear boundaries and governance.
-        </p>
-        <div
-          class="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
-        >
-          <a
-            href="/platforms/"
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] bg-white px-7 py-3.5 text-base font-semibold text-accent shadow-(--shadow-md) transition-[transform,box-shadow] duration-150 hover:shadow-(--shadow-lg) active:scale-[0.98]"
-          >
-            Browse all platforms
-          </a>
-          <a
-            href={site.cta.href}
-            class="inline-flex items-center justify-center rounded-[var(--radius-pill)] border border-white/35 bg-white/10 px-7 py-3.5 text-base font-semibold text-white transition-colors duration-150 hover:border-white/55 hover:bg-white/15"
-            rel="noopener noreferrer"
-          >
-            Talk about implementation
-          </a>
-        </div>
-        <p class="mt-6 text-sm text-white/70">
-          Or jump to{" "}
-          <a href="/categories/frameworks/" class="text-white/80 hover:text-white"
-            >Frameworks</a
-          >
-          {" · "}
-          <a href="/categories/enterprise/" class="text-white/80 hover:text-white"
-            >Enterprise</a
-          >
-        </p>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
-
-<style>
-  .guide-h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    color: var(--color-ink);
-    line-height: 1.25;
-  }
-  @media (min-width: 640px) {
-    .guide-h2 {
-      font-size: 1.75rem;
-    }
-  }
-  .prose-guide p {
-    margin-top: 1rem;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--color-ink-muted);
-  }
-  @media (min-width: 640px) {
-    .prose-guide p {
-      font-size: 1.0625rem;
-    }
-  }
-</style>
+</GuideLayout>
