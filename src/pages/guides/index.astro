@@ -54,7 +54,19 @@ const otherGuides = latestGuides.filter((g) => !isHubPage(g.slug));
           >AI Agent Platforms Guide</a
         >{" "}
         — the central hub for choosing, comparing, and evaluating platforms —
-        then open the spoke articles that match your decision.
+        then open the spoke articles that match your decision. For agent
+        connectivity, see{" "}
+        <a
+          href={guideHref("mcp-and-tool-calling-explained")}
+          class="font-semibold text-accent hover:text-accent-hover"
+          >MCP and Tool Calling Explained</a
+        >{" "}
+        and{" "}
+        <a
+          href={guideHref("mcp-server-implementation")}
+          class="font-semibold text-accent hover:text-accent-hover"
+          >How to Build and Run MCP Servers</a
+        >.
       </p>
     </div>
   </section>
@@ -147,6 +159,46 @@ const otherGuides = latestGuides.filter((g) => !isHubPage(g.slug));
       </section>
     )
   }
+
+  <!-- Technical deep-dives: MCP pair -->
+  <section class="border-b border-border bg-surface">
+    <div class="container-site section-y-tight py-10 sm:py-12">
+      <p class="eyebrow">Technical deep-dives</p>
+      <h2 class="text-section-title mt-2">MCP & tool calling</h2>
+      <p class="mt-2 max-w-2xl text-sm text-ink-muted">
+        Conceptual overview for buyers and platform shortlists, plus a practical
+        implementation guide for teams building tool servers.
+      </p>
+      <div class="mt-6 grid gap-4 md:grid-cols-2">
+        {
+          [
+            getGuideBySlug("mcp-and-tool-calling-explained"),
+            getGuideBySlug("mcp-server-implementation"),
+          ]
+            .filter((g): g is NonNullable<typeof g> => Boolean(g))
+            .map((guide) => (
+              <a
+                href={guideHref(guide.slug)}
+                class="card-interactive flex flex-col p-5 sm:p-6"
+              >
+                <span class="pill-accent normal-case tracking-normal">
+                  {guide.category}
+                </span>
+                <span class="mt-3 text-lg font-semibold text-ink">
+                  {guide.title}
+                </span>
+                <span class="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
+                  {guide.excerpt}
+                </span>
+                <span class="mt-4 text-sm font-semibold text-accent">
+                  Read guide →
+                </span>
+              </a>
+            ))
+        }
+      </div>
+    </div>
+  </section>
 
   <!-- All other guides -->
   <section class="bg-surface">

@@ -11,47 +11,21 @@ const description =
 const heroImage = "/images/guides/mcp-and-tool-calling-hero.jpg";
 const published = "2026-04-01";
 const readTime = "11 min";
+const slug = "mcp-and-tool-calling-explained";
 
 const toc = [
-  { id: "tool-calling", label: "What tool calling is" },
-  { id: "what-is-mcp", label: "What MCP is" },
+  { id: "introduction", label: "Why this matters for agent platforms" },
+  { id: "tool-calling", label: "What tool calling actually is" },
+  { id: "mcp-vs-tools", label: "MCP vs traditional tool calling" },
+  { id: "mcp-vs-openai-assistants", label: "MCP vs OpenAI Assistants" },
+  { id: "what-is-mcp", label: "What MCP is and why it exists" },
   { id: "interoperability", label: "How MCP improves interoperability" },
   { id: "platform-support", label: "Platform support in 2026" },
+  { id: "profiles", label: "Platforms with strong MCP support" },
   { id: "implications", label: "Implications for buyers & builders" },
   { id: "limitations", label: "Limitations and maturity" },
   { id: "evaluate", label: "What to evaluate" },
   { id: "bottom-line", label: "Bottom line" },
-];
-
-const supportRows = [
-  {
-    label: "MCP client momentum",
-    cells: [
-      "Claude ecosystem, Cursor, Cline",
-      "Strong first-class or early deep integration",
-    ],
-  },
-  {
-    label: "Frameworks + adapters",
-    cells: [
-      "LangGraph, OpenAI Agents SDK, CrewAI, Mastra, peers",
-      "Tool calling core; MCP bridges vary by version",
-    ],
-  },
-  {
-    label: "Workflow / no-code",
-    cells: [
-      "n8n (+ community MCP tooling)",
-      "Agent nodes + connectors; protocol support growing",
-    ],
-  },
-  {
-    label: "Enterprise suites",
-    cells: [
-      "Copilot Studio, Agentforce, Bedrock, ServiceNow…",
-      "Native connectors dominate; MCP often secondary",
-    ],
-  },
 ];
 
 const toolCallingSteps = [
@@ -75,6 +49,124 @@ const toolCallingSteps = [
     title: "Model continues or finishes",
     body: "With the tool result in context, the model answers the user or issues another tool call. Multi-step agents are mostly loops of this pattern.",
   },
+];
+
+/** Side-by-side: behavior (tool calling) vs protocol (MCP) vs proprietary plugins */
+const mcpVsToolsRows = [
+  {
+    label: "What it is",
+    cells: [
+      "Model requests a structured action; your app executes it",
+      "Open protocol so hosts talk to shared tool/resource servers",
+      "Vendor-specific plugins/connectors inside one product",
+    ],
+  },
+  {
+    label: "Primary job",
+    cells: [
+      "Let agents act (APIs, scripts, systems of record)",
+      "Reuse the same tool implementations across clients",
+      "Deep, polished integrations for that suite only",
+    ],
+  },
+  {
+    label: "Portability",
+    cells: [
+      "Depends how you wire tools into each runtime",
+      "High — write a server once, attach many MCP hosts",
+      "Low — rewrites when you leave the vendor",
+    ],
+  },
+  {
+    label: "Security model",
+    cells: [
+      "Your runtime must validate args, auth, and scopes",
+      "Server + host enforce policy; still not automatic IAM",
+      "Usually strong admin/SSO if the suite owns identity",
+    ],
+  },
+  {
+    label: "Best when",
+    cells: [
+      "Any real agent that must touch external systems",
+      "Multiple agents/IDEs share internal tools",
+      "Work lives inside one CRM/cloud/ITSM estate",
+    ],
+  },
+  {
+    label: "Buyer trap",
+    cells: [
+      "Assuming “function calling” equals production agents",
+      "Treating MCP checkbox as security or quality proof",
+      "Ignoring open protocols when you will multi-host tools",
+    ],
+  },
+];
+
+/** Practical: open protocol vs OpenAI Assistants managed runtime */
+const mcpVsAssistantsRows = [
+  {
+    label: "What it is",
+    cells: [
+      "Open protocol / standard for connecting AI to tools & data",
+      "Proprietary product + API for building assistants",
+    ],
+  },
+  {
+    label: "Vendor lock-in",
+    cells: [
+      "Low (model-agnostic)",
+      "High (tied to OpenAI)",
+    ],
+  },
+  {
+    label: "Primary goal",
+    cells: [
+      "Standardize how tools and context are connected",
+      "Provide a complete managed assistant runtime",
+    ],
+  },
+  {
+    label: "Tool integration",
+    cells: [
+      "External MCP servers (portable)",
+      "Built-in tools + function calling",
+    ],
+  },
+  {
+    label: "Portability",
+    cells: [
+      "High – works across Claude, GPT, open-source models",
+      "Low – mainly OpenAI models",
+    ],
+  },
+  {
+    label: "State / Threads",
+    cells: [
+      "Depends on the client implementation",
+      "Strong native support (threads, runs, persistence)",
+    ],
+  },
+  {
+    label: "Best for",
+    cells: [
+      "Multi-model agents, open ecosystems, reusable tools",
+      "Fast OpenAI-centric products and prototypes",
+    ],
+  },
+];
+
+const chooseMcp = [
+  "You want tool portability across different models",
+  "You are building multi-model or open-source agents",
+  "You want a growing ecosystem of reusable tool servers",
+  "Avoiding vendor lock-in is important",
+];
+
+const chooseAssistants = [
+  "You are fully committed to the OpenAI stack",
+  "You need fast development with built-in threads, file search, and code interpreter",
+  "You want a managed runtime rather than assembling protocol + servers yourself",
 ];
 
 const mcpWhy = [
@@ -111,6 +203,41 @@ const interoperabilityPoints = [
   },
 ];
 
+const supportRows = [
+  {
+    label: "Strong MCP client momentum",
+    cells: [
+      "Claude ecosystem, Claude Code, Cursor, Cline",
+      "First-class or deep MCP client investment",
+      "Coding agents & Claude-native stacks",
+    ],
+  },
+  {
+    label: "Frameworks + adapters",
+    cells: [
+      "LangGraph, OpenAI Agents SDK, CrewAI, Mastra, peers",
+      "Tool calling core; MCP bridges vary by version",
+      "Product agents and custom orchestration",
+    ],
+  },
+  {
+    label: "Workflow / no-code",
+    cells: [
+      "n8n (+ community MCP tooling)",
+      "Agent nodes + connectors; protocol support growing",
+      "Ops automation with AI steps",
+    ],
+  },
+  {
+    label: "Enterprise suites",
+    cells: [
+      "Copilot Studio, Agentforce, Bedrock, ServiceNow…",
+      "Native connectors dominate; MCP often secondary",
+      "Process agents on systems of record",
+    ],
+  },
+];
+
 const platformSupport: {
   group: string;
   items: { name: string; note: string; href: string }[];
@@ -132,6 +259,11 @@ const platformSupport: {
         name: "Cline",
         note: "Open-source IDE agent with MCP as a first-class extension path.",
         href: "/tools/cline/",
+      },
+      {
+        name: "Claude Code",
+        note: "Terminal-native agent with MCP tool extension as a core workflow pattern.",
+        href: "/tools/claude-code/",
       },
     ],
   },
@@ -259,295 +391,459 @@ const evalChecklist = [
   category="Technical"
   published={published}
   readTime={readTime}
-  slug="mcp-and-tool-calling-explained"
+  slug={slug}
   breadcrumbLabel="MCP & tool calling"
   heroImage={heroImage}
   heroImageAlt="Illustration of AI agents connecting to tools through a shared protocol"
   exploreCategories={["Frameworks", "Enterprise", "No-Code", "Coding"]}
   toc={toc}
 >
-        <!-- What tool calling is -->
-        <section class="prose-guide" id="tool-calling">
-          <h2 class="guide-h2">What tool calling actually is</h2>
-          <p>
-            Large language models predict text. They do not magically open your
-            CRM or deploy your app. <strong class="font-semibold text-ink"
-              >Tool calling</strong
-            > (also called function calling) is the pattern where the model is
-            allowed to request structured actions, and <em>your application</em>
-            decides whether and how to run them.
-          </p>
-          <p>
-            Think of the model as a coordinator with a menu of buttons. It can
-            press “search knowledge base” or “create ticket,” but the buttons
-            are wired by engineers with real credentials and guardrails. Without
-            that loop, you have a chatbot. With it, you have an agent candidate.
-          </p>
-          <KeyTakeaway>
-            <strong>Tool calling</strong> is the behavior (model requests an
-            action; your runtime executes it). <strong>MCP</strong> is a shared
-            plug shape so many agent hosts can reuse the same tool servers —
-            not a security silver bullet and not a substitute for IAM.
-          </KeyTakeaway>
+  <!-- 1. Intro -->
+  <section id="introduction">
+    <h2 class="guide-h2">Why tool calling and MCP matter for agent platforms</h2>
+    <p>
+      AI agent platforms only become useful when models can{" "}
+      <strong>act</strong> — open tickets, query warehouses, edit repos, update
+      CRM records — not merely chat. That capability rests on{" "}
+      <strong>tool calling</strong> (also called function calling). In 2026 a
+      second question matters just as much: will you rebuild those tools for
+      every host, or share them through an open contract like{" "}
+      <strong>Model Context Protocol (MCP)</strong>?
+    </p>
+    <p>
+      This guide is for technical founders, eng leads, and platform buyers who
+      shortlist agent products. It explains the concepts in plain language, maps
+      who supports MCP-style interoperability, and gives a practical evaluation
+      checklist — without treating any protocol as a magic security feature. When
+      you are ready to ship a server, use the companion{" "}
+      <a href="/guides/mcp-server-implementation/">
+        practical MCP server implementation guide
+      </a>
+      .
+    </p>
+    <KeyTakeaway>
+      <strong>Tool calling</strong> is the behavior that lets agents act.{" "}
+      <strong>MCP</strong> is a shared plug shape so many hosts can reuse the
+      same tool servers. Evaluate both: native tool quality for the jobs you
+      need today, and protocol support if you will run multiple agents against
+      the same internal systems — never confuse an MCP logo with IAM, DLP, or
+      production-grade tools.
+    </KeyTakeaway>
+    <InfoCallout title="How to use this guide" variant="tip">
+      Hold your real golden tasks constant (e.g. create ticket, query internal
+      API, open PR). Score whether a platform’s tool model can complete them
+      with traces and least privilege — then check whether MCP (or equivalent)
+      would reduce duplicate connectors. Cross-check feature flags on{" "}
+      <a href="/platforms/">All Platforms</a> and our{" "}
+      <a href="/methodology/">methodology</a>. To implement servers, see{" "}
+      <a href="/guides/mcp-server-implementation/">
+        How to Build and Run MCP Servers
+      </a>
+      .
+    </InfoCallout>
+  </section>
 
-          <ol class="mt-8 space-y-4">
-            {
-              toolCallingSteps.map((s) => (
-                <li class="flex gap-4 rounded-2xl border border-border bg-surface-muted/40 p-5 sm:p-6">
+  <!-- 2. Tool calling -->
+  <section id="tool-calling">
+    <h2 class="guide-h2">What tool calling actually is</h2>
+    <p>
+      Large language models predict text. They do not magically open your CRM or
+      deploy your app.{" "}
+      <strong>Tool calling</strong> is the pattern where the model is allowed to
+      request structured actions, and <em>your application</em> decides whether
+      and how to run them.
+    </p>
+    <p>
+      Think of the model as a coordinator with a menu of buttons. It can press
+      “search knowledge base” or “create ticket,” but the buttons are wired by
+      engineers with real credentials and guardrails. Without that loop, you
+      have a chatbot. With it, you have an agent candidate.
+    </p>
+
+    <ol class="mt-8 !list-none !space-y-4 !p-0">
+      {
+        toolCallingSteps.map((s) => (
+          <li class="flex gap-4 rounded-[var(--radius-card)] border border-border bg-surface-muted/40 p-5 sm:p-6">
+            <span
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-accent text-sm font-bold text-accent-fg"
+              aria-hidden="true"
+            >
+              {s.num}
+            </span>
+            <div>
+              <h3 class="text-base font-semibold text-ink">{s.title}</h3>
+              <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                {s.body}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p>
+      Computer-use (screen control) is a specialized form of acting on the
+      world. Most business agents still rely primarily on API-style tools. Both
+      need the same discipline: least privilege, logging, and tests.
+    </p>
+  </section>
+
+  <!-- 3. MCP vs traditional -->
+  <section id="mcp-vs-tools">
+    <h2 class="guide-h2">MCP vs traditional tool calling</h2>
+    <p>
+      Teams often conflate three different things: the model’s ability to
+      request tools, an open protocol for hosting those tools, and a vendor’s
+      proprietary connector catalog. Separating them prevents bad RFPs.
+    </p>
+
+    <ComparisonTable
+      caption="Tool calling vs MCP vs proprietary connectors"
+      headers={[
+        "Traditional tool / function calling",
+        "MCP (Model Context Protocol)",
+        "Proprietary suite connectors",
+      ]}
+      rows={mcpVsToolsRows}
+    />
+
+    <p>
+      In plain language: tool calling is the <em>behavior</em> (“the model asked
+      to run a function”). MCP is a <em>shared plug shape</em> so many apps can
+      use the same tool implementations. Enterprise suites often excel at
+      connectors without exposing MCP at all — that can still be the right buy
+      when the system of record is the product.
+    </p>
+  </section>
+
+  <!-- 3b. MCP vs OpenAI Assistants -->
+  <section id="mcp-vs-openai-assistants">
+    <h2 class="guide-h2">MCP vs OpenAI Assistants</h2>
+    <p>
+      Buyers often compare MCP to the{" "}
+      <strong>OpenAI Assistants API</strong> as if they were alternatives in
+      the same product category. They solve different layers of the stack: MCP
+      standardizes how tools and context plug into many hosts; Assistants is a
+      managed OpenAI runtime for building assistants quickly. Choosing one does
+      not always exclude the other.
+    </p>
+
+    <ComparisonTable
+      caption="MCP vs OpenAI Assistants API"
+      headers={["MCP (Model Context Protocol)", "OpenAI Assistants API"]}
+      rows={mcpVsAssistantsRows}
+    />
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      <div class="card-surface p-6 sm:p-7">
+        <h3 class="text-lg font-semibold text-accent">When to choose MCP</h3>
+        <ul class="mt-4 !list-none !space-y-3 !p-0">
+          {
+            chooseMcp.map((item) => (
+              <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted">
+                <span
+                  class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                  aria-hidden="true"
+                >
+                  ✓
+                </span>
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="card-surface p-6 sm:p-7">
+        <h3 class="text-lg font-semibold text-accent">
+          When to choose OpenAI Assistants
+        </h3>
+        <ul class="mt-4 !list-none !space-y-3 !p-0">
+          {
+            chooseAssistants.map((item) => (
+              <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted">
+                <span
+                  class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                  aria-hidden="true"
+                >
+                  ✓
+                </span>
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <InfoCallout title="They can work together" variant="info">
+      Many teams now combine both approaches — using OpenAI’s runtime while
+      connecting portable tools via MCP-style servers. Treat Assistants as the
+      managed conversation/runtime layer and MCP (or equivalent) as how shared
+      tools stay portable across hosts.
+    </InfoCallout>
+  </section>
+
+  <!-- 4. What MCP is -->
+  <section id="what-is-mcp">
+    <h2 class="guide-h2">
+      What Model Context Protocol (MCP) is — and why it was created
+    </h2>
+    <p>
+      <strong>Model Context Protocol (MCP)</strong> is an open standard for
+      connecting AI applications (hosts) to external context and tools
+      (servers). It was created to stop the explosion of one-off plugin formats
+      as agents and coding assistants multiplied.
+    </p>
+    <ul class="mt-8 !list-none !space-y-4 !p-0">
+      {
+        mcpWhy.map((item) => (
+          <li class="card-surface p-5 sm:p-6">
+            <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+              {item.body}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- 5. Interoperability -->
+  <section id="interoperability">
+    <h2 class="guide-h2">
+      How MCP improves interoperability between agents and tools
+    </h2>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      {
+        interoperabilityPoints.map((p) => (
+          <div class="card-surface p-5 sm:p-6">
+            <h3 class="text-base font-semibold text-ink">{p.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted">{p.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 6. Platform support -->
+  <section id="platform-support">
+    <h2 class="guide-h2">
+      Which major platforms support MCP (or similar) in 2026
+    </h2>
+    <p>
+      Support moves quickly. Treat this as a map of patterns, not a forever
+      certification. Always confirm in current product docs before a purchase.
+    </p>
+
+    <ComparisonTable
+      caption="MCP / tool-calling patterns by category (2026)"
+      headers={["Examples", "Pattern", "Typical fit"]}
+      rows={supportRows}
+    />
+
+    <InfoCallout title="Living shortlist in this directory" variant="tip">
+      Filter platforms with the{" "}
+      <a href="/platforms/">MCP feature chip</a> on All Platforms. Directory
+      profiles flag MCP support on tools such as{" "}
+      <a href="/tools/cursor/">Cursor</a>,{" "}
+      <a href="/tools/claude-code/">Claude Code</a>,{" "}
+      <a href="/tools/cline/">Cline</a>,{" "}
+      <a href="/tools/langgraph/">LangGraph</a>, and{" "}
+      <a href="/tools/anthropic-claude-agent-sdk/">Claude Agent SDK</a>.
+    </InfoCallout>
+
+    <div class="mt-8 space-y-6">
+      {
+        platformSupport.map((group) => (
+          <div>
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-ink-soft">
+              {group.group}
+            </h3>
+            <ul class="mt-3 !list-none !space-y-3 !p-0">
+              {group.items.map((item) => (
+                <li class="card-surface p-5">
+                  <a
+                    href={item.href}
+                    class="text-base font-semibold text-ink hover:text-accent"
+                  >
+                    {item.name}
+                  </a>
+                  <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">
+                    {item.note}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 7. Profiles -->
+  <section id="profiles">
+    <h2 class="guide-h2">Platforms with strong MCP support</h2>
+    <p>
+      These directory profiles are useful starting points when MCP and
+      tool-calling quality are selection criteria — especially for coding agents
+      and open frameworks. Open each profile for scores, pricing, and feature
+      flags.
+    </p>
+
+    <ToolReviewCard
+      slug="cursor"
+      rank={1}
+      badge="MCP in the IDE"
+      blurb="AI-native IDE with MCP tool integration — extend the daily coding agent with the same servers you use elsewhere."
+    />
+    <ToolReviewCard
+      slug="claude-code"
+      rank={2}
+      badge="CLI + MCP"
+      blurb="Terminal-native Claude agent where MCP tools are a core extension path for repo-wide, tool-using sessions."
+    />
+    <ToolReviewCard
+      slug="cline"
+      rank={3}
+      badge="OSS + MCP"
+      blurb="Open-source VS Code agent with plan/act and first-class MCP — max control; cost is mostly model APIs."
+    />
+    <ToolReviewCard
+      slug="anthropic-claude-agent-sdk"
+      badge="Claude-native SDK"
+      blurb="Build Claude-centric product agents with strong tool-use alignment in the ecosystem that drove MCP adoption."
+    />
+    <ToolReviewCard
+      slug="langgraph"
+      badge="Framework + adapters"
+      blurb="Own graphs, state, and tool policy in production — broad tool abstractions with maturing MCP bridges."
+    />
+  </section>
+
+  <!-- 8. Implications -->
+  <section id="implications">
+    <h2 class="guide-h2">Practical implications for buyers and builders</h2>
+    <div class="mt-6 grid gap-6 lg:grid-cols-2">
+      {
+        buyerImplications.map((col) => (
+          <div class="card-surface p-6 sm:p-7">
+            <h3 class="text-lg font-semibold text-accent">{col.title}</h3>
+            <ul class="mt-4 !list-none !space-y-3 !p-0">
+              {col.points.map((point) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted">
                   <span
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-fg"
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
                     aria-hidden="true"
                   >
-                    {s.num}
+                    ✓
                   </span>
-                  <div>
-                    <h3 class="text-base font-semibold text-ink">{s.title}</h3>
-                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
-                      {s.body}
-                    </p>
-                  </div>
+                  <span>{point}</span>
                 </li>
-              ))
-            }
-          </ol>
-
-          <p class="mt-6 text-base leading-relaxed text-ink-muted">
-            Computer-use (screen control) is a specialized form of acting on the
-            world. Most business agents still rely primarily on API-style tools.
-            Both need the same discipline: least privilege, logging, and tests.
-          </p>
-        </section>
-
-        <!-- What MCP is -->
-        <section class="mt-12 sm:mt-14" id="what-is-mcp">
-          <h2 class="guide-h2">
-            What Model Context Protocol (MCP) is — and why it was created
-          </h2>
-          <p class="mt-3 text-base leading-relaxed text-ink-muted">
-            <strong class="font-semibold text-ink">Model Context Protocol (MCP)</strong> is an open
-            standard for connecting AI applications (hosts) to external
-            context and tools (servers). It was created to stop the explosion of
-            one-off plugin formats as agents and coding assistants multiplied.
-          </p>
-          <ul class="mt-8 space-y-4">
-            {
-              mcpWhy.map((item) => (
-                <li class="card-surface p-5 sm:p-6">
-                  <h3 class="text-base font-semibold text-ink">{item.title}</h3>
-                  <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
-                    {item.body}
-                  </p>
-                </li>
-              ))
-            }
-          </ul>
-          <p class="mt-6 text-base leading-relaxed text-ink-muted">
-            In plain language: tool calling is the <em>behavior</em> (“the model
-            asked to run a function”). MCP is a <em>shared plug shape</em> so
-            many apps can use the same tool implementations.
-          </p>
-        </section>
-
-        <!-- Interoperability -->
-        <section class="mt-12 sm:mt-14" id="interoperability">
-          <h2 class="guide-h2">
-            How MCP improves interoperability between agents and tools
-          </h2>
-          <div class="mt-8 grid gap-4 sm:grid-cols-2">
-            {
-              interoperabilityPoints.map((p) => (
-                <div class="card-surface p-5 sm:p-6">
-                  <h3 class="text-base font-semibold text-ink">{p.title}</h3>
-                  <p class="mt-2 text-sm leading-relaxed text-ink-muted">
-                    {p.body}
-                  </p>
-                </div>
-              ))
-            }
+              ))}
+            </ul>
           </div>
-        </section>
+        ))
+      }
+    </div>
+  </section>
 
-        <!-- Platform support 2026 -->
-        <section class="mt-12 sm:mt-14" id="platform-support">
-          <h2 class="guide-h2">
-            Which major platforms support MCP (or similar) in 2026
-          </h2>
-          <p class="mt-3 text-base leading-relaxed text-ink-muted">
-            Support moves quickly. Treat this as a map of patterns, not a
-            forever certification. Always confirm in current product docs before
-            a purchase.
-          </p>
+  <!-- 9. Limitations -->
+  <section id="limitations">
+    <h2 class="guide-h2">Limitations and current maturity</h2>
+    <InfoCallout title="MCP is not a security silver bullet" variant="warning">
+      The protocol standardizes how tools are exposed. Misconfigured servers,
+      over-broad tokens, and prompt injection against tool descriptions remain
+      real risks. Always pair MCP with allowlists, least privilege, human
+      approval for high-risk actions, and full tool-call traces.
+    </InfoCallout>
+    <ul class="mt-8 !list-none !space-y-4 !p-0">
+      {
+        limitations.map((item) => (
+          <li class="card-surface p-5 sm:p-6">
+            <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+              {item.body}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
 
-          <ComparisonTable
-            caption="MCP / tool-calling patterns by category (2026)"
-            headers={["Examples", "Pattern"]}
-            rows={supportRows}
-          />
-
-          <InfoCallout title="Living shortlist" variant="tip">
-            Filter platforms with the{" "}
-            <a href="/platforms/">MCP feature chip</a>{" "}
-            on All Platforms, then open profiles for{" "}
-            <a href="/tools/cursor/">Cursor</a>,{" "}
-            <a href="/tools/cline/">Cline</a>, and{" "}
-            <a href="/tools/langgraph/">LangGraph</a> to see how tool support
-            scores in our directory.
-          </InfoCallout>
-
-          <ToolReviewCard
-            slug="cursor"
-            badge="MCP in the IDE"
-            blurb="Coding agent with MCP tool integration — extend the IDE agent with the same servers you use elsewhere."
-          />
-          <ToolReviewCard
-            slug="cline"
-            badge="OSS + MCP"
-            blurb="Open-source VS Code agent where MCP is a first-class extension path and cost is mostly model APIs."
-          />
-          <ToolReviewCard
-            slug="langgraph"
-            badge="Framework tools"
-            blurb="Broad tool abstractions with maturing MCP bridges — own the orchestration loop and the tool policy."
-          />
-
-          <div class="mt-8 space-y-6">
-            {
-              platformSupport.map((group) => (
-                <div>
-                  <h3 class="text-sm font-semibold uppercase tracking-wider text-ink-soft">
-                    {group.group}
-                  </h3>
-                  <ul class="mt-3 space-y-3">
-                    {group.items.map((item) => (
-                      <li class="card-surface p-5">
-                        <a
-                          href={item.href}
-                          class="text-base font-semibold text-ink hover:text-accent"
-                        >
-                          {item.name}
-                        </a>
-                        <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">
-                          {item.note}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
-            }
-          </div>
-        </section>
-
-        <!-- Practical implications -->
-        <section class="mt-12 sm:mt-14" id="implications">
-          <h2 class="guide-h2">
-            Practical implications for buyers and builders
-          </h2>
-          <div class="mt-8 grid gap-6 lg:grid-cols-2">
-            {
-              buyerImplications.map((col) => (
-                <div class="card-surface p-6 sm:p-7">
-                  <h3 class="text-lg font-semibold text-accent">{col.title}</h3>
-                  <ul class="mt-4 space-y-3">
-                    {col.points.map((point) => (
-                      <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted">
-                        <span
-                          class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
-                          aria-hidden="true"
-                        >
-                          ✓
-                        </span>
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
-            }
-          </div>
-        </section>
-
-        <!-- Limitations -->
-        <section class="mt-12 sm:mt-14" id="limitations">
-          <h2 class="guide-h2">Limitations and current maturity</h2>
-          <InfoCallout title="MCP is not a security silver bullet" variant="warning">
-            The protocol standardizes how tools are exposed. Misconfigured
-            servers, over-broad tokens, and prompt injection against tool
-            descriptions remain real risks. Always pair MCP with allowlists,
-            least privilege, and traces.
-          </InfoCallout>
-          <ul class="mt-8 space-y-4">
-            {
-              limitations.map((item) => (
-                <li class="card-surface p-5 sm:p-6">
-                  <h3 class="text-base font-semibold text-ink">{item.title}</h3>
-                  <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
-                    {item.body}
-                  </p>
-                </li>
-              ))
-            }
-          </ul>
-        </section>
-
-        <!-- What to look for -->
-        <section class="mt-12 sm:mt-14" id="evaluate">
-          <h2 class="guide-h2">
-            What to look for when evaluating tool / MCP support
-          </h2>
-          <p class="mt-3 text-base leading-relaxed text-ink-muted">
-            Use this checklist in RFPs and technical spikes. A “yes” to MCP is
-            never enough on its own.
-          </p>
-          <ol class="mt-8 space-y-4">
-            {
-              evalChecklist.map((item, i) => (
-                <li class="flex gap-4 rounded-2xl border border-border p-5 sm:p-6">
-                  <span
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-sm font-bold tabular-nums text-accent"
-                    aria-hidden="true"
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <h3 class="text-base font-semibold text-ink">{item.title}</h3>
-                    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
-                      {item.body}
-                    </p>
-                  </div>
-                </li>
-              ))
-            }
-          </ol>
-
-          <p class="mt-8 text-base leading-relaxed text-ink-muted">
-            For a broader evaluation framework (autonomy, memory, guardrails,
-            TCO, and more), see{" "}
-            <a
-              href="/guides/how-to-evaluate-ai-agent-platforms/"
-              class="font-medium text-accent hover:text-accent-hover"
+  <!-- 10. Evaluate -->
+  <section id="evaluate">
+    <h2 class="guide-h2">
+      What to look for when evaluating tool / MCP support
+    </h2>
+    <p>
+      Use this checklist in RFPs and technical spikes. A “yes” to MCP is never
+      enough on its own.
+    </p>
+    <ol class="mt-8 !list-none !space-y-4 !p-0">
+      {
+        evalChecklist.map((item, i) => (
+          <li class="flex gap-4 rounded-[var(--radius-card)] border border-border p-5 sm:p-6">
+            <span
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-accent-soft text-sm font-bold tabular-nums text-accent"
+              aria-hidden="true"
             >
-              How to Evaluate AI Agent Platforms in 2026
-            </a>
-            . For category choice, see{" "}
-            <a
-              href="/guides/frameworks-vs-enterprise-platforms/"
-              class="font-medium text-accent hover:text-accent-hover"
-            >
-              Frameworks vs Enterprise Platforms
-            </a>.
-          </p>
-        </section>
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <div>
+              <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+              <p class="mt-1.5 text-sm leading-relaxed text-ink-muted sm:text-base">
+                {item.body}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
 
-        <!-- Short close -->
-        <section class="mt-12 sm:mt-14" id="bottom-line">
-          <h2 class="guide-h2">Bottom line</h2>
-          <p class="mt-3 text-base leading-relaxed text-ink-muted">
-            Tool calling turns language models into systems that can act. MCP
-            reduces how often you rebuild those actions for every agent host.
-            Neither replaces product judgment: define the tools that matter,
-            lock down permissions, measure outcomes, and pick platforms whose
-            integration model matches how you actually ship software.
-          </p>
-        </section>
+    <p>
+      For a broader evaluation framework (autonomy, memory, guardrails, TCO, and
+      more), see{" "}
+      <a href="/guides/how-to-evaluate-ai-agent-platforms/">
+        How to Evaluate AI Agent Platforms in 2026
+      </a>
+      . For category choice, see{" "}
+      <a href="/guides/frameworks-vs-enterprise-platforms/">
+        Frameworks vs Enterprise Platforms
+      </a>
+      . Coding-agent MCP surfaces are also covered in{" "}
+      <a href="/guides/best-ai-coding-agents-2026/">Best AI Coding Agents 2026</a>{" "}
+      and{" "}
+      <a href="/guides/claude-code-vs-cursor/">Claude Code vs Cursor</a>. When you
+      need to implement servers — tools, patterns, and production checklist —
+      open the{" "}
+      <a href="/guides/mcp-server-implementation/">
+        MCP server implementation guide
+      </a>
+      .
+    </p>
+  </section>
+
+  <!-- 11. Bottom line -->
+  <section id="bottom-line">
+    <h2 class="guide-h2">Bottom line</h2>
+    <p>
+      Tool calling turns language models into systems that can act. MCP reduces
+      how often you rebuild those actions for every agent host. Neither replaces
+      product judgment: define the tools that matter, lock down permissions,
+      measure outcomes, and pick platforms whose integration model matches how
+      you actually ship software.
+    </p>
+    <p>
+      Next: read the{" "}
+      <a href="/guides/mcp-server-implementation/">
+        practical guide to building and running MCP servers
+      </a>
+      , or open scored hosts with strong MCP stories —{" "}
+      <a href="/tools/cursor/">Cursor</a>,{" "}
+      <a href="/tools/claude-code/">Claude Code</a>,{" "}
+      <a href="/tools/cline/">Cline</a>,{" "}
+      <a href="/tools/langgraph/">LangGraph</a>, and{" "}
+      <a href="/tools/anthropic-claude-agent-sdk/">Claude Agent SDK</a>.
+    </p>
+  </section>
 </GuideLayout>

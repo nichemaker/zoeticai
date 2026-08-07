@@ -146,6 +146,16 @@ const decisionPaths: DecisionPath[] = [
     meta: getGuideBySlug("best-ai-coding-agents-2026"),
   },
   {
+    id: "mcp-tools",
+    title: "Tool calling & MCP",
+    body: "How agents connect to tools and data: conceptual MCP overview for buyers, plus a practical guide to building and running MCP servers.",
+    href: guideHref("mcp-and-tool-calling-explained"),
+    label: "Read MCP & tool calling explained",
+    secondaryHref: guideHref("mcp-server-implementation"),
+    secondaryLabel: "Build & run MCP servers",
+    meta: getGuideBySlug("mcp-and-tool-calling-explained"),
+  },
+  {
     id: "tco",
     title: "Cost & TCO considerations",
     body: "List price is not the cost. Model seats, runs, tokens, hidden fees, and people time by company size.",
@@ -208,6 +218,14 @@ const startingPoints = [
       {
         href: guideHref("best-ai-coding-agents-2026"),
         label: "Best coding agents",
+      },
+      {
+        href: guideHref("mcp-and-tool-calling-explained"),
+        label: "MCP & tool calling explained",
+      },
+      {
+        href: guideHref("mcp-server-implementation"),
+        label: "How to build MCP servers",
       },
     ],
   },
@@ -500,6 +518,21 @@ const toc = [
               ))
             }
           </ol>
+          <p class="mt-6 text-base leading-relaxed text-ink-muted">
+            When tools and agent connectivity are a shortlist criterion, read{" "}
+            <a
+              href={guideHref("mcp-and-tool-calling-explained")}
+              class="font-semibold text-accent hover:text-accent-hover"
+              >MCP and Tool Calling Explained</a
+            >{" "}
+            for buyer-level interoperability, then{" "}
+            <a
+              href={guideHref("mcp-server-implementation")}
+              class="font-semibold text-accent hover:text-accent-hover"
+              >How to Build and Run MCP Servers</a
+            >{" "}
+            if your team will own custom tool servers.
+          </p>
           <div
             class="mt-8 grid gap-3 rounded-2xl border border-accent/20 bg-accent-soft/30 p-5 sm:grid-cols-2 sm:p-6"
           >

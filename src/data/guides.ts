@@ -26,6 +26,15 @@ export const latestGuides: GuidePreview[] = [
     date: "2026-08-01",
   },
   {
+    slug: "mcp-server-implementation",
+    title: "How to Build and Run MCP Servers (Implementation Guide)",
+    excerpt:
+      "Developer-focused MCP server guide: core concepts, SDKs, a minimal build walkthrough, common patterns, production concerns, and when function calling is enough.",
+    category: "Technical",
+    readTime: "14 min",
+    date: "2026-08-07",
+  },
+  {
     slug: "best-ai-coding-agents-2026",
     title: "Best AI Coding Agents in 2026",
     excerpt:
@@ -194,9 +203,16 @@ export function comparisonLinkLabel(slug: string): string {
   return getGuideBySlug(slug)?.title ?? slug;
 }
 
+/** Short labels for long technical guides in hub / related lists. */
+const shortGuideLabels: Record<string, string> = {
+  "mcp-and-tool-calling-explained": "MCP and tool calling explained",
+  "mcp-server-implementation": "How to build and run MCP servers",
+};
+
 /** Display title for related-link cards (shorter labels for comparisons). */
 export function guideLinkLabel(slug: string): string {
   if (isComparisonGuide(slug)) return comparisonLinkLabels[slug];
+  if (shortGuideLabels[slug]) return shortGuideLabels[slug];
   return getGuideBySlug(slug)?.title ?? slug;
 }
 
@@ -217,6 +233,8 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "how-to-evaluate-ai-agent-platforms",
     "ai-agent-platforms-tco-2026",
     "frameworks-vs-enterprise-platforms",
+    "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
     "langgraph-vs-crewai",
     "copilot-studio-vs-agentforce",
     "n8n-vs-make-vs-zapier-agents",
@@ -233,6 +251,7 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "frameworks-vs-enterprise-platforms",
     "how-to-evaluate-ai-agent-platforms",
     "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
   ],
   "claude-code-vs-cursor": [
     "best-ai-coding-agents-2026",
@@ -240,6 +259,7 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "ai-agent-platforms-tco-2026",
     "how-to-evaluate-ai-agent-platforms",
     "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
   ],
   "copilot-studio-vs-agentforce": [
     "ai-agent-platforms-guide",
@@ -254,6 +274,8 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "best-ai-agent-platforms-for-smbs-2026",
     "ai-agent-platforms-tco-2026",
     "how-to-evaluate-ai-agent-platforms",
+    "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
   ],
   "lindy-vs-relevance-ai-vs-dust": [
     "ai-agent-platforms-guide",
@@ -265,6 +287,8 @@ const relatedGuidesBySlug: Record<string, string[]> = {
   "how-to-evaluate-ai-agent-platforms": [
     "ai-agent-platforms-guide",
     "ai-agent-platforms-tco-2026",
+    "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
     "best-ai-agent-platforms-for-smbs-2026",
     "best-ai-coding-agents-2026",
     "lindy-vs-relevance-ai-vs-dust",
@@ -282,12 +306,23 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "ai-agent-platforms-tco-2026",
     "best-ai-agent-platforms-for-smbs-2026",
     "how-to-evaluate-ai-agent-platforms",
+    "mcp-and-tool-calling-explained",
   ],
   "mcp-and-tool-calling-explained": [
+    "mcp-server-implementation",
     "ai-agent-platforms-guide",
     "best-ai-coding-agents-2026",
     "best-open-source-ai-agent-frameworks-2026",
     "how-to-evaluate-ai-agent-platforms",
+    "langgraph-vs-crewai",
+  ],
+  "mcp-server-implementation": [
+    "mcp-and-tool-calling-explained",
+    "ai-agent-platforms-guide",
+    "best-ai-coding-agents-2026",
+    "best-open-source-ai-agent-frameworks-2026",
+    "how-to-evaluate-ai-agent-platforms",
+    "claude-code-vs-cursor",
     "langgraph-vs-crewai",
   ],
   "best-open-source-ai-agent-frameworks-2026": [
@@ -297,12 +332,15 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "frameworks-vs-enterprise-platforms",
     "best-ai-agent-platforms-for-smbs-2026",
     "how-to-evaluate-ai-agent-platforms",
+    "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
   ],
   "best-ai-coding-agents-2026": [
     "ai-agent-platforms-guide",
     "claude-code-vs-cursor",
     "ai-agent-platforms-tco-2026",
     "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
     "how-to-evaluate-ai-agent-platforms",
   ],
   "ai-agent-platforms-tco-2026": [
@@ -484,6 +522,7 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
     cats.includes("Coding")
   ) {
     add("mcp-and-tool-calling-explained");
+    add("mcp-server-implementation");
   }
   if (cats.includes("No-Code") || cats.includes("Workflow")) {
     add("best-ai-agent-platforms-for-smbs-2026");
@@ -518,6 +557,7 @@ export function getRelatedGuidesForCategory(
       "best-ai-agent-platforms-for-smbs-2026",
       "frameworks-vs-enterprise-platforms",
       "mcp-and-tool-calling-explained",
+      "mcp-server-implementation",
       "how-to-evaluate-ai-agent-platforms",
     ],
     "No-Code": [
@@ -535,11 +575,13 @@ export function getRelatedGuidesForCategory(
       "ai-agent-platforms-guide",
       "ai-agent-platforms-tco-2026",
       "mcp-and-tool-calling-explained",
+      "mcp-server-implementation",
       "how-to-evaluate-ai-agent-platforms",
     ],
     Browser: [
       "ai-agent-platforms-guide",
       "mcp-and-tool-calling-explained",
+      "mcp-server-implementation",
       "ai-agent-platforms-tco-2026",
       "how-to-evaluate-ai-agent-platforms",
     ],
@@ -733,6 +775,16 @@ export const topicHubs: TopicHub[] = [
         detail:
           "See the full guide for decision paths and head-to-head comparisons after you score options.",
       },
+      "mcp-and-tool-calling-explained": {
+        label: "Part of our complete AI Agent Platforms Guide",
+        detail:
+          "Tool calling and MCP sit under platform evaluation — see decision paths and related deep-dives.",
+      },
+      "mcp-server-implementation": {
+        label: "Part of our complete AI Agent Platforms Guide",
+        detail:
+          "Implementation detail for teams building tool servers — see the pillar for platform selection context.",
+      },
       "best-ai-coding-agents-2026": {
         label:
           "See the full AI Agent Platforms Guide for more comparisons and decision frameworks",
@@ -785,6 +837,16 @@ export const topicHubs: TopicHub[] = [
         slug: "how-to-evaluate-ai-agent-platforms",
         blurb:
           "Seven-criteria evaluation checklist and scoring sheet you can copy.",
+      },
+      {
+        slug: "mcp-and-tool-calling-explained",
+        blurb:
+          "What tool calling and MCP mean for agent interoperability and platform choice.",
+      },
+      {
+        slug: "mcp-server-implementation",
+        blurb:
+          "How to build and run MCP servers — tools, patterns, production, and when not to bother.",
       },
       {
         slug: "best-ai-coding-agents-2026",
@@ -876,6 +938,17 @@ export const guideExampleTools: Record<
       "cline",
       "langgraph",
       "openai-agents-sdk",
+    ],
+  },
+  "mcp-server-implementation": {
+    label: "Hosts and stacks that pair well with custom MCP servers",
+    slugs: [
+      "cursor",
+      "claude-code",
+      "cline",
+      "langgraph",
+      "openai-agents-sdk",
+      "anthropic-claude-agent-sdk",
     ],
   },
   "langgraph-vs-crewai": {

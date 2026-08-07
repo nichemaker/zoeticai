@@ -1,0 +1,589 @@
+---
+import GuideLayout from "../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../components/guide/ComparisonTable.astro";
+
+const title = "How to Build and Run MCP Servers (Implementation Guide)";
+const description =
+  "Practical developer guide to implementing MCP servers: core concepts, SDKs, a minimal server walkthrough, common patterns, production concerns, and when to prefer simple function calling instead.";
+const published = "2026-08-07";
+const readTime = "14 min";
+const slug = "mcp-server-implementation";
+
+const toc = [
+  { id: "introduction", label: "Introduction" },
+  { id: "core-concepts", label: "Core concepts" },
+  { id: "approaches", label: "Implementation approaches" },
+  { id: "step-by-step", label: "Building a simple MCP server" },
+  { id: "patterns", label: "Common patterns" },
+  { id: "production", label: "Production considerations" },
+  { id: "vs-function-calling", label: "MCP server vs function calling" },
+  { id: "takeaways", label: "Key takeaways & next steps" },
+];
+
+const whenToBuild = [
+  {
+    title: "Build an MCP server when…",
+    points: [
+      "The same tools must serve multiple hosts (Cursor, Claude Code, a product agent, CI)",
+      "Internal APIs or data sources will outlive any single model vendor",
+      "You want one security review surface for a capability (auth, logging, allowlists)",
+      "Tool schemas and versions need a clear ownership boundary outside each agent app",
+    ],
+  },
+  {
+    title: "Skip a custom server when…",
+    points: [
+      "One host and one app own the tools forever (embed function calling in that app)",
+      "You only need a vendor’s built-in tools (file search, code interpreter, suite connectors)",
+      "The “tool” is a one-off prototype with no reuse or compliance bar",
+      "You lack capacity to own runtime, secrets, and on-call for a new service",
+    ],
+  },
+];
+
+const primitives = [
+  {
+    title: "Tools",
+    body: "Callable actions with a name, description, and JSON-schema-style parameters. The model proposes a call; your server executes it and returns structured or text results. Most production MCP work is tools.",
+  },
+  {
+    title: "Resources",
+    body: "Readable context the host can fetch or subscribe to — docs, tickets, config, file contents — usually identified by URI. Resources feed context without necessarily being “actions.”",
+  },
+  {
+    title: "Prompts",
+    body: "Reusable prompt templates or workflows the host can surface to users (e.g. “triage this ticket”). Optional; many servers ship tools only.",
+  },
+];
+
+const steps = [
+  {
+    num: "01",
+    title: "Project setup",
+    body: "Create a small Node (TypeScript) or Python package. Install the official MCP SDK for your language, enable strict types if available, and decide transport: stdio for local IDE clients, or HTTP/SSE-style transports when the host expects a network endpoint. Keep secrets out of the repo from day one.",
+  },
+  {
+    num: "02",
+    title: "Define tools",
+    body: "Start with one high-value, low-risk tool (e.g. search_tickets, get_order). Write a clear description the model can reason about, parameter schemas with types and enums, and an implementation that validates inputs again on the server. Prefer idempotent names and predictable error messages.",
+  },
+  {
+    num: "03",
+    title: "Handle requests",
+    body: "Wire list-tools and call-tool handlers. On each call: authenticate (if remote), authorize the action, validate args, execute with timeouts, map failures to safe messages, and return content the host can show the model. Never trust model-provided arguments as already safe.",
+  },
+  {
+    num: "04",
+    title: "Test with an MCP client",
+    body: "Point a real host at your server: Claude Desktop / Claude Code, Cursor, Cline, or another MCP-capable client. Confirm tools appear, arguments validate, happy path works, and failures are visible in host UI and your logs. Add a second host only after one path is green.",
+  },
+];
+
+const patterns = [
+  {
+    title: "Database / API wrappers",
+    body: "Expose a thin, intentional surface over Postgres, REST, or GraphQL — not the entire schema. Name tools after business actions (create_refund_request), not raw SQL. Cap result sizes and redact PII before returning content to the model.",
+  },
+  {
+    title: "File system access",
+    body: "Scope to an allowlisted root. Resolve paths carefully (no .. escapes). Prefer read-only tools first; write tools need confirmations in the host and dry-run modes when possible.",
+  },
+  {
+    title: "Browser / computer-use style tools",
+    body: "Screenshot, click, and shell tools are high blast radius. Isolate in a sandbox, log every action, require human approval for navigation outside allowlisted domains, and treat them as separate servers from low-risk API tools.",
+  },
+  {
+    title: "Authentication and secrets",
+    body: "Load API keys and OAuth tokens from the environment or a secret manager — never from tool arguments. Prefer per-user delegated identity when the host can supply it; otherwise use least-privilege service accounts and short-lived credentials.",
+  },
+];
+
+const productionItems = [
+  {
+    title: "Error handling and timeouts",
+    body: "Every tool needs a hard deadline. Distinguish user-fixable errors (bad input) from system errors (dependency down). Return structured error text the model can recover from without leaking stack traces or secrets.",
+  },
+  {
+    title: "Logging and observability",
+    body: "Log tool name, latency, success/failure, and a correlation id. Redact arguments that may contain secrets or PII. If you already trace agents (LangSmith-class tools or OpenTelemetry), attach the same trace context at the server boundary.",
+  },
+  {
+    title: "Rate limiting and safety",
+    body: "Throttle per host, per user, and per tool. Allowlist high-risk tools. Block destructive actions in production until HITL is wired. Assume prompt injection against tool descriptions is possible — treat untrusted content as data, not instructions.",
+  },
+  {
+    title: "Deployment options",
+    body: "Local stdio servers ship with developer machines. Team servers often run as internal HTTP services behind VPN/mTLS. Containerize early, pin dependency versions, and document how hosts register the server (config snippet, not tribal knowledge).",
+  },
+];
+
+const vsRows = [
+  {
+    label: "What you build",
+    cells: [
+      "A reusable server exposing tools/resources via MCP",
+      "Handlers inside one agent app or Assistants-style runtime",
+    ],
+  },
+  {
+    label: "Reuse across hosts",
+    cells: [
+      "High — same server for Cursor, Claude Code, product agents",
+      "Low — rewire or re-register tools per app",
+    ],
+  },
+  {
+    label: "Operate cost",
+    cells: [
+      "Service ownership: deploy, secrets, on-call, versioning",
+      "Usually lower — lives next to the agent code",
+    ],
+  },
+  {
+    label: "Best fit",
+    cells: [
+      "Shared internal capabilities and multi-model stacks",
+      "Single product, fast iteration, tools are product-private",
+    ],
+  },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Technical"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="Build MCP servers"
+  exploreCategories={["Frameworks", "Coding", "No-Code", "Enterprise"]}
+  toc={toc}
+>
+  <!-- 1. Introduction -->
+  <section id="introduction">
+    <h2 class="guide-h2">Introduction</h2>
+    <p>
+      An <strong>MCP server</strong> is a small program that exposes tools,
+      resources, and optional prompts to AI hosts over the{" "}
+      <strong>Model Context Protocol</strong>. The host (Claude Code, Cursor,
+      Cline, a custom agent runtime, etc.) discovers what the server offers, lets
+      the model request actions, and your server executes those actions under
+      your auth and policy.
+    </p>
+    <p>
+      This is not a chatbot. It is infrastructure: a contract for “how agents
+      touch the real world” that you can version, secure, and reuse. For the
+      conceptual overview of tool calling vs MCP vs proprietary connectors —
+      including platform support and buyer checklists — read{" "}
+      <a href="/guides/mcp-and-tool-calling-explained/">
+        MCP and Tool Calling Explained
+      </a>
+      . This page is the hands-on implementation companion.
+    </p>
+
+    <KeyTakeaway>
+      Build an MCP server when the <strong>same capabilities</strong> must be
+      shared across multiple agent hosts or models. Keep tools inside a single
+      app with ordinary function calling when there is no reuse, no multi-host
+      requirement, and no need for a separate security boundary.
+    </KeyTakeaway>
+
+    <h3 class="guide-h3">Why teams build their own MCP servers</h3>
+    <ul>
+      <li>
+        <strong>Portability</strong> — one GitHub/search/internal API integration
+        for several coding agents and product agents
+      </li>
+      <li>
+        <strong>Ownership</strong> — schemas, auth, and logging live in a service
+        your platform team controls
+      </li>
+      <li>
+        <strong>Speed of adoption</strong> — new hosts attach to existing servers
+        instead of reinventing connectors
+      </li>
+      <li>
+        <strong>Security review</strong> — concentrate blast radius and audits on
+        one boundary instead of N agent codebases
+      </li>
+    </ul>
+
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+      {
+        whenToBuild.map((col) => (
+          <div class="card-surface p-6 sm:p-7">
+            <h3 class="text-lg font-semibold text-accent">{col.title}</h3>
+            <ul class="mt-4 !list-none !space-y-3 !p-0">
+              {col.points.map((point) => (
+                <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-muted">
+                  <span
+                    class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[10px] font-bold text-accent"
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <InfoCallout title="Concepts first, then code" variant="tip">
+      Still deciding whether MCP belongs on your shortlist? Start with the{" "}
+      <a href="/guides/mcp-and-tool-calling-explained/">
+        conceptual overview of MCP and tool calling
+      </a>
+      , then skim MCP-capable profiles like{" "}
+      <a href="/tools/cursor/">Cursor</a>,{" "}
+      <a href="/tools/claude-code/">Claude Code</a>,{" "}
+      <a href="/tools/cline/">Cline</a>, and{" "}
+      <a href="/tools/langgraph/">LangGraph</a>. Come back here when you are ready
+      to ship a server.
+    </InfoCallout>
+  </section>
+
+  <!-- 2. Core concepts -->
+  <section id="core-concepts">
+    <h2 class="guide-h2">Core concepts</h2>
+    <p>
+      MCP splits responsibilities cleanly: the <strong>host/client</strong>{" "}
+      talks to models and users; the <strong>server</strong> exposes
+      capabilities. Understanding the three capability types prevents overbuilding.
+    </p>
+
+    <ul class="mt-8 !list-none !space-y-4 !p-0">
+      {
+        primitives.map((item) => (
+          <li class="card-surface p-5 sm:p-6">
+            <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+              {item.body}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h3 class="guide-h3">How client–server communication works</h3>
+    <p>
+      At a high level: the host starts or connects to your server, negotiates
+      protocol capabilities, then calls list/read operations for tools,
+      resources, and prompts. When the model wants an action, the host sends a
+      tool invocation with name + arguments; your server runs code and returns
+      results (and optional errors) that the host folds back into the model
+      context. Transports differ (local stdio vs remote HTTP), but the mental
+      model stays the same: <em>discover → call → result</em>.
+    </p>
+
+    <h3 class="guide-h3">Security and permission model basics</h3>
+    <p>
+      MCP does <strong>not</strong> magically secure your systems. It standardizes
+      exposure. You still own:
+    </p>
+    <ul>
+      <li>
+        <strong>Authentication</strong> — who is the host or end user?
+      </li>
+      <li>
+        <strong>Authorization</strong> — which tools may they call?
+      </li>
+      <li>
+        <strong>Input validation</strong> — never trust model arguments
+      </li>
+      <li>
+        <strong>Egress control</strong> — which networks, paths, and APIs can the
+        server reach?
+      </li>
+      <li>
+        <strong>Human-in-the-loop</strong> — host-level approvals for destructive
+        tools
+      </li>
+    </ul>
+    <InfoCallout title="Least privilege by default" variant="warning">
+      Ship read-only tools first. Add write/delete tools only with allowlists,
+      timeouts, audit logs, and an explicit approval story in the client. Treat
+      over-scoped tokens as an incident waiting to happen.
+    </InfoCallout>
+  </section>
+
+  <!-- 3. Implementation approaches -->
+  <section id="approaches">
+    <h2 class="guide-h2">Implementation approaches</h2>
+
+    <h3 class="guide-h3">Official SDKs and starter templates</h3>
+    <p>
+      Prefer the <strong>official MCP SDKs</strong> and community starters over
+      hand-rolled JSON-RPC. They handle protocol framing, capability
+      advertisement, and schema plumbing so you can focus on tool logic. Check
+      current docs for TypeScript/Node and Python packages, example servers, and
+      inspector/debug tools that list and call tools without a full IDE.
+    </p>
+
+    <h3 class="guide-h3">Language options</h3>
+    <ul>
+      <li>
+        <strong>TypeScript / Node</strong> — strong fit for web APIs, full-stack
+        teams, and local IDE servers; excellent DX with schema typing
+      </li>
+      <li>
+        <strong>Python</strong> — natural when tools wrap data science stacks,
+        internal Python services, or{" "}
+        <a href="/tools/langgraph/">LangGraph</a> /{" "}
+        <a href="/tools/pydantic-ai/">Pydantic AI</a> backends
+      </li>
+      <li>
+        <strong>Other runtimes</strong> — use official or well-maintained
+        community SDKs when your org standardizes on Go, Rust, etc.; do not invent
+        a private protocol unless you must
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Minimal viable MCP server structure</h3>
+    <p>A production-shaped skeleton is usually enough for v1:</p>
+    <ul>
+      <li>
+        <code class="text-sm">server</code> entry — transport + lifecycle
+      </li>
+      <li>
+        <code class="text-sm">tools/</code> — one module per tool (schema + handler)
+      </li>
+      <li>
+        <code class="text-sm">lib/</code> — clients (HTTP, DB), config, logging
+      </li>
+      <li>
+        <code class="text-sm">policy/</code> — allowlists, auth helpers
+      </li>
+      <li>
+        <code class="text-sm">README</code> — how to run + how to register in Cursor /
+        Claude / Cline
+      </li>
+    </ul>
+    <p>
+      Resist a monorepo of fifty tools on day one. One solid tool with tests beats
+      a kitchen-sink server nobody trusts.
+    </p>
+  </section>
+
+  <!-- 4. Step-by-step -->
+  <section id="step-by-step">
+    <h2 class="guide-h2">Step-by-step: building a simple MCP server</h2>
+    <p>
+      The walkthrough below is language-agnostic on purpose. Map each step to your
+      SDK’s “create server → register tool → connect transport” examples.
+    </p>
+
+    <ol class="mt-8 !list-none !space-y-5 !p-0">
+      {
+        steps.map((s) => (
+          <li class="card-surface p-5 sm:p-6">
+            <div class="flex items-start gap-4">
+              <span
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-accent-soft text-xs font-bold tabular-nums text-accent"
+                aria-hidden="true"
+              >
+                {s.num}
+              </span>
+              <div class="min-w-0">
+                <h3 class="text-lg font-semibold tracking-tight text-ink">
+                  {s.title}
+                </h3>
+                <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+                  {s.body}
+                </p>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <h3 class="guide-h3">Example: one tool, three host checks</h3>
+    <p>
+      Suppose you expose <code class="text-sm">search_docs</code> with query and
+      limit parameters:
+    </p>
+    <ul>
+      <li>
+        <strong>Cursor</strong> — register the server in MCP settings; ask the
+        agent to search internal docs mid-edit (
+        <a href="/tools/cursor/">Cursor profile</a>)
+      </li>
+      <li>
+        <strong>Claude Code</strong> — attach the same server for terminal agent
+        sessions (
+        <a href="/tools/claude-code/">Claude Code profile</a>)
+      </li>
+      <li>
+        <strong>Cline</strong> — verify open-source IDE path and BYO-model cost
+        shape (
+        <a href="/tools/cline/">Cline profile</a>)
+      </li>
+    </ul>
+    <p>
+      If the tool works in one host but not another, debug capability negotiation
+      and transport config before rewriting business logic — host integration is
+      often the bug.
+    </p>
+  </section>
+
+  <!-- 5. Patterns -->
+  <section id="patterns">
+    <h2 class="guide-h2">Common patterns</h2>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      {
+        patterns.map((p) => (
+          <div class="card-surface p-5 sm:p-6">
+            <h3 class="text-base font-semibold text-ink">{p.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted">{p.body}</p>
+          </div>
+        ))
+      }
+    </div>
+    <p class="mt-6">
+      Productized multi-step agents may call MCP tools from a graph or crew
+      framework (
+      <a href="/tools/langgraph/">LangGraph</a>,{" "}
+      <a href="/tools/openai-agents-sdk/">OpenAI Agents SDK</a>
+      ). Keep orchestration in the framework and side effects in the MCP server so
+      tool policy stays centralized.
+    </p>
+  </section>
+
+  <!-- 6. Production -->
+  <section id="production">
+    <h2 class="guide-h2">Production considerations</h2>
+    <p>
+      A demo server that works on a laptop is not production. Budget for the same
+      operate bar you would give any internal API that agents can hammer in a loop.
+    </p>
+    <ul class="mt-8 !list-none !space-y-4 !p-0">
+      {
+        productionItems.map((item) => (
+          <li class="card-surface p-5 sm:p-6">
+            <h3 class="text-base font-semibold text-ink">{item.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+              {item.body}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+    <InfoCallout title="Measure cost of tool loops" variant="tip">
+      Multi-step agents retry. A flaky tool multiplies tokens and latency. Track
+      success rate and p95 latency per tool, and fail closed when dependencies
+      degrade. For platform-level TCO thinking, see{" "}
+      <a href="/guides/ai-agent-platforms-tco-2026/">
+        what AI agent platforms actually cost
+      </a>
+      .
+    </InfoCallout>
+  </section>
+
+  <!-- 7. MCP vs function calling -->
+  <section id="vs-function-calling">
+    <h2 class="guide-h2">MCP server vs custom function calling</h2>
+    <p>
+      Both patterns let models call tools. The difference is packaging and reuse —
+      not intelligence. Full MCP servers are not always the right abstraction.
+    </p>
+
+    <ComparisonTable
+      caption="MCP server vs in-app function calling"
+      headers={["Full MCP server", "Custom function calling in one app"]}
+      rows={vsRows}
+    />
+
+    <h3 class="guide-h3">When a full MCP server is worth it</h3>
+    <ul>
+      <li>Multiple hosts or products need the same capabilities</li>
+      <li>You are standardizing an internal tool catalog for the company</li>
+      <li>Security wants a single place to audit side effects</li>
+      <li>You expect model or host churn over the next 12–24 months</li>
+    </ul>
+
+    <h3 class="guide-h3">When simple function calling is enough</h3>
+    <ul>
+      <li>One product owns the only consumer of those tools</li>
+      <li>You need to ship a pilot this week, not a platform</li>
+      <li>Tools are tightly coupled to app domain objects and will never leave</li>
+      <li>
+        You are already deep in a managed runtime (e.g. OpenAI Assistants-style
+        stacks) and connectors are product-private — see the comparison in{" "}
+        <a href="/guides/mcp-and-tool-calling-explained/#mcp-vs-openai-assistants">
+          MCP vs OpenAI Assistants
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 8. Takeaways -->
+  <section id="takeaways">
+    <h2 class="guide-h2">Key takeaways and next steps</h2>
+    <div
+      class="rounded-[var(--radius-card)] border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+    >
+      <ul class="!list-none !space-y-3 !p-0 text-sm leading-relaxed text-ink-muted sm:text-base">
+        <li>
+          <strong class="text-ink">MCP servers are reusable capability
+          boundaries</strong>{" "}
+          — tools, resources, prompts behind a protocol hosts already speak.
+        </li>
+        <li>
+          <strong class="text-ink">Start tiny</strong> — one low-risk tool, real
+          host tests, then expand the catalog.
+        </li>
+        <li>
+          <strong class="text-ink">Security is your job</strong> — validate args,
+          least privilege, timeouts, logs, and HITL for dangerous actions.
+        </li>
+        <li>
+          <strong class="text-ink">Do not force MCP</strong> — single-app function
+          calling is still the right default for many products.
+        </li>
+      </ul>
+    </div>
+
+    <h3 class="guide-h3">Next steps</h3>
+    <ol>
+      <li>
+        Read the{" "}
+        <a href="/guides/mcp-and-tool-calling-explained/">
+          conceptual overview of MCP and tool calling
+        </a>{" "}
+        if you need buyer context, platform support maps, or MCP vs Assistants
+      </li>
+      <li>
+        Pick a host for first integration —{" "}
+        <a href="/tools/cursor/">Cursor</a>,{" "}
+        <a href="/tools/claude-code/">Claude Code</a>,{" "}
+        <a href="/tools/cline/">Cline</a>, or product agents on{" "}
+        <a href="/tools/langgraph/">LangGraph</a> /{" "}
+        <a href="/tools/openai-agents-sdk/">OpenAI Agents SDK</a>
+      </li>
+      <li>
+        If the server feeds product agents, align with framework choice via{" "}
+        <a href="/guides/best-open-source-ai-agent-frameworks-2026/">
+          best open-source frameworks
+        </a>{" "}
+        or{" "}
+        <a href="/guides/langgraph-vs-crewai/">LangGraph vs CrewAI</a>
+      </li>
+      <li>
+        Score the broader platform (not only MCP) with{" "}
+        <a href="/guides/how-to-evaluate-ai-agent-platforms/">
+          how to evaluate AI agent platforms
+        </a>
+      </li>
+      <li>
+        Browse the living shortlist of MCP-flagged platforms on{" "}
+        <a href="/platforms/">All Platforms</a>
+      </li>
+    </ol>
+  </section>
+</GuideLayout>
