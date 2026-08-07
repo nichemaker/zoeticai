@@ -1,21 +1,21 @@
 ---
 /**
- * End-of-guide block: example tools + categories + methodology.
+ * End-of-guide block: example tools + categories + related reading + methodology.
+ * Related reading is contextual (newest high-signal guides first), not a dump of all articles.
  */
 import { getToolBySlug } from "../data/tools";
 import {
   guideExampleTools,
   guideHref,
-  latestGuides,
+  getRelatedReadingForArticle,
   methodologyLink,
-  isComparisonGuide,
-  comparisonLinkLabel,
+  guideLinkLabel,
 } from "../data/guides";
 import { categoryHref } from "../data/categories";
 import type { ToolCategory } from "../types/tool";
 
 interface Props {
-  /** Current guide slug (to exclude from "other guides") */
+  /** Current guide slug (to exclude from related reading) */
   slug: string;
   categories?: ToolCategory[];
 }
@@ -27,7 +27,7 @@ const tools = (examples?.slugs ?? [])
   .map((s) => getToolBySlug(s))
   .filter((t): t is NonNullable<typeof t> => Boolean(t));
 
-const otherGuides = latestGuides.filter((g) => g.slug !== slug);
+const relatedReading = getRelatedReadingForArticle(slug, 7);
 ---
 
 <section class="border-t border-border bg-surface-muted">
@@ -98,24 +98,45 @@ const otherGuides = latestGuides.filter((g) => g.slug !== slug);
                 {methodologyLink.title} →
               </a>
             </li>
-            {
-              otherGuides.map((g) => (
-                <li>
-                  <a
-                    href={guideHref(g.slug)}
-                    class="font-medium text-ink-muted hover:text-accent"
-                  >
-                    {isComparisonGuide(g.slug)
-                      ? comparisonLinkLabel(g.slug)
-                      : g.title}{" "}
-                    →
-                  </a>
-                </li>
-              ))
-            }
+            <li>
+              <a
+                href="/guides/"
+                class="font-medium text-ink-muted hover:text-accent"
+              >
+                All guides →
+              </a>
+            </li>
           </ul>
         </div>
       </div>
+
+      {
+        relatedReading.length > 0 && (
+          <div class="mt-8" id="related-guides">
+            <h3 class="text-sm font-semibold text-ink">Related guides</h3>
+            <p class="mt-1 text-sm text-ink-muted">
+              Newest and most relevant follow-ups for this topic.
+            </p>
+            <ul class="mt-4 space-y-2.5">
+              {relatedReading.map((g) => (
+                <li>
+                  <a
+                    href={guideHref(g.slug)}
+                    class="group flex flex-col rounded-lg border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/30 sm:flex-row sm:items-center sm:justify-between sm:gap-3"
+                  >
+                    <span class="text-sm font-semibold text-ink group-hover:text-accent">
+                      {guideLinkLabel(g.slug)}
+                    </span>
+                    <span class="mt-1 shrink-0 text-xs font-medium text-ink-soft sm:mt-0">
+                      {g.category} · {g.readTime}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
     </div>
   </div>
 </section>

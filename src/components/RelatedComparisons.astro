@@ -1,14 +1,16 @@
 ---
 /**
- * End-of-comparison block: platform profiles + other head-to-head guides.
- * Supports 2- or 3-tool comparison guides.
+ * End-of-comparison block: platform profiles + other head-to-head guides
+ * + related (non-comparison) guides. Supports 2- or 3-tool comparison guides.
  */
 import { getToolBySlug } from "../data/tools";
 import {
   comparisonToolProfiles,
   getRelatedComparisons,
+  getRelatedGuidesForArticle,
   guideHref,
   comparisonLinkLabel,
+  guideLinkLabel,
   isComparisonGuide,
   methodologyLink,
 } from "../data/guides";
@@ -34,7 +36,11 @@ const profileTools =
   })) ?? [];
 
 const visibleProfiles = profileTools.filter((p) => p.tool);
-const related = getRelatedComparisons(slug);
+const relatedComparisons = getRelatedComparisons(slug);
+const relatedGuides = getRelatedGuidesForArticle(slug, {
+  excludeComparisons: true,
+  limit: 5,
+});
 
 const profileGridClass =
   visibleProfiles.length >= 3
@@ -43,8 +49,13 @@ const profileGridClass =
 ---
 
 {
-  (visibleProfiles.length > 0 || related.length > 0) && (
-    <section class="mt-14 sm:mt-16 border-t border-border pt-12" id="related-comparisons">
+  (visibleProfiles.length > 0 ||
+    relatedComparisons.length > 0 ||
+    relatedGuides.length > 0) && (
+    <section
+      class="mt-14 sm:mt-16 border-t border-border pt-12"
+      id="related-comparisons"
+    >
       {
         visibleProfiles.length > 0 && (
           <div class="mb-10">
@@ -81,15 +92,15 @@ const profileGridClass =
       }
 
       {
-        related.length > 0 && (
-          <div>
+        relatedComparisons.length > 0 && (
+          <div class="mb-10">
             <h2 class="guide-h2">Related comparisons</h2>
             <p class="mt-2 text-base leading-relaxed text-ink-muted">
               More head-to-head guides for frameworks, coding agents, workflow
               platforms, and enterprise suites.
             </p>
             <ul class="mt-6 space-y-3">
-              {related.map((g) => (
+              {relatedComparisons.map((g) => (
                 <li>
                   <a
                     href={guideHref(g.slug)}
@@ -98,6 +109,40 @@ const profileGridClass =
                     <span>
                       <span class="text-base font-semibold text-ink group-hover:text-accent">
                         {comparisonLinkLabel(g.slug)}
+                      </span>
+                      <span class="mt-1 block text-sm text-ink-muted">
+                        {g.excerpt}
+                      </span>
+                    </span>
+                    <span class="mt-3 shrink-0 text-sm font-semibold text-accent sm:mt-0">
+                      Read →
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        relatedGuides.length > 0 && (
+          <div>
+            <h2 class="guide-h2">Related guides</h2>
+            <p class="mt-2 text-base leading-relaxed text-ink-muted">
+              Roundups, cost models, and evaluation playbooks that pair with
+              this comparison.
+            </p>
+            <ul class="mt-6 space-y-3">
+              {relatedGuides.map((g) => (
+                <li>
+                  <a
+                    href={guideHref(g.slug)}
+                    class="card-interactive group flex flex-col p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                  >
+                    <span>
+                      <span class="text-base font-semibold text-ink group-hover:text-accent">
+                        {guideLinkLabel(g.slug)}
                       </span>
                       <span class="mt-1 block text-sm text-ink-muted">
                         {g.excerpt}

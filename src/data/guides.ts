@@ -10,101 +10,11 @@ export type GuidePreview = {
   date: string;
 };
 
+/**
+ * Canonical guide list — newest first (by date, then editorial priority).
+ * Homepage “Latest guides” and /guides/ both consume this order.
+ */
 export const latestGuides: GuidePreview[] = [
-  {
-    slug: "how-to-evaluate-ai-agent-platforms",
-    title: "How to Evaluate AI Agent Platforms in 2026",
-    excerpt:
-      "A practical checklist for capability, governance, integrations, and total cost before you pilot.",
-    category: "Buying",
-    readTime: "12 min",
-    date: "2026-04-01",
-  },
-  {
-    slug: "frameworks-vs-enterprise-platforms",
-    title: "Frameworks vs Enterprise AI Agent Platforms — When to Choose Which",
-    excerpt:
-      "When to build on LangGraph or CrewAI — and when a managed enterprise stack is the safer bet.",
-    category: "Strategy",
-    readTime: "10 min",
-    date: "2026-04-01",
-  },
-  {
-    slug: "mcp-and-tool-calling-explained",
-    title: "MCP and Tool Calling Explained — Why It Matters for AI Agents",
-    excerpt:
-      "What Model Context Protocol means for agent interoperability, and which platforms support it today.",
-    category: "Technical",
-    readTime: "11 min",
-    date: "2026-04-01",
-  },
-  {
-    slug: "langgraph-vs-crewai",
-    title:
-      "LangGraph vs CrewAI in 2026: Which Multi-Agent Framework Should You Choose?",
-    excerpt:
-      "Graph-first vs role-first multi-agent frameworks — architecture, state, HITL, DX, and when to pick each.",
-    category: "Comparison",
-    readTime: "14 min",
-    date: "2026-04-01",
-  },
-  {
-    slug: "claude-code-vs-cursor",
-    title: "Claude Code vs Cursor in 2026: Which AI Coding Agent Should You Use?",
-    excerpt:
-      "IDE-first vs terminal-first coding agents — workflow, autonomy, refactors, ecosystem, pricing, and when to use both.",
-    category: "Comparison",
-    readTime: "13 min",
-    date: "2026-04-01",
-  },
-  {
-    slug: "copilot-studio-vs-agentforce",
-    title:
-      "Microsoft Copilot Studio vs Salesforce Agentforce in 2026: Which Enterprise Agent Platform Should You Choose?",
-    excerpt:
-      "Enterprise agent platforms compared — grounding, governance, lock-in, pricing/TCO, and when to pick Microsoft vs Salesforce.",
-    category: "Comparison",
-    readTime: "15 min",
-    date: "2026-04-01",
-  },
-  {
-    slug: "best-open-source-ai-agent-frameworks-2026",
-    title: "Best Open-Source AI Agent Frameworks in 2026",
-    excerpt:
-      "Ranked open-source agent frameworks for control, multi-agent, state, production readiness — plus when OSS beats enterprise suites.",
-    category: "Roundup",
-    readTime: "14 min",
-    date: "2026-04-01",
-  },
-  {
-    slug: "n8n-vs-make-vs-zapier-agents",
-    title:
-      "n8n vs Make vs Zapier Agents in 2026: Which Is Best for AI Agents?",
-    excerpt:
-      "Practical comparison for real AI agents and automations — capabilities, ease of use, integrations, self-hosting, pricing, and TCO.",
-    category: "Comparison",
-    readTime: "15 min",
-    date: "2026-04-01",
-  },
-  {
-    slug: "best-ai-agent-platforms-for-smbs-2026",
-    title: "Best AI Agent Platforms for SMBs and Startups in 2026",
-    excerpt:
-      "Founder-friendly shortlist: SMB evaluation criteria, no-code vs technical picks, comparison table, pricing reality, and a simple decision framework.",
-    category: "Roundup",
-    readTime: "14 min",
-    date: "2026-04-01",
-  },
-  {
-    slug: "lindy-vs-relevance-ai-vs-dust",
-    title:
-      "Lindy vs Relevance AI vs Dust in 2026: Which No-Code AI Agent Platform Should You Choose?",
-    excerpt:
-      "No-code agent platforms compared — personal productivity vs multi-agent workforces vs team knowledge, with pricing and a clear pick framework.",
-    category: "Comparison",
-    readTime: "14 min",
-    date: "2026-04-01",
-  },
   {
     slug: "best-ai-coding-agents-2026",
     title: "Best AI Coding Agents in 2026",
@@ -112,7 +22,7 @@ export const latestGuides: GuidePreview[] = [
       "Developer-focused roundup: IDE, CLI, cloud, and open-source coding agents — ranked picks, comparison table, and who should use what.",
     category: "Roundup",
     readTime: "14 min",
-    date: "2026-04-01",
+    date: "2026-07-28",
   },
   {
     slug: "ai-agent-platforms-tco-2026",
@@ -122,9 +32,111 @@ export const latestGuides: GuidePreview[] = [
       "Full cost stack beyond list price — meters, models, people, hidden costs, and rough TCO reality by company size.",
     category: "Buying",
     readTime: "13 min",
+    date: "2026-07-22",
+  },
+  {
+    slug: "lindy-vs-relevance-ai-vs-dust",
+    title:
+      "Lindy vs Relevance AI vs Dust in 2026: Which No-Code AI Agent Platform Should You Choose?",
+    excerpt:
+      "No-code agent platforms compared — personal productivity vs multi-agent workforces vs team knowledge, with pricing and a clear pick framework.",
+    category: "Comparison",
+    readTime: "14 min",
+    date: "2026-07-15",
+  },
+  {
+    slug: "best-ai-agent-platforms-for-smbs-2026",
+    title: "Best AI Agent Platforms for SMBs and Startups in 2026",
+    excerpt:
+      "Founder-friendly shortlist: SMB evaluation criteria, no-code vs technical picks, comparison table, pricing reality, and a simple decision framework.",
+    category: "Roundup",
+    readTime: "14 min",
+    date: "2026-07-08",
+  },
+  {
+    slug: "n8n-vs-make-vs-zapier-agents",
+    title:
+      "n8n vs Make vs Zapier Agents in 2026: Which Is Best for AI Agents?",
+    excerpt:
+      "Practical comparison for real AI agents and automations — capabilities, ease of use, integrations, self-hosting, pricing, and TCO.",
+    category: "Comparison",
+    readTime: "15 min",
+    date: "2026-07-01",
+  },
+  {
+    slug: "best-open-source-ai-agent-frameworks-2026",
+    title: "Best Open-Source AI Agent Frameworks in 2026",
+    excerpt:
+      "Ranked open-source agent frameworks for control, multi-agent, state, production readiness — plus when OSS beats enterprise suites.",
+    category: "Roundup",
+    readTime: "14 min",
+    date: "2026-05-20",
+  },
+  {
+    slug: "copilot-studio-vs-agentforce",
+    title:
+      "Microsoft Copilot Studio vs Salesforce Agentforce in 2026: Which Enterprise Agent Platform Should You Choose?",
+    excerpt:
+      "Enterprise agent platforms compared — grounding, governance, lock-in, pricing/TCO, and when to pick Microsoft vs Salesforce.",
+    category: "Comparison",
+    readTime: "15 min",
+    date: "2026-05-12",
+  },
+  {
+    slug: "claude-code-vs-cursor",
+    title: "Claude Code vs Cursor in 2026: Which AI Coding Agent Should You Use?",
+    excerpt:
+      "IDE-first vs terminal-first coding agents — workflow, autonomy, refactors, ecosystem, pricing, and when to use both.",
+    category: "Comparison",
+    readTime: "13 min",
+    date: "2026-05-05",
+  },
+  {
+    slug: "langgraph-vs-crewai",
+    title:
+      "LangGraph vs CrewAI in 2026: Which Multi-Agent Framework Should You Choose?",
+    excerpt:
+      "Graph-first vs role-first multi-agent frameworks — architecture, state, HITL, DX, and when to pick each.",
+    category: "Comparison",
+    readTime: "14 min",
+    date: "2026-04-28",
+  },
+  {
+    slug: "mcp-and-tool-calling-explained",
+    title: "MCP and Tool Calling Explained — Why It Matters for AI Agents",
+    excerpt:
+      "What Model Context Protocol means for agent interoperability, and which platforms support it today.",
+    category: "Technical",
+    readTime: "11 min",
+    date: "2026-04-15",
+  },
+  {
+    slug: "frameworks-vs-enterprise-platforms",
+    title: "Frameworks vs Enterprise AI Agent Platforms — When to Choose Which",
+    excerpt:
+      "When to build on LangGraph or CrewAI — and when a managed enterprise stack is the safer bet.",
+    category: "Strategy",
+    readTime: "10 min",
+    date: "2026-04-08",
+  },
+  {
+    slug: "how-to-evaluate-ai-agent-platforms",
+    title: "How to Evaluate AI Agent Platforms in 2026",
+    excerpt:
+      "A practical checklist for capability, governance, integrations, and total cost before you pilot.",
+    category: "Buying",
+    readTime: "12 min",
     date: "2026-04-01",
   },
 ];
+
+/** How many cards to show in homepage “Latest guides”. */
+export const HOMEPAGE_LATEST_GUIDES_COUNT = 6;
+
+/** Newest guides for homepage / featured strips (preserves latestGuides order). */
+export function getLatestGuides(limit = HOMEPAGE_LATEST_GUIDES_COUNT): GuidePreview[] {
+  return latestGuides.slice(0, limit);
+}
 
 export function guideHref(slug: string): string {
   return `/guides/${slug}/`;
@@ -132,6 +144,14 @@ export function guideHref(slug: string): string {
 
 export function getGuideBySlug(slug: string): GuidePreview | undefined {
   return latestGuides.find((g) => g.slug === slug);
+}
+
+/** Resolve slugs in order, dropping missing entries. */
+function resolveGuideSlugs(slugs: string[], exclude?: string): GuidePreview[] {
+  return slugs
+    .filter((s) => s !== exclude)
+    .map((slug) => getGuideBySlug(slug))
+    .filter((g): g is GuidePreview => Boolean(g));
 }
 
 /** Head-to-head comparison guides used for cross-linking */
@@ -164,11 +184,156 @@ export function comparisonLinkLabel(slug: string): string {
   return getGuideBySlug(slug)?.title ?? slug;
 }
 
-/** Other head-to-head guides (excludes current) */
+/** Display title for related-link cards (shorter labels for comparisons). */
+export function guideLinkLabel(slug: string): string {
+  if (isComparisonGuide(slug)) return comparisonLinkLabels[slug];
+  return getGuideBySlug(slug)?.title ?? slug;
+}
+
+/** Other head-to-head guides (excludes current), newest first via latestGuides. */
 export function getRelatedComparisons(currentSlug: string): GuidePreview[] {
   return latestGuides.filter(
     (g) => isComparisonGuide(g.slug) && g.slug !== currentSlug,
   );
+}
+
+/**
+ * Contextual related guides per article — newest high-signal pieces first,
+ * only where they make sense. Used by RelatedComparisons + GuideExplore.
+ */
+const relatedGuidesBySlug: Record<string, string[]> = {
+  "langgraph-vs-crewai": [
+    "best-open-source-ai-agent-frameworks-2026",
+    "ai-agent-platforms-tco-2026",
+    "best-ai-agent-platforms-for-smbs-2026",
+    "frameworks-vs-enterprise-platforms",
+    "how-to-evaluate-ai-agent-platforms",
+    "mcp-and-tool-calling-explained",
+  ],
+  "claude-code-vs-cursor": [
+    "best-ai-coding-agents-2026",
+    "ai-agent-platforms-tco-2026",
+    "how-to-evaluate-ai-agent-platforms",
+    "mcp-and-tool-calling-explained",
+  ],
+  "copilot-studio-vs-agentforce": [
+    "ai-agent-platforms-tco-2026",
+    "frameworks-vs-enterprise-platforms",
+    "how-to-evaluate-ai-agent-platforms",
+    "best-ai-agent-platforms-for-smbs-2026",
+  ],
+  "n8n-vs-make-vs-zapier-agents": [
+    "lindy-vs-relevance-ai-vs-dust",
+    "best-ai-agent-platforms-for-smbs-2026",
+    "ai-agent-platforms-tco-2026",
+    "how-to-evaluate-ai-agent-platforms",
+  ],
+  "lindy-vs-relevance-ai-vs-dust": [
+    "n8n-vs-make-vs-zapier-agents",
+    "best-ai-agent-platforms-for-smbs-2026",
+    "ai-agent-platforms-tco-2026",
+    "how-to-evaluate-ai-agent-platforms",
+  ],
+  "how-to-evaluate-ai-agent-platforms": [
+    "ai-agent-platforms-tco-2026",
+    "best-ai-agent-platforms-for-smbs-2026",
+    "best-ai-coding-agents-2026",
+    "lindy-vs-relevance-ai-vs-dust",
+    "n8n-vs-make-vs-zapier-agents",
+    "frameworks-vs-enterprise-platforms",
+    "langgraph-vs-crewai",
+    "claude-code-vs-cursor",
+    "copilot-studio-vs-agentforce",
+  ],
+  "frameworks-vs-enterprise-platforms": [
+    "langgraph-vs-crewai",
+    "copilot-studio-vs-agentforce",
+    "best-open-source-ai-agent-frameworks-2026",
+    "ai-agent-platforms-tco-2026",
+    "best-ai-agent-platforms-for-smbs-2026",
+    "how-to-evaluate-ai-agent-platforms",
+  ],
+  "mcp-and-tool-calling-explained": [
+    "best-ai-coding-agents-2026",
+    "best-open-source-ai-agent-frameworks-2026",
+    "how-to-evaluate-ai-agent-platforms",
+    "langgraph-vs-crewai",
+  ],
+  "best-open-source-ai-agent-frameworks-2026": [
+    "langgraph-vs-crewai",
+    "ai-agent-platforms-tco-2026",
+    "frameworks-vs-enterprise-platforms",
+    "best-ai-agent-platforms-for-smbs-2026",
+    "how-to-evaluate-ai-agent-platforms",
+  ],
+  "best-ai-coding-agents-2026": [
+    "claude-code-vs-cursor",
+    "ai-agent-platforms-tco-2026",
+    "mcp-and-tool-calling-explained",
+    "how-to-evaluate-ai-agent-platforms",
+  ],
+  "ai-agent-platforms-tco-2026": [
+    "how-to-evaluate-ai-agent-platforms",
+    "best-ai-agent-platforms-for-smbs-2026",
+    "n8n-vs-make-vs-zapier-agents",
+    "lindy-vs-relevance-ai-vs-dust",
+    "best-ai-coding-agents-2026",
+    "copilot-studio-vs-agentforce",
+  ],
+  "best-ai-agent-platforms-for-smbs-2026": [
+    "n8n-vs-make-vs-zapier-agents",
+    "lindy-vs-relevance-ai-vs-dust",
+    "ai-agent-platforms-tco-2026",
+    "how-to-evaluate-ai-agent-platforms",
+    "best-ai-coding-agents-2026",
+  ],
+};
+
+/**
+ * Non-comparison related guides for a page (excludes other head-to-heads
+ * when those are already listed under Related comparisons).
+ */
+export function getRelatedGuidesForArticle(
+  currentSlug: string,
+  options: { excludeComparisons?: boolean; limit?: number } = {},
+): GuidePreview[] {
+  const { excludeComparisons = false, limit = 6 } = options;
+  const mapped = relatedGuidesBySlug[currentSlug] ?? [
+    "ai-agent-platforms-tco-2026",
+    "best-ai-agent-platforms-for-smbs-2026",
+    "how-to-evaluate-ai-agent-platforms",
+  ];
+  let guides = resolveGuideSlugs(mapped, currentSlug);
+  if (excludeComparisons) {
+    guides = guides.filter((g) => !isComparisonGuide(g.slug));
+  }
+  return guides.slice(0, limit);
+}
+
+/**
+ * Full related reading list for GuideExplore / RelatedLinks (comparisons + guides).
+ */
+export function getRelatedReadingForArticle(
+  currentSlug: string,
+  limit = 8,
+): GuidePreview[] {
+  const ordered: string[] = [];
+  const add = (slug: string) => {
+    if (slug !== currentSlug && !ordered.includes(slug)) ordered.push(slug);
+  };
+
+  // Prefer mapped related order
+  for (const slug of relatedGuidesBySlug[currentSlug] ?? []) add(slug);
+
+  // Then other comparisons (newest first from latestGuides)
+  for (const g of latestGuides) {
+    if (isComparisonGuide(g.slug)) add(g.slug);
+  }
+
+  // Fill with remaining newest guides
+  for (const g of latestGuides) add(g.slug);
+
+  return resolveGuideSlugs(ordered, currentSlug).slice(0, limit);
 }
 
 /**
@@ -269,8 +434,8 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
     add("best-open-source-ai-agent-frameworks-2026");
   }
   if (cats.includes("Coding")) {
-    add("claude-code-vs-cursor");
     add("best-ai-coding-agents-2026");
+    add("claude-code-vs-cursor");
   }
   if (
     tool.features.mcpSupport ||
@@ -287,13 +452,11 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
     add("frameworks-vs-enterprise-platforms");
   }
 
-  return ordered
-    .map((slug) => getGuideBySlug(slug))
-    .filter((g): g is GuidePreview => Boolean(g));
+  return resolveGuideSlugs(ordered);
 }
 
 /**
- * Related guides for a category hub — pick the most useful articles for that lane.
+ * Related guides for a category hub — order is intentional (newest / most useful first).
  */
 export function getRelatedGuidesForCategory(
   category: ToolCategory,
@@ -304,6 +467,7 @@ export function getRelatedGuidesForCategory(
       "ai-agent-platforms-tco-2026",
       "frameworks-vs-enterprise-platforms",
       "how-to-evaluate-ai-agent-platforms",
+      "best-ai-agent-platforms-for-smbs-2026",
     ],
     Frameworks: [
       "best-open-source-ai-agent-frameworks-2026",
@@ -316,9 +480,9 @@ export function getRelatedGuidesForCategory(
     ],
     "No-Code": [
       "lindy-vs-relevance-ai-vs-dust",
-      "ai-agent-platforms-tco-2026",
       "best-ai-agent-platforms-for-smbs-2026",
       "n8n-vs-make-vs-zapier-agents",
+      "ai-agent-platforms-tco-2026",
       "how-to-evaluate-ai-agent-platforms",
       "frameworks-vs-enterprise-platforms",
     ],
@@ -335,8 +499,9 @@ export function getRelatedGuidesForCategory(
       "how-to-evaluate-ai-agent-platforms",
     ],
     Workflow: [
-      "best-ai-agent-platforms-for-smbs-2026",
       "n8n-vs-make-vs-zapier-agents",
+      "best-ai-agent-platforms-for-smbs-2026",
+      "lindy-vs-relevance-ai-vs-dust",
       "ai-agent-platforms-tco-2026",
       "how-to-evaluate-ai-agent-platforms",
       "frameworks-vs-enterprise-platforms",
@@ -344,7 +509,14 @@ export function getRelatedGuidesForCategory(
   };
 
   const slugs = byCat[category] ?? ["how-to-evaluate-ai-agent-platforms"];
-  return latestGuides.filter((g) => slugs.includes(g.slug));
+  return resolveGuideSlugs(slugs);
+}
+
+/** Featured (first) guide for category hero callouts. */
+export function getFeaturedGuideForCategory(
+  category: ToolCategory,
+): GuidePreview | undefined {
+  return getRelatedGuidesForCategory(category)[0];
 }
 
 /** Example tools to surface from guides (stable slugs). */

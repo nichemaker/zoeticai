@@ -9,7 +9,11 @@ import {
   tools,
 } from "../data/tools";
 import { getCategoryCounts, categoryHref } from "../data/categories";
-import { latestGuides } from "../data/guides";
+import {
+  getLatestGuides,
+  guideHref,
+  HOMEPAGE_LATEST_GUIDES_COUNT,
+} from "../data/guides";
 
 const featuredRaw = getFeaturedTools(6);
 /** Never leave the featured strip empty — fall back to top-scored tools. */
@@ -18,7 +22,28 @@ const featured =
 
 const categoryCards = getCategoryCounts();
 const catalogCount = tools.length || 0;
-const guideList = latestGuides;
+/** Newest-first subset for the homepage strip */
+const guideList = getLatestGuides(HOMEPAGE_LATEST_GUIDES_COUNT);
+
+/** High-signal comparisons called out near Latest guides */
+const featuredComparisons = [
+  {
+    href: "/guides/lindy-vs-relevance-ai-vs-dust/",
+    label: "Lindy vs Relevance AI vs Dust",
+  },
+  {
+    href: "/guides/n8n-vs-make-vs-zapier-agents/",
+    label: "n8n vs Make vs Zapier Agents",
+  },
+  {
+    href: "/guides/claude-code-vs-cursor/",
+    label: "Claude Code vs Cursor",
+  },
+  {
+    href: "/guides/copilot-studio-vs-agentforce/",
+    label: "Copilot Studio vs Agentforce",
+  },
+];
 
 const whyItems = [
   {
@@ -310,7 +335,7 @@ const whyItems = [
       <SectionHeader
         eyebrow="Guides"
         title="Latest guides"
-        description="Practical writing on evaluation, architecture choices, and shipping agents in production."
+        description="Newest roundups, TCO models, and head-to-head comparisons for buyers and builders."
         href="/guides/"
         linkLabel="All guides"
       />
@@ -333,7 +358,7 @@ const whyItems = [
                 </div>
                 <h3 class="mt-4 text-lg font-semibold leading-snug tracking-tight text-ink transition-colors group-hover:text-accent">
                   <a
-                    href={`/guides/${guide.slug}/`}
+                    href={guideHref(guide.slug)}
                     class="after:absolute after:inset-0 focus-visible:outline-none"
                   >
                     {guide.title}
@@ -361,6 +386,32 @@ const whyItems = [
             <p class="mt-2 max-w-sm text-sm text-ink-muted">
               Evaluation playbooks and architecture notes will land here soon.
             </p>
+          </div>
+        )
+      }
+
+      {
+        featuredComparisons.length > 0 && (
+          <div class="mt-10 border-t border-border pt-8">
+            <p class="text-sm font-semibold text-ink">
+              Popular comparisons
+            </p>
+            <p class="mt-1 max-w-2xl text-sm text-ink-muted">
+              Head-to-head picks for no-code agents, workflow automation, coding
+              tools, and enterprise suites.
+            </p>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              {featuredComparisons.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    class="inline-flex items-center rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm font-medium text-ink-muted transition-colors hover:border-accent/30 hover:bg-accent-soft hover:text-accent"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         )
       }
