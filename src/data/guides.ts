@@ -16,6 +16,25 @@ export type GuidePreview = {
  */
 export const latestGuides: GuidePreview[] = [
   {
+    slug: "mcp-servers",
+    title: "Best MCP Servers in 2026: Trusted Servers for AI Agents",
+    excerpt:
+      "Selective MCP server directory — Playwright, Figma, GitHub, Notion, Slack, and more for AI agent builders.",
+    category: "Directory",
+    readTime: "8 min",
+    date: "2026-08-12",
+  },
+  {
+    slug: "langchain-vs-langgraph",
+    title:
+      "LangChain vs LangGraph in 2026: Which Should You Use for AI Agents?",
+    excerpt:
+      "How LangChain and LangGraph relate — ecosystem vs graph orchestration, when to use each, and when both together.",
+    category: "Comparison",
+    readTime: "12 min",
+    date: "2026-08-12",
+  },
+  {
     slug: "claude-code",
     title:
       "Claude Code Guide Hub (2026): Pricing, Setup, Skills, Plugins, MCP & Comparisons",
@@ -123,13 +142,12 @@ export const latestGuides: GuidePreview[] = [
   },
   {
     slug: "ai-agent-platforms-tco-2026",
-    title:
-      "What AI Agent Platforms Actually Cost in 2026 (A Practical TCO Guide)",
+    title: "AI Agent Pricing Index 2026: What Platforms Actually Cost",
     excerpt:
-      "Full cost stack beyond list price — meters, models, people, hidden costs, and rough TCO reality by company size.",
+      "Pricing models, category index (coding, frameworks, no-code, enterprise, workflow), comparison tables, hidden costs, and how to forecast real TCO.",
     category: "Buying",
-    readTime: "13 min",
-    date: "2026-07-22",
+    readTime: "16 min",
+    date: "2026-08-12",
   },
   {
     slug: "lindy-vs-relevance-ai-vs-dust",
@@ -253,6 +271,7 @@ function resolveGuideSlugs(slugs: string[], exclude?: string): GuidePreview[] {
 
 /** Head-to-head comparison guides used for cross-linking */
 export const comparisonGuideSlugs = [
+  "langchain-vs-langgraph",
   "langgraph-vs-crewai",
   "claude-code/vs-codex",
   "claude-code-vs-cursor",
@@ -265,6 +284,7 @@ export type ComparisonGuideSlug = (typeof comparisonGuideSlugs)[number];
 
 /** Short anchor text for SEO-friendly internal links */
 export const comparisonLinkLabels: Record<ComparisonGuideSlug, string> = {
+  "langchain-vs-langgraph": "LangChain vs LangGraph comparison",
   "langgraph-vs-crewai": "LangGraph vs CrewAI comparison",
   "claude-code/vs-codex": "Claude Code vs Codex comparison",
   "claude-code-vs-cursor": "Claude Code vs Cursor comparison",
@@ -291,6 +311,7 @@ const shortGuideLabels: Record<string, string> = {
   "claude-code/vs-codex": "Claude Code vs Codex",
   "claude-code/skills": "Claude Code Skills (2026)",
   "claude-code/mcp": "Best MCP servers for Claude Code",
+  "mcp-servers": "MCP servers directory",
   "claude-code/plugins": "Claude Code Plugins (2026)",
   "claude-code/setup": "Install & set up Claude Code",
   "claude-code/troubleshooting": "Claude Code troubleshooting",
@@ -331,7 +352,18 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "best-open-source-ai-agent-frameworks-2026",
     "best-ai-coding-agents-2026",
   ],
+  "langchain-vs-langgraph": [
+    "langgraph-vs-crewai",
+    "best-open-source-ai-agent-frameworks-2026",
+    "frameworks-vs-enterprise-platforms",
+    "ai-agent-platforms-guide",
+    "ai-agent-platforms-tco-2026",
+    "how-to-evaluate-ai-agent-platforms",
+    "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
+  ],
   "langgraph-vs-crewai": [
+    "langchain-vs-langgraph",
     "ai-agent-platforms-guide",
     "best-open-source-ai-agent-frameworks-2026",
     "ai-agent-platforms-tco-2026",
@@ -411,6 +443,7 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "ai-agent-platforms-guide",
   ],
   "claude-code/mcp": [
+    "mcp-servers",
     "claude-code",
     "claude-code/setup",
     "claude-code/troubleshooting",
@@ -423,6 +456,14 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "claude-code-vs-cursor",
     "best-ai-coding-agents-2026",
     "ai-agent-platforms-guide",
+  ],
+  "mcp-servers": [
+    "claude-code/mcp",
+    "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
+    "claude-code",
+    "ai-agent-platforms-guide",
+    "best-ai-coding-agents-2026",
   ],
   "claude-code/plugins": [
     "claude-code",
@@ -510,6 +551,7 @@ const relatedGuidesBySlug: Record<string, string[]> = {
   ],
   "mcp-and-tool-calling-explained": [
     "mcp-server-implementation",
+    "mcp-servers",
     "claude-code/mcp",
     "claude-code/skills",
     "ai-agent-platforms-guide",
@@ -520,6 +562,7 @@ const relatedGuidesBySlug: Record<string, string[]> = {
   ],
   "mcp-server-implementation": [
     "mcp-and-tool-calling-explained",
+    "mcp-servers",
     "claude-code/mcp",
     "claude-code/skills",
     "ai-agent-platforms-guide",
@@ -531,6 +574,7 @@ const relatedGuidesBySlug: Record<string, string[]> = {
   ],
   "best-open-source-ai-agent-frameworks-2026": [
     "ai-agent-platforms-guide",
+    "langchain-vs-langgraph",
     "langgraph-vs-crewai",
     "ai-agent-platforms-tco-2026",
     "frameworks-vs-enterprise-platforms",
@@ -562,6 +606,10 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "lindy-vs-relevance-ai-vs-dust",
     "best-ai-coding-agents-2026",
     "claude-code/pricing",
+    "claude-code",
+    "langchain-vs-langgraph",
+    "langgraph-vs-crewai",
+    "mcp-servers",
     "copilot-studio-vs-agentforce",
   ],
   "best-ai-agent-platforms-for-smbs-2026": [
@@ -628,7 +676,7 @@ export function getPrimaryComparisonForTool(
   toolSlug: string,
 ): GuidePreview | undefined {
   const map: Record<string, ComparisonGuideSlug> = {
-    langgraph: "langgraph-vs-crewai",
+    langgraph: "langchain-vs-langgraph",
     crewai: "langgraph-vs-crewai",
     "claude-code": "claude-code/vs-codex",
     "openai-codex": "claude-code/vs-codex",
@@ -653,6 +701,9 @@ export const comparisonToolProfiles: Record<
   ComparisonGuideSlug,
   ComparisonToolProfile[]
 > = {
+  "langchain-vs-langgraph": [
+    { slug: "langgraph", label: "LangGraph platform profile" },
+  ],
   "langgraph-vs-crewai": [
     { slug: "langgraph", label: "LangGraph platform profile" },
     { slug: "crewai", label: "CrewAI platform profile" },
@@ -721,6 +772,7 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
   }
   if (cats.includes("Enterprise")) add("copilot-studio-vs-agentforce");
   if (cats.includes("Frameworks")) {
+    add("langchain-vs-langgraph");
     add("langgraph-vs-crewai");
     add("best-open-source-ai-agent-frameworks-2026");
     add("best-ai-agent-platforms-for-smbs-2026");
@@ -778,6 +830,7 @@ export function getRelatedGuidesForCategory(
     Frameworks: [
       "ai-agent-platforms-guide",
       "best-open-source-ai-agent-frameworks-2026",
+      "langchain-vs-langgraph",
       "langgraph-vs-crewai",
       "ai-agent-platforms-tco-2026",
       "best-ai-agent-platforms-for-smbs-2026",
@@ -1024,6 +1077,12 @@ export const topicHubs: TopicHub[] = [
       "More comparisons, decision frameworks, evaluation criteria, and TCO guidance in one place.",
     /** Natural copy keyed by spoke slug (falls back to backlinkLabel / Detail). */
     spokeBacklinks: {
+      "langchain-vs-langgraph": {
+        label:
+          "This comparison is part of our complete AI Agent Platforms Guide",
+        detail:
+          "See the full guide for frameworks vs enterprise, OSS roundups, and more head-to-heads.",
+      },
       "langgraph-vs-crewai": {
         label:
           "This comparison is part of our complete AI Agent Platforms Guide",
@@ -1101,7 +1160,7 @@ export const topicHubs: TopicHub[] = [
           "See the full guide for frameworks vs enterprise and multi-agent comparisons.",
       },
       "ai-agent-platforms-tco-2026": {
-        label: "Part of our complete AI Agent Platforms Guide",
+        label: "This pricing index is part of our complete AI Agent Platforms Guide",
         detail:
           "See the full guide for cost-aware decision paths and platform shortlists.",
       },
@@ -1140,9 +1199,19 @@ export const topicHubs: TopicHub[] = [
     },
     spokeGuides: [
       {
+        slug: "langchain-vs-langgraph",
+        blurb:
+          "Ecosystem toolkit vs graph orchestration — when to use LangChain, LangGraph, or both.",
+      },
+      {
         slug: "langgraph-vs-crewai",
         blurb:
           "Graph-first vs role-first multi-agent frameworks for engineering teams.",
+      },
+      {
+        slug: "mcp-servers",
+        blurb:
+          "Selective MCP server directory for AI agents — Playwright, GitHub, Figma, and more.",
       },
       {
         slug: "copilot-studio-vs-agentforce",
@@ -1172,7 +1241,7 @@ export const topicHubs: TopicHub[] = [
       {
         slug: "ai-agent-platforms-tco-2026",
         blurb:
-          "What platforms actually cost — seats, runs, models, people, and hidden spend.",
+          "AI Agent Pricing Index — models, category costs, tables, and how to forecast TCO.",
       },
       {
         slug: "frameworks-vs-enterprise-platforms",
@@ -1307,6 +1376,10 @@ export const guideExampleTools: Record<
       "anthropic-claude-agent-sdk",
     ],
   },
+  "langchain-vs-langgraph": {
+    label: "LangGraph and related frameworks",
+    slugs: ["langgraph", "crewai", "openai-agents-sdk", "pydantic-ai", "mastra"],
+  },
   "langgraph-vs-crewai": {
     label: "Compare these multi-agent frameworks",
     slugs: ["langgraph", "crewai", "openai-agents-sdk", "pydantic-ai", "mastra"],
@@ -1430,11 +1503,12 @@ export const guideExampleTools: Record<
     ],
   },
   "ai-agent-platforms-tco-2026": {
-    label: "Example platforms when modeling TCO",
+    label: "Example platforms in the pricing index",
     slugs: [
       "n8n",
       "make",
       "cursor",
+      "claude-code",
       "langgraph",
       "microsoft-copilot-studio",
       "relevance-ai",

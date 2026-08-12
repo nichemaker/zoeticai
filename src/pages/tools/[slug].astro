@@ -6,6 +6,8 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/Breadcrumb.astro";
 import HubBacklink from "../../components/HubBacklink.astro";
+import SearchDemand from "../../components/tool/SearchDemand.astro";
+import PeopleAlsoCompare from "../../components/tool/PeopleAlsoCompare.astro";
 import {
   tools,
   getToolBySlug,
@@ -778,6 +780,12 @@ const shareText = encodeURIComponent(`${tool.name} — AI agent platform on Zoet
         <!-- Sidebar ~32% -->
         <aside class="space-y-5 lg:col-span-4">
           <div class="lg:sticky lg:top-36 space-y-5">
+            <!-- Search demand (hidden when no data) -->
+            <SearchDemand tool={tool} />
+
+            <!-- People also compare (hidden when no links) -->
+            <PeopleAlsoCompare tool={tool} />
+
             <!-- Details card -->
             <div class="card-surface p-5 sm:p-6">
               <h2 class="text-base font-semibold tracking-tight text-ink">

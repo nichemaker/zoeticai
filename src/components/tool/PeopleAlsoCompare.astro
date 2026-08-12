@@ -1,0 +1,120 @@
+---
+/**
+ * Related comparison guides for a tool — data-driven with guide registry fallback.
+ */
+import type { Tool, ToolRelatedComparison } from "../../types/tool";
+import {
+  getPrimaryComparisonForTool,
+  getRelatedComparisons,
+  guideHref,
+  guideLinkLabel,
+  getGuideBySlug,
+  isComparisonGuide,
+} from "../../data/guides";
+
+interface Props {
+  tool: Tool;
+}
+
+const { tool } = Astro.props;
+
+function normalizeHref(href: string): string {
+  if (!href.startsWith("/")) return href;
+  return href.endsWith("/") ? href : `${href}/`;
+}
+
+/** Map path → guide slug for existence checks */
+function slugFromHref(href: string): string | null {
+  const m = normalizeHref(href).match(/^\/guides\/(.+)\/$/);
+  return m ? m[1] : null;
+}
+
+function resolveComparisons(t: Tool): ToolRelatedComparison[] {
+  const seen = new Set<string>();
+  const out: ToolRelatedComparison[] = [];
+
+  const push = (item: ToolRelatedComparison) => {
+    const href = normalizeHref(item.href);
+    const guideSlug = slugFromHref(href);
+    if (guideSlug && !getGuideBySlug(guideSlug)) return;
+    if (seen.has(href)) return;
+    seen.add(href);
+    out.push({ ...item, href });
+  };
+
+  for (const c of t.relatedComparisons ?? []) {
+    push(c);
+  }
+
+  // Primary head-to-head from registry
+  const primary = getPrimaryComparisonForTool(t.slug);
+  if (primary) {
+    push({
+      title: guideLinkLabel(primary.slug),
+      href: guideHref(primary.slug),
+      note: "Popular comparison",
+    });
+  }
+
+  // Other comparison guides that feature this tool via comparisonToolProfiles
+  // (light: only pull related comparisons list when primary exists)
+  if (primary && isComparisonGuide(primary.slug)) {
+    for (const g of getRelatedComparisons(primary.slug).slice(0, 2)) {
+      // Only add if title mentions this tool or is coding-related for coding tools
+      const title = g.title.toLowerCase();
+      const name = t.name.toLowerCase();
+      const nameToken = name.split(/\s+/)[0] ?? name;
+      if (title.includes(nameToken) || title.includes(t.slug.replace(/-/g, " "))) {
+        push({
+          title: guideLinkLabel(g.slug),
+          href: guideHref(g.slug),
+        });
+      }
+    }
+  }
+
+  return out.slice(0, 5);
+}
+
+const items = resolveComparisons(tool);
+---
+
+{
+  items.length > 0 && (
+    <div class="card-surface p-5 sm:p-6">
+      <p class="text-xs font-bold uppercase tracking-wider text-accent">
+        People also compare
+      </p>
+      <p class="mt-1 text-[11px] text-ink-soft">
+        Head-to-heads buyers open next
+      </p>
+      <ul class="mt-4 space-y-2.5">
+        {items.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class="group flex items-start justify-between gap-2 rounded-[var(--radius-md)] border border-border bg-surface-muted/40 px-3 py-2.5 transition-colors hover:border-accent/30 hover:bg-accent-soft/40"
+            >
+              <span class="min-w-0">
+                <span class="block text-sm font-semibold text-ink group-hover:text-accent">
+                  {item.title}
+                </span>
+                {item.note && (
+                  <span class="mt-0.5 block text-[11px] font-medium text-ink-soft">
+                    {item.note}
+                  </span>
+                )}
+              </span>
+              <span
+                class="mt-0.5 shrink-0 text-sm font-semibold text-accent"
+                aria-hidden="true"
+              >
+                →
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

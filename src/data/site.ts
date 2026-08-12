@@ -68,7 +68,7 @@ export const footerGroups: FooterGroup[] = [
       },
       {
         href: "/guides/ai-agent-platforms-tco-2026/",
-        label: "TCO guide",
+        label: "Pricing index",
       },
       {
         href: "/guides/best-ai-agent-platforms-for-smbs-2026/",

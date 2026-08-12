@@ -1,0 +1,481 @@
+---
+import GuideLayout from "../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../components/guide/ComparisonTable.astro";
+import ToolReviewCard from "../../components/guide/ToolReviewCard.astro";
+import RelatedComparisons from "../../components/RelatedComparisons.astro";
+import { getToolBySlug } from "../../data/tools";
+
+const title =
+  "LangChain vs LangGraph in 2026: Which Should You Use for AI Agents?";
+const description =
+  "Practical 2026 comparison of LangChain and LangGraph for engineering teams: how they relate, architecture, state, multi-agent control, production cost, and when to use each — or both.";
+const published = "2026-08-12";
+const readTime = "12 min";
+const slug = "langchain-vs-langgraph";
+
+const langgraph = getToolBySlug("langgraph");
+
+const comparisonRows = [
+  {
+    label: "Primary use case",
+    cells: [
+      "LLM apps: chains, RAG, tools, memory helpers, integrations across the LangChain ecosystem",
+      "Durable agent workflows: explicit graphs with cycles, branches, checkpoints, and long-running control flow",
+    ],
+  },
+  {
+    label: "Architecture model",
+    cells: [
+      "Composable primitives and LCEL-style pipelines; many linear or lightly branched “chain” patterns",
+      "Graph of nodes and edges (including cycles); control flow is a first-class design artifact",
+    ],
+  },
+  {
+    label: "State management",
+    cells: [
+      "Conversation/memory patterns and chain state; less “durable run” native than graph runtimes",
+      "Shared graph state, checkpoints, interrupt/resume — built for multi-step durable agents",
+    ],
+  },
+  {
+    label: "Multi-agent support",
+    cells: [
+      "Possible via agents/tools and orchestration patterns; historically more app-kit than topology engine",
+      "Arbitrary multi-agent topologies (supervisor, pipeline, custom) expressed as graph structure",
+    ],
+  },
+  {
+    label: "Control vs convenience",
+    cells: [
+      "Higher convenience for common LLM app patterns and integrations; less explicit runtime topology",
+      "Higher control over every transition, retry, and HITL gate; more design upfront",
+    ],
+  },
+  {
+    label: "Learning curve",
+    cells: [
+      "Faster first demo for RAG/chat/tool calling if you accept framework abstractions",
+      "Steeper: think in state machines and durable runs; pays off for production agent systems",
+    ],
+  },
+  {
+    label: "Production readiness",
+    cells: [
+      "Widely used; production quality depends on how carefully you structure apps and ops around it",
+      "Designed for production agent paths: persistence, HITL, long jobs; often paired with LangSmith/Platform",
+    ],
+  },
+  {
+    label: "Ecosystem / tooling",
+    cells: [
+      "Large integration surface (models, vector stores, tools) and community patterns",
+      "Lives in the LangChain ecosystem; strong path to LangSmith tracing and LangGraph Platform options",
+    ],
+  },
+  {
+    label: "Best for",
+    cells: [
+      "LLM-powered features, RAG apps, tool-using assistants, teams that need breadth of integrations",
+      "Complex agents that must loop, branch, pause for humans, and survive restarts",
+    ],
+  },
+];
+
+const pricingRows = [
+  {
+    label: "Open-source core",
+    cells: [
+      "LangChain libraries free/OSS — you pay models + infra",
+      "LangGraph library free/OSS — same model/infra bill",
+    ],
+  },
+  {
+    label: "Managed extras",
+    cells: [
+      "LangSmith (tracing/evals) often adopted across LangChain apps",
+      "LangSmith + optional LangGraph Platform for deploy/ops",
+    ],
+  },
+  {
+    label: "What drives production cost",
+    cells: [
+      "Token burn on RAG + tools; eng time; optional LangSmith seats",
+      "Longer agent loops (more tokens), checkpoints/infra, Platform/Smith when used",
+    ],
+  },
+  {
+    label: "Honest cost character",
+    cells: [
+      "Framework is cheap; integrations and retries make API spend real",
+      "Control reduces rework; unguarded multi-step graphs can burn tokens hard",
+    ],
+  },
+];
+
+const chooseLangChain = [
+  "You are building chat, RAG, extraction, or tool-calling features more than a long-running agent OS",
+  "You want the broadest integration surface and community examples quickly",
+  "Your control flow is mostly linear or lightly branched — not cyclic multi-day jobs",
+  "The team is new to agents and needs productive abstractions before graph design",
+  "You will add LangGraph later only if orchestration outgrows simple chains",
+];
+
+const chooseLangGraph = [
+  "You need durable multi-step agents with retries, cycles, and explicit routing",
+  "Human-in-the-loop approvals and interrupt/resume are product requirements",
+  "Multi-agent topology is a first-class design problem, not a side effect",
+  "You want state/checkpoints as runtime primitives, not bolted-on session glue",
+  "You are willing to invest in graph design for production reliability",
+];
+
+const bothPatterns = [
+  {
+    title: "LangChain for I/O, LangGraph for control",
+    body: "Use LangChain integrations (models, retrievers, tools) inside LangGraph nodes. Graph owns routing; LangChain owns adapters.",
+  },
+  {
+    title: "Start chain, graduate graph",
+    body: "Prototype with LangChain chains/agents. When you need cycles, HITL, or durable state, move orchestration to LangGraph without abandoning the ecosystem.",
+  },
+  {
+    title: "Shared observability",
+    body: "Trace both with LangSmith (or your APM). One operate story across chains and graphs reduces “framework soup.”",
+  },
+  {
+    title: "When pure LangGraph is cleaner",
+    body: "If the product is the agent workflow itself (ops copilots, multi-step research with gates), design graph-first and keep LangChain as a dependency layer — not a second orchestration style.",
+  },
+];
+
+const decisionNotes = [
+  {
+    type: "Starting fresh",
+    pick: "Match the problem, not the brand",
+    detail:
+      "Feature/RAG app → LangChain-first is rational. Production multi-step agent → design in LangGraph from day one so you do not rewrite control flow later.",
+  },
+  {
+    type: "Already on LangChain",
+    pick: "Keep the ecosystem; add LangGraph where chains hurt",
+    detail:
+      "Do not rewrite working RAG for ideology. Introduce LangGraph for the workflows that need state, loops, and HITL. Reuse tools and model wrappers.",
+  },
+  {
+    type: "Evaluating frameworks broadly",
+    pick: "Compare LangGraph to CrewAI/OpenAI Agents SDK on topology — not “LangChain vs X” alone",
+    detail:
+      "LangChain is the wide toolkit; LangGraph is the orchestration peer of other agent frameworks. See LangGraph vs CrewAI and the OSS frameworks roundup.",
+  },
+];
+
+const toc = [
+  { id: "introduction", label: "Why this comparison matters" },
+  { id: "verdict", label: "Quick verdict" },
+  { id: "relationship", label: "Core relationship" },
+  { id: "comparison", label: "Detailed comparison" },
+  { id: "choose-langchain", label: "When to choose LangChain" },
+  { id: "choose-langgraph", label: "When to choose LangGraph" },
+  { id: "both", label: "Using both together" },
+  { id: "pricing", label: "Pricing / cost reality" },
+  { id: "decision", label: "Migration & decision notes" },
+  { id: "related", label: "Related guides" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Comparison"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="LangChain vs LangGraph"
+  exploreCategories={["Frameworks", "Enterprise", "No-Code", "Coding"]}
+  toc={toc}
+>
+  <!-- 1. Introduction -->
+  <section>
+    <h2 id="introduction" class="guide-h2">
+      Why this comparison matters in 2026
+    </h2>
+    <p>
+      Engineering teams still type “LangChain vs LangGraph” into search as if they
+      were rival IDEs. In 2026 they are better understood as{" "}
+      <strong>related layers in one ecosystem</strong>: LangChain is the broad
+      framework and integration surface for LLM applications; LangGraph is the
+      graph-based orchestration layer optimized for durable, controllable agents.
+    </p>
+    <p>
+      Choosing poorly still hurts. Using only linear LangChain chains for a
+      multi-day, multi-agent workflow creates glue code and fragile state. Forcing
+      every simple RAG app into a full graph runtime adds ceremony without payoff.
+      This guide clarifies the relationship, when each wins, and when using both is
+      the sane default.
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        APIs and product packaging (LangSmith, LangGraph Platform) change.
+        Architecture advice below is stable; verify current library docs and
+        commercial SKUs before you commit. Directory profile:{" "}
+        <a href="/tools/langgraph/">LangGraph</a>.
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 2. Quick verdict -->
+  <section id="verdict">
+    <h2 class="guide-h2">Quick verdict</h2>
+    <div
+      class="not-prose rounded-2xl border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+    >
+      <p
+        class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
+      >
+        One-line guidance
+      </p>
+      <div class="mt-5 grid gap-5 sm:grid-cols-2">
+        <div class="rounded-xl border border-border bg-surface p-5">
+          <h3 class="text-base font-semibold text-ink">LangChain is best for</h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+            LLM app building blocks — RAG, tools, integrations, and assistants
+            whose control flow stays relatively simple.
+          </p>
+        </div>
+        <div class="rounded-xl border border-border bg-surface p-5">
+          <h3 class="text-base font-semibold text-ink">LangGraph is best for</h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+            Production agent orchestration — explicit graphs, cycles, durable
+            state, multi-agent topologies, and human-in-the-loop gates.
+          </p>
+        </div>
+      </div>
+    </div>
+    <KeyTakeaway>
+      Do not treat this as a pure either/or.{" "}
+      <strong>LangGraph solves orchestration and durability</strong>;{" "}
+      <strong>LangChain solves composition and ecosystem breadth</strong>. Many
+      serious systems use LangGraph for control flow and LangChain-family
+      components for models, retrievers, and tools. Pick graph-first when the
+      product <em>is</em> the multi-step agent.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 3. Relationship -->
+  <section>
+    <h2 id="relationship" class="guide-h2">Core relationship</h2>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      <div class="card-surface p-5 sm:p-6">
+        <h3 class="text-base font-semibold text-accent">LangChain</h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+          <strong class="text-ink">Broader framework ecosystem.</strong> Chains,
+          agents helpers, tools, retrievers, memory patterns, and a large
+          integration catalog. Optimized for building LLM-powered application
+          features quickly with shared abstractions.
+        </p>
+      </div>
+      <div class="card-surface p-5 sm:p-6">
+        <h3 class="text-base font-semibold text-accent">LangGraph</h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+          <strong class="text-ink">Graph orchestration for agents.</strong> You
+          model nodes, edges, state, and cycles so workflows can loop, branch,
+          checkpoint, and pause. Optimized for controllable, long-running agent
+          systems — still in the LangChain orbit for models and tooling.
+        </p>
+      </div>
+    </div>
+    <h3 class="guide-h3">Common confusion</h3>
+    <ul>
+      <li>
+        <strong>“We must migrate off LangChain to use LangGraph.”</strong> Often
+        false — teams keep ecosystem pieces and move orchestration into graphs.
+      </li>
+      <li>
+        <strong>“LangGraph replaces RAG.”</strong> No. Retrieval remains a node
+        capability; graphs orchestrate when and how retrieval runs.
+      </li>
+      <li>
+        <strong>“More framework = better agents.”</strong> Extra abstraction
+        without durable control still fails in production. Match layer to problem.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 4. Comparison table early -->
+  <section>
+    <h2 id="comparison" class="guide-h2">Detailed comparison</h2>
+    <ComparisonTable
+      caption="LangChain vs LangGraph (2026) — engineering planning view"
+      headers={["LangChain", "LangGraph"]}
+      rows={comparisonRows}
+      highlightIndex={1}
+    />
+  </section>
+
+  <!-- 5. Choose LangChain -->
+  <section>
+    <h2 id="choose-langchain" class="guide-h2">When to choose LangChain</h2>
+    <ul class="not-prose mt-6 space-y-3">
+      {
+        chooseLangChain.map((item) => (
+          <li class="flex gap-3 text-sm leading-relaxed text-ink-muted sm:text-base">
+            <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+            <span>{item}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- 6. Choose LangGraph -->
+  <section>
+    <h2 id="choose-langgraph" class="guide-h2">When to choose LangGraph</h2>
+    <ul class="not-prose mt-6 space-y-3">
+      {
+        chooseLangGraph.map((item) => (
+          <li class="flex gap-3 text-sm leading-relaxed text-ink-muted sm:text-base">
+            <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+            <span>{item}</span>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      langgraph && (
+        <div class="mt-6">
+          <ToolReviewCard
+            slug="langgraph"
+            badge="Graph orchestration"
+            blurb="Directory profile — scores, features, and when LangGraph fits production agents."
+          />
+        </div>
+      )
+    }
+  </section>
+
+  <!-- 7. Both -->
+  <section>
+    <h2 id="both" class="guide-h2">When to use both together</h2>
+    <p>
+      Combining them is normal — and often better than pretending they are
+      enemies.
+    </p>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      {
+        bothPatterns.map((p) => (
+          <div class="card-surface p-5">
+            <h3 class="text-base font-semibold text-ink">{p.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted">{p.body}</p>
+          </div>
+        ))
+      }
+    </div>
+    <InfoCallout title="Avoid dual orchestration styles" variant="warning">
+      <p>
+        The failure mode is running ad-hoc LangChain agent loops <em>and</em> a
+        LangGraph runtime with no single source of control. Pick one orchestration
+        brain per workflow; reuse libraries underneath.
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 8. Pricing -->
+  <section>
+    <h2 id="pricing" class="guide-h2">Pricing / cost reality</h2>
+    <p>
+      Neither core library is the bill. Production cost is models, infra, people,
+      and optional managed ops.
+    </p>
+    <ComparisonTable
+      caption="Cost shape (OSS cores + managed extras — verify vendor pricing)"
+      headers={["LangChain", "LangGraph"]}
+      rows={pricingRows}
+    />
+    <ul>
+      <li>
+        <strong>Open-source cores</strong> keep license cost near zero for both.
+      </li>
+      <li>
+        <strong>LangSmith</strong> is the common paid observability path across
+        the ecosystem (seats/usage — confirm current plans).
+      </li>
+      <li>
+        <strong>LangGraph Platform</strong> (when used) adds managed deploy/ops —
+        budget when you outgrow DIY hosting, not on day-one prototypes.
+      </li>
+      <li>
+        <strong>Token burn</strong> grows with agent loop depth — graphs that
+        retry freely need spend caps and evals. See the{" "}
+        <a href="/guides/ai-agent-platforms-tco-2026/">AI Agent Pricing Index</a>.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 9. Decision notes -->
+  <section>
+    <h2 id="decision" class="guide-h2">Migration / decision notes</h2>
+    <div class="not-prose mt-8 space-y-4">
+      {
+        decisionNotes.map((d) => (
+          <div class="card-surface p-5 sm:p-6">
+            <p class="text-xs font-bold uppercase tracking-wider text-ink-soft">
+              {d.type}
+            </p>
+            <h3 class="mt-1.5 text-base font-semibold text-ink">{d.pick}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-[0.9375rem]">
+              {d.detail}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+    <KeyTakeaway title="Bottom line">
+      Use <strong>LangChain</strong> for ecosystem breadth and LLM app composition.
+      Use <strong>LangGraph</strong> when agents need durable, explicit control
+      flow. Use <strong>both</strong> when graph nodes call LangChain-style tools
+      and models — with one orchestration owner per workflow.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 10. Related -->
+  <section id="related">
+    <h2 class="guide-h2">Related guides</h2>
+    <ul>
+      <li>
+        <a href="/guides/langgraph-vs-crewai/">LangGraph vs CrewAI</a> — graph-first
+        vs role-first multi-agent frameworks (pair with this guide)
+      </li>
+      <li>
+        <a href="/guides/best-open-source-ai-agent-frameworks-2026/"
+          >Best open-source AI agent frameworks 2026</a
+        >
+      </li>
+      <li>
+        <a href="/guides/frameworks-vs-enterprise-platforms/"
+          >Frameworks vs enterprise platforms</a
+        >
+        {" · "}
+        <a href="/guides/ai-agent-platforms-guide/">AI Agent Platforms Guide</a>
+      </li>
+      <li>
+        <a href="/guides/ai-agent-platforms-tco-2026/">AI Agent Pricing Index</a>
+        {" · "}
+        <a href="/methodology/">Methodology</a>
+      </li>
+      <li>
+        <a href="/tools/langgraph/">LangGraph tool page</a>
+        {" · "}
+        <a href="/tools/crewai/">CrewAI</a>
+        {" · "}
+        <a href="/categories/frameworks/">Frameworks category</a>
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. There is no separate LangChain directory profile
+      yet — LangGraph is listed as the orchestration product in this ecosystem.
+    </p>
+  </section>
+
+  <RelatedComparisons slug={slug} categories={["Frameworks"]} />
+</GuideLayout>

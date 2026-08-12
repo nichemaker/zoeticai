@@ -62,6 +62,20 @@ export const tools: Tool[] = [
     ],
     featured: false,
     lastUpdated: "2026-04-01",
+    searchVolume: 74000,
+    searchTrend: "stable",
+    searchLabel: "Solid enterprise demand, suite-led discovery",
+    relatedComparisons: [
+      {
+        title: "Copilot Studio vs Agentforce",
+        href: "/guides/copilot-studio-vs-agentforce/",
+        note: "Popular comparison",
+      },
+      {
+        title: "Frameworks vs enterprise platforms",
+        href: "/guides/frameworks-vs-enterprise-platforms/",
+      },
+    ],
   },
   {
     id: "salesforce-agentforce",
@@ -96,6 +110,20 @@ export const tools: Tool[] = [
     ],
     featured: true,
     lastUpdated: "2026-04-01",
+    searchVolume: 49000,
+    searchTrend: "rising",
+    searchLabel: "Growing CRM-agent interest",
+    relatedComparisons: [
+      {
+        title: "Copilot Studio vs Agentforce",
+        href: "/guides/copilot-studio-vs-agentforce/",
+        note: "Popular comparison",
+      },
+      {
+        title: "AI Agent Pricing Index 2026",
+        href: "/guides/ai-agent-platforms-tco-2026/",
+      },
+    ],
   },
   {
     id: "google-vertex-ai-agent-builder",
@@ -302,6 +330,28 @@ export const tools: Tool[] = [
     ],
     featured: true,
     lastUpdated: "2026-04-01",
+    searchVolume: 33100,
+    searchTrend: "rising",
+    searchLabel: "Niche but growing among agent builders",
+    relatedComparisons: [
+      {
+        title: "LangChain vs LangGraph",
+        href: "/guides/langchain-vs-langgraph/",
+        note: "Popular comparison",
+      },
+      {
+        title: "LangGraph vs CrewAI",
+        href: "/guides/langgraph-vs-crewai/",
+      },
+      {
+        title: "Best open-source AI agent frameworks 2026",
+        href: "/guides/best-open-source-ai-agent-frameworks-2026/",
+      },
+      {
+        title: "Frameworks vs enterprise platforms",
+        href: "/guides/frameworks-vs-enterprise-platforms/",
+      },
+    ],
   },
   {
     id: "crewai",
@@ -336,6 +386,20 @@ export const tools: Tool[] = [
     ],
     featured: false,
     lastUpdated: "2026-04-01",
+    searchVolume: 27100,
+    searchTrend: "stable",
+    searchLabel: "Stable multi-agent framework demand",
+    relatedComparisons: [
+      {
+        title: "LangGraph vs CrewAI",
+        href: "/guides/langgraph-vs-crewai/",
+        note: "Popular comparison",
+      },
+      {
+        title: "Best open-source AI agent frameworks 2026",
+        href: "/guides/best-open-source-ai-agent-frameworks-2026/",
+      },
+    ],
   },
   {
     id: "openai-agents-sdk",
@@ -677,6 +741,24 @@ export const tools: Tool[] = [
     ],
     featured: true,
     lastUpdated: "2026-04-01",
+    searchVolume: 110000,
+    searchTrend: "rising",
+    searchLabel: "Strong and rising automation demand",
+    relatedComparisons: [
+      {
+        title: "n8n vs Make vs Zapier Agents",
+        href: "/guides/n8n-vs-make-vs-zapier-agents/",
+        note: "Popular comparison",
+      },
+      {
+        title: "Best AI agent platforms for SMBs",
+        href: "/guides/best-ai-agent-platforms-for-smbs-2026/",
+      },
+      {
+        title: "AI Agent Pricing Index 2026",
+        href: "/guides/ai-agent-platforms-tco-2026/",
+      },
+    ],
   },
   {
     id: "lindy",
@@ -951,6 +1033,41 @@ export const tools: Tool[] = [
     ],
     featured: true,
     lastUpdated: "2026-04-01",
+    searchVolume: 165000,
+    searchTrend: "rising",
+    searchLabel: "Strong and rising interest",
+    relatedComparisons: [
+      {
+        title: "Claude Code Guide Hub",
+        href: "/guides/claude-code/",
+        note: "Setup, pricing, skills, MCP",
+      },
+      {
+        title: "Claude Code vs Cursor",
+        href: "/guides/claude-code-vs-cursor/",
+        note: "Popular comparison",
+      },
+      {
+        title: "Claude Code vs Codex",
+        href: "/guides/claude-code/vs-codex/",
+      },
+      {
+        title: "Claude Code pricing",
+        href: "/guides/claude-code/pricing/",
+      },
+      {
+        title: "Install & set up Claude Code",
+        href: "/guides/claude-code/setup/",
+      },
+      {
+        title: "Best MCP servers for Claude Code",
+        href: "/guides/claude-code/mcp/",
+      },
+      {
+        title: "Best AI coding agents 2026",
+        href: "/guides/best-ai-coding-agents-2026/",
+      },
+    ],
   },
   {
     id: "cursor",
@@ -985,6 +1102,28 @@ export const tools: Tool[] = [
     ],
     featured: true,
     lastUpdated: "2026-04-01",
+    searchVolume: 246000,
+    searchTrend: "rising",
+    searchLabel: "Very high demand, still rising",
+    relatedComparisons: [
+      {
+        title: "Claude Code vs Cursor",
+        href: "/guides/claude-code-vs-cursor/",
+        note: "Popular comparison",
+      },
+      {
+        title: "Claude Code vs Codex",
+        href: "/guides/claude-code/vs-codex/",
+      },
+      {
+        title: "Best AI coding agents 2026",
+        href: "/guides/best-ai-coding-agents-2026/",
+      },
+      {
+        title: "AI Agent Pricing Index",
+        href: "/guides/ai-agent-platforms-tco-2026/",
+      },
+    ],
   },
   {
     id: "openai-codex",
@@ -1019,6 +1158,25 @@ export const tools: Tool[] = [
     ],
     featured: false,
     lastUpdated: "2026-04-01",
+    relatedComparisons: [
+      {
+        title: "Claude Code vs Codex",
+        href: "/guides/claude-code/vs-codex/",
+        note: "Popular comparison",
+      },
+      {
+        title: "Claude Code vs Cursor",
+        href: "/guides/claude-code-vs-cursor/",
+      },
+      {
+        title: "Best AI coding agents 2026",
+        href: "/guides/best-ai-coding-agents-2026/",
+      },
+      {
+        title: "AI Agent Pricing Index",
+        href: "/guides/ai-agent-platforms-tco-2026/",
+      },
+    ],
   },
   {
     id: "github-copilot-agents",

@@ -1,0 +1,210 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import {
+  mcpServers,
+  getMcpServerBySlug,
+  getRelatedMcpServers,
+  mcpServerHref,
+} from "../../../data/mcpServers";
+import { getToolBySlug } from "../../../data/tools";
+
+export function getStaticPaths() {
+  return mcpServers.map((server) => ({
+    params: { slug: server.slug },
+    props: { server },
+  }));
+}
+
+interface Props {
+  server: (typeof mcpServers)[number];
+}
+
+const { server: serverProp } = Astro.props;
+const slugParam = Astro.params.slug ?? "";
+const server = serverProp ?? getMcpServerBySlug(slugParam);
+
+if (!server) {
+  return Astro.redirect("/guides/mcp-servers/");
+}
+
+const related = getRelatedMcpServers(server);
+const relatedTools = (server.relatedToolSlugs ?? [])
+  .map((s) => getToolBySlug(s))
+  .filter(Boolean);
+
+const title = `${server.name} in 2026: What It Does for AI Agents`;
+const description = `${server.tagline} Setup overview, use cases, caveats, and when to use ${server.name} with Claude Code and other MCP clients.`;
+const published = server.lastUpdated;
+const readTime = "6 min";
+const pageSlug = `mcp-servers/${server.slug}`;
+
+const toc = [
+  { id: "what-it-does", label: "What it does" },
+  { id: "best-for", label: "Best for" },
+  { id: "agents", label: "For AI agents & Claude Code" },
+  { id: "setup", label: "Setup overview" },
+  { id: "use-cases", label: "Practical use cases" },
+  { id: "caveats", label: "Caveats & permissions" },
+  { id: "related", label: "Related servers & guides" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category={server.category}
+  published={published}
+  readTime={readTime}
+  slug={pageSlug}
+  breadcrumbLabel={server.name}
+  canonical={`/guides/mcp-servers/${server.slug}/`}
+  exploreCategories={["Coding", "Frameworks", "No-Code", "Workflow"]}
+  toc={toc}
+  showHubBacklink={false}
+>
+  <section>
+    <p class="text-sm text-ink-soft">
+      <a href="/guides/mcp-servers/" class="font-semibold text-accent hover:text-accent-hover"
+        >← MCP servers directory</a
+      >
+      {" · "}
+      {server.category}
+      {" · "}
+      Setup: {server.setupDifficulty}
+    </p>
+    <h2 id="what-it-does" class="guide-h2">What {server.name} does</h2>
+    <p>{server.summary}</p>
+    <KeyTakeaway title="In one line">{server.tagline}</KeyTakeaway>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        Install commands and official package names change. Confirm auth and
+        packaging on vendor docs before production.{" "}
+        {
+          server.website && (
+            <>
+              Project / product:{" "}
+              <a href={server.website} target="_blank" rel="noopener noreferrer">
+                {server.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+              </a>
+            </>
+          )
+        }
+      </p>
+    </InfoCallout>
+  </section>
+
+  <section>
+    <h2 id="best-for" class="guide-h2">Best for</h2>
+    <ul>
+      {server.bestFor.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section>
+    <h2 id="agents" class="guide-h2">How it helps AI agents &amp; Claude Code</h2>
+    <p>{server.agentValue}</p>
+    <p>
+      See the Claude-focused shortlist:{" "}
+      <a href="/guides/claude-code/mcp/">Best MCP servers for Claude Code</a>.
+      Protocol background:{" "}
+      <a href="/guides/mcp-and-tool-calling-explained/"
+        >MCP and tool calling explained</a
+      >.
+    </p>
+  </section>
+
+  <section>
+    <h2 id="setup" class="guide-h2">Setup overview</h2>
+    <p>
+      High-level steps only — clients differ (Claude Code, Cursor, desktop hosts).
+      For building your own server, use the{" "}
+      <a href="/guides/mcp-server-implementation/">MCP implementation guide</a>.
+    </p>
+    <ol>
+      {server.setupOverview.map((step) => <li>{step}</li>)}
+    </ol>
+    <InfoCallout title="Secrets" variant="warning">
+      <p>
+        Keep tokens in environment variables or local overrides. Never commit MCP
+        configs that embed live credentials.
+      </p>
+    </InfoCallout>
+  </section>
+
+  <section>
+    <h2 id="use-cases" class="guide-h2">Practical use cases</h2>
+    <ul>
+      {server.useCases.map((u) => <li>{u}</li>)}
+    </ul>
+  </section>
+
+  <section>
+    <h2 id="caveats" class="guide-h2">Caveats &amp; permissions</h2>
+    <ul>
+      {server.caveats.map((c) => <li>{c}</li>)}
+    </ul>
+  </section>
+
+  <section id="related">
+    <h2 class="guide-h2">Related servers &amp; guides</h2>
+    {
+      related.length > 0 && (
+        <div class="not-prose mt-4 grid gap-3 sm:grid-cols-2">
+          {related.map((r) => (
+            <a
+              href={mcpServerHref(r.slug)}
+              class="card-interactive p-4 sm:p-5"
+            >
+              <span class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                {r.category}
+              </span>
+              <span class="mt-1 block font-semibold text-ink">{r.name}</span>
+              <span class="mt-1 block text-sm text-ink-muted">{r.tagline}</span>
+            </a>
+          ))}
+        </div>
+      )
+    }
+    <ul class="mt-6">
+      <li>
+        <a href="/guides/mcp-servers/">All MCP servers</a> — directory home
+      </li>
+      <li>
+        <a href="/guides/claude-code/mcp/">Best MCP servers for Claude Code</a>
+      </li>
+      <li>
+        <a href="/guides/mcp-server-implementation/"
+          >MCP server implementation</a
+        >
+        {" · "}
+        <a href="/guides/mcp-and-tool-calling-explained/"
+          >MCP and tool calling explained</a
+        >
+      </li>
+      {
+        relatedTools.length > 0 && (
+          <li>
+            Related tools:{" "}
+            {relatedTools.map((t, i) =>
+              t ? (
+                <>
+                  {i > 0 && " · "}
+                  <a href={`/tools/${t.slug}/`}>{t.name}</a>
+                </>
+              ) : null,
+            )}
+          </li>
+        )
+      }
+      <li>
+        <a href="/guides/ai-agent-platforms-guide/">AI Agent Platforms Guide</a>
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: {server.lastUpdated}. Editorial profile — verify before
+      production.
+    </p>
+  </section>
+</GuideLayout>

@@ -1,0 +1,196 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import {
+  mcpServers,
+  mcpServerCategories,
+  getFeaturedMcpServers,
+  getMcpServersByCategory,
+  mcpServerHref,
+} from "../../../data/mcpServers";
+
+const title = "Best MCP Servers in 2026: Trusted Servers for AI Agents";
+const description =
+  "Selective directory of useful MCP servers for AI agents and Claude Code — browser, design, GitHub, Notion, Slack, and more. Browse by use case with setup notes and caveats.";
+const published = "2026-08-12";
+const readTime = "8 min";
+const slug = "mcp-servers";
+
+const featured = getFeaturedMcpServers();
+
+const categoryCopy: Record<string, string> = {
+  Browser: "Live UI automation and verification beyond the repo.",
+  Design: "Design-system and Figma context for frontend agents.",
+  "Dev tools": "Repos, PRs, and engineering systems of record.",
+  Productivity: "Docs and workspaces that ground agent tasks.",
+  Data: "Databases and backend project context.",
+  Communication: "Chat and collaboration context — high power, high risk.",
+};
+
+const toc = [
+  { id: "introduction", label: "What MCP servers are" },
+  { id: "key-takeaway", label: "Key takeaway" },
+  { id: "featured", label: "Featured servers" },
+  { id: "browse", label: "Browse by category" },
+  { id: "related", label: "Related guides" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Directory"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="MCP servers"
+  exploreCategories={["Coding", "Frameworks", "No-Code", "Workflow"]}
+  toc={toc}
+  showHubBacklink={false}
+>
+  <section>
+    <h2 id="introduction" class="guide-h2">
+      What MCP servers are (plain language)
+    </h2>
+    <p>
+      <strong>MCP (Model Context Protocol)</strong> lets AI agents call external
+      tools and data sources through a standard interface. An{" "}
+      <strong>MCP server</strong> is a small program that exposes those tools —
+      browser control, GitHub PRs, Figma frames, Slack threads, docs — so clients
+      like <a href="/tools/claude-code/">Claude Code</a>, Cursor, and other
+      MCP-compatible agents can use them in the agent loop instead of you pasting
+      context by hand.
+    </p>
+    <p>
+      This directory is a <strong>selective shortlist</strong>, not every server
+      on the internet. Each profile covers what it does, who it is for, setup
+      overview, use cases, and permission caveats — aimed at builders shipping
+      real agents.
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        Packaging and install commands change. Prefer official vendor docs for
+        auth. Treat third-party servers like untrusted CI scripts — read before
+        you grant tokens.
+      </p>
+    </InfoCallout>
+  </section>
+
+  <section id="key-takeaway">
+    <h2 class="guide-h2">Key takeaway</h2>
+    <KeyTakeaway>
+      Install MCP servers that match a <strong>weekly job</strong> (PRs, UI
+      checks, design-to-code). Start with{" "}
+      <a href={mcpServerHref("github")}>GitHub</a> + docs/browser only if you need
+      them. More servers mean more tools in context and more secret surface —
+      fewer is usually better.
+    </KeyTakeaway>
+  </section>
+
+  <section>
+    <h2 id="featured" class="guide-h2">Featured / recommended servers</h2>
+    <p>
+      Highest-demand integrations for agent builders in 2026. Open a profile for
+      setup and caveats.
+    </p>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      {
+        featured.map((s) => (
+          <a
+            href={mcpServerHref(s.slug)}
+            class="card-interactive group flex flex-col p-5 sm:p-6"
+          >
+            <span class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+              {s.category}
+              {s.setupDifficulty && ` · ${s.setupDifficulty} setup`}
+            </span>
+            <span class="mt-2 text-base font-semibold text-ink group-hover:text-accent">
+              {s.name}
+            </span>
+            <span class="mt-2 text-sm leading-relaxed text-ink-muted">
+              {s.tagline}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2 id="browse" class="guide-h2">Browse by category</h2>
+    {
+      mcpServerCategories.map((cat) => {
+        const list = getMcpServersByCategory(cat);
+        if (list.length === 0) return null;
+        return (
+          <div class="mt-10">
+            <h3 class="guide-h3">{cat}</h3>
+            <p class="text-sm text-ink-muted">
+              {categoryCopy[cat] ?? "MCP servers in this use-case group."}
+            </p>
+            <ul class="not-prose mt-4 space-y-3">
+              {list.map((s) => (
+                <li>
+                  <a
+                    href={mcpServerHref(s.slug)}
+                    class="card-interactive flex flex-col gap-1 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
+                  >
+                    <span>
+                      <span class="font-semibold text-ink">{s.name}</span>
+                      <span class="mt-1 block text-sm text-ink-muted">
+                        {s.tagline}
+                      </span>
+                    </span>
+                    <span class="shrink-0 text-sm font-semibold text-accent">
+                      View →
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })
+    }
+    <p class="mt-8 text-sm text-ink-soft">
+      {mcpServers.length} servers in the directory so far — expandable without
+      new page templates.
+    </p>
+  </section>
+
+  <section id="related">
+    <h2 class="guide-h2">Related guides &amp; ecosystem</h2>
+    <ul>
+      <li>
+        <a href="/guides/mcp-and-tool-calling-explained/"
+          >MCP and tool calling explained</a
+        >{" "}
+        — protocol mental model
+      </li>
+      <li>
+        <a href="/guides/mcp-server-implementation/"
+          >How to build and run MCP servers</a
+        >{" "}
+        — when you need a custom server
+      </li>
+      <li>
+        <a href="/guides/claude-code/mcp/"
+          >Best MCP servers for Claude Code</a
+        >{" "}
+        — Claude-specific shortlist and setup habits
+      </li>
+      <li>
+        <a href="/guides/claude-code/">Claude Code hub</a>
+        {" · "}
+        <a href="/guides/ai-agent-platforms-guide/">AI Agent Platforms Guide</a>
+        {" · "}
+        <a href="/platforms/">Browse platforms</a>
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. Profiles are editorial; verify install and auth
+      on vendor docs before production use.
+    </p>
+  </section>
+</GuideLayout>

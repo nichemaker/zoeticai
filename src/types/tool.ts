@@ -80,6 +80,30 @@ export interface ToolFeatures {
   computerUse: boolean;
 }
 
+/** Direction of brand / category search interest (editorial or SEO API). */
+export type SearchTrend = "rising" | "stable" | "cooling";
+
+/**
+ * Optional search-demand signal for tool detail pages.
+ * Can be filled manually or later from DataForSEO / similar.
+ */
+export interface ToolSearchDemand {
+  /** Approximate monthly brand search volume (US or global — note in UI if needed). */
+  searchVolume?: number;
+  searchTrend?: SearchTrend;
+  /** Short plain-language label, e.g. "Strong and rising interest". */
+  searchLabel?: string;
+}
+
+/** Curated comparison link for “People also compare”. */
+export interface ToolRelatedComparison {
+  title: string;
+  /** Absolute path on this site, e.g. `/guides/claude-code-vs-cursor/`. */
+  href: string;
+  /** Optional badge, e.g. "Popular comparison". */
+  note?: string;
+}
+
 export interface Tool {
   /** Stable unique id (kebab-case). */
   id: string;
@@ -108,4 +132,17 @@ export interface Tool {
   featured: boolean;
   /** ISO date string (YYYY-MM-DD) of last editorial refresh. */
   lastUpdated: string;
+  /**
+   * Optional brand search interest for the Search Demand module.
+   * Prefer nested object; flat fields below are also accepted for convenience.
+   */
+  searchDemand?: ToolSearchDemand;
+  /** @deprecated Prefer searchDemand.searchVolume — kept for flexible editorial entry. */
+  searchVolume?: number;
+  /** @deprecated Prefer searchDemand.searchTrend */
+  searchTrend?: SearchTrend;
+  /** @deprecated Prefer searchDemand.searchLabel */
+  searchLabel?: string;
+  /** Editorial “People also compare” links (only real on-site guides). */
+  relatedComparisons?: ToolRelatedComparison[];
 }
