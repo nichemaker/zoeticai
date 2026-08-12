@@ -1,0 +1,563 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../../components/guide/ComparisonTable.astro";
+import ClaudeCodeClusterNav from "../../../components/guide/ClaudeCodeClusterNav.astro";
+import RelatedComparisons from "../../../components/RelatedComparisons.astro";
+
+const title =
+  "Claude Code Plugins in 2026: Best Plugins, How They Work & When to Use Them";
+const description =
+  "Practical 2026 guide to Claude Code plugins — how they differ from skills and MCP, how to install from marketplaces, and a selective shortlist of useful plugins.";
+const published = "2026-08-12";
+const readTime = "11 min";
+const slug = "claude-code/plugins";
+
+const extensionRows = [
+  {
+    label: "What it is",
+    cells: [
+      "Installable bundle: skills, hooks, agents, MCP/LSP configs in one unit",
+      "On-demand playbook (SKILL.md) for a procedure",
+      "Live tool/server connection to external systems",
+      "Separate Claude run with its own context for a subtask",
+    ],
+  },
+  {
+    label: "Primary job",
+    cells: [
+      "Distribute and manage a capability set as one package",
+      "Teach Claude how to do a repeated workflow",
+      "Give Claude access to tools/data outside the repo",
+      "Isolate heavy or parallel work without polluting main chat",
+    ],
+  },
+  {
+    label: "How you get it",
+    cells: [
+      "/plugin install name@marketplace (or Discover UI)",
+      "Project/personal skills folder or via a plugin",
+      "MCP config / claude mcp add / plugin-shipped MCP",
+      "Spawned by main agent, skill, or team features",
+    ],
+  },
+  {
+    label: "Cost / risk shape",
+    cells: [
+      "Install once; hooks/MCP may run every session — audit the whole bundle",
+      "Loads when relevant or on /skill — usually cheap when idle",
+      "Auth + network + tool noise; secrets and write scopes matter",
+      "Extra tokens per subagent run; good for isolation, not free",
+    ],
+  },
+];
+
+type PluginItem = {
+  name: string;
+  what: string;
+  bestFor: string;
+  setup: string;
+};
+
+type PluginGroup = {
+  title: string;
+  blurb: string;
+  plugins: PluginItem[];
+};
+
+const pluginGroups: PluginGroup[] = [
+  {
+    title: "Integrations & product workflows",
+    blurb:
+      "Plugins that wire Claude Code into systems you already use — often wrapping MCP plus skills.",
+    plugins: [
+      {
+        name: "GitHub (official marketplace)",
+        what: "GitHub-oriented workflows packaged for Claude Code — PR/issue context and related agent tooling depending on plugin version.",
+        bestFor: "Teams that live on GitHub and want one install instead of hand-rolled MCP + skills.",
+        setup:
+          "Typical pattern: /plugin install github@claude-plugins-official (confirm current name in Discover). Still requires proper GitHub auth/scopes.",
+      },
+      {
+        name: "Context7 / docs plugins",
+        what: "Bundles up-to-date library documentation access so Claude stops inventing APIs from stale memory.",
+        bestFor: "Daily coding against fast-moving frameworks and SDKs.",
+        setup:
+          "Prefer official or well-known marketplace listings. Overlaps with raw Context7 MCP — install one path, not both duplicates.",
+      },
+      {
+        name: "Playwright / browser plugins",
+        what: "Browser automation packaged for Claude Code sessions (E2E checks, UI verification after edits).",
+        bestFor: "Frontend and full-stack work where “does it click through?” matters.",
+        setup:
+          "Heavier runtime (browsers). Install when you will actually run UI checks — not as default global noise.",
+      },
+    ],
+  },
+  {
+    title: "Code quality & security",
+    blurb: "Plugins that raise the review bar or inject security guidance into the loop.",
+    plugins: [
+      {
+        name: "security-guidance (official-style packs)",
+        what: "Security-oriented guidance and checks during implementation and review — threat-minded defaults instead of generic “LGTM.”",
+        bestFor: "Auth, payments, multi-tenant apps, and any code that touches secrets or PII.",
+        setup:
+          "Common install form: /plugin install security-guidance@claude-plugins-official. Read what hooks it enables before leaving it always-on.",
+      },
+      {
+        name: "Quality / review plugin packs",
+        what: "Namespaced skills for structured review, simplify/refactor passes, or team quality checklists shipped as one plugin.",
+        bestFor: "Orgs standardizing PR quality without pasting the same checklist every time.",
+        setup:
+          "Skills often appear as /plugin-name:skill-name. Start with explicit invoke; watch for aggressive auto-hooks.",
+      },
+      {
+        name: "Language server (LSP) plugins",
+        what: "TypeScript, Python (e.g. pyright), and similar LSP bridges so Claude can lean on real diagnostics, not only grep.",
+        bestFor: "Large typed codebases where compile/type errors should drive the agent.",
+        setup:
+          "Examples often listed as typescript-lsp / pyright-lsp on official marketplace. Ensure the language binary exists on PATH; check Errors after install.",
+      },
+    ],
+  },
+  {
+    title: "Workflow & team distribution",
+    blurb: "Plugins as the unit of shareable setup — not a single skill file.",
+    plugins: [
+      {
+        name: "Official example / demo plugins",
+        what: "Anthropic demo marketplace plugins that show hooks, skills, and MCP packaging patterns.",
+        bestFor: "Learning the plugin model before building an internal marketplace.",
+        setup:
+          "Browse via /plugin → Discover or claude.com/plugins. Treat demos as templates, not production policy.",
+      },
+      {
+        name: "Team conventions plugin (internal)",
+        what: "Your org’s skills + hooks + approved MCP configs in one marketplace package — deploy, review, naming, test rules.",
+        bestFor: "Companies that need every engineer’s Claude Code to behave the same.",
+        setup:
+          "Host a private git marketplace (marketplace.json), /plugin marketplace add <repo>, install by name@your-marketplace.",
+      },
+      {
+        name: "Domain skill packs (community)",
+        what: "Large community marketplaces shipping many skills/agents (marketing, review, niche domains).",
+        bestFor: "Experimentation when you lack time to write SKILL.md from scratch.",
+        setup:
+          "High variance. Install one plugin, not a 400-plugin dump. Audit hooks and scripts before global enable.",
+      },
+    ],
+  },
+];
+
+const toc = [
+  { id: "introduction", label: "What plugins are" },
+  { id: "key-takeaway", label: "Key takeaway" },
+  { id: "comparison", label: "Plugins vs skills vs MCP" },
+  { id: "how-they-work", label: "How plugins work" },
+  { id: "best-plugins", label: "Best plugins (2026)" },
+  { id: "install", label: "Install & manage" },
+  { id: "recommendations", label: "Practical recommendations" },
+  { id: "related", label: "Related guides" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Technical"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="Claude Code Plugins"
+  exploreCategories={["Coding", "Frameworks", "Enterprise", "No-Code"]}
+  toc={toc}
+>
+  <!-- 1. Introduction -->
+  <section>
+    <h2 id="introduction" class="guide-h2">
+      What Claude Code Plugins are
+    </h2>
+    <p>
+      In <a href="/tools/claude-code/">Claude Code</a>, a{" "}
+      <strong>plugin</strong> is an installable package that can ship one or more
+      extension pieces together: skills (and slash workflows), hooks, subagent
+      definitions, MCP server configs, and even LSP integrations. You install it
+      from a <strong>marketplace</strong> with{" "}
+      <code>/plugin install …</code> instead of copying folders by hand.
+    </p>
+    <p>
+      That is the key difference from raw{" "}
+      <a href="/guides/claude-code/skills/">Skills</a> and{" "}
+      <a href="/guides/claude-code/mcp/">MCP servers</a>:
+    </p>
+    <ul>
+      <li>
+        <strong>Skills</strong> are the playbooks themselves (how Claude should do
+        a job).
+      </li>
+      <li>
+        <strong>MCP servers</strong> are live tool connections (what Claude can
+        call outside the repo).
+      </li>
+      <li>
+        <strong>Plugins</strong> are the distribution and management layer that can
+        bundle those (plus hooks/agents/LSP) into a named, versioned unit.
+      </li>
+    </ul>
+    <p>
+      This guide helps you understand when plugins are worth it, how the marketplace
+      model works, and which kinds of plugins are actually useful in 2026 — as a
+      shortlist, not a dump of every community pack.
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        Plugin names, marketplace IDs, and bundled contents change. Official
+        discovery surfaces include <code>/plugin</code> → Discover and{" "}
+        <code>claude.com/plugins</code>.{" "}
+        <strong
+          >Confirm install strings and permissions against current Claude Code
+          docs before standardizing for a team.</strong
+        >
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 2. Key takeaway -->
+  <section id="key-takeaway">
+    <h2 class="guide-h2">Key takeaway</h2>
+    <KeyTakeaway>
+      Use a plugin when you want a{" "}
+      <strong>maintained, shareable bundle</strong> — especially integrations
+      (GitHub, docs, browser) or org standards — not when you only need a single
+      short skill you could write in ten minutes. Prefer the official marketplace
+      first; treat community megapacks like unreviewed dependencies.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 3. Comparison -->
+  <section>
+    <h2 id="comparison" class="guide-h2">
+      Plugins vs Skills vs MCP vs Agents
+    </h2>
+    <ComparisonTable
+      caption="Extension surfaces in Claude Code (2026 mental model)"
+      headers={["Plugins", "Skills", "MCP servers", "Subagents"]}
+      rows={extensionRows}
+      highlightIndex={0}
+    />
+    <h3 class="guide-h3">When to reach for a plugin</h3>
+    <ul>
+      <li>
+        You need <strong>skills + MCP (or hooks) together</strong> and do not want
+        to maintain three separate installs.
+      </li>
+      <li>
+        You want <strong>one-command setup</strong> for a new laptop or teammate
+        (<code>/plugin install …</code>).
+      </li>
+      <li>
+        Your org needs a <strong>versioned internal pack</strong> of conventions
+        distributed via a private marketplace.
+      </li>
+      <li>
+        You want LSP/diagnostics or event hooks that are awkward as a lone{" "}
+        <code>SKILL.md</code>.
+      </li>
+    </ul>
+    <p>
+      Reach for a <strong>skill alone</strong> when the process is yours and
+      simple. Reach for <strong>MCP alone</strong> when you only need a tool
+      connection. Reach for a <strong>subagent</strong> when you need isolated
+      context for a long side job — plugins may <em>define</em> agents, but agents
+      are the runtime isolation model.
+    </p>
+  </section>
+
+  <!-- 4. How they work -->
+  <section>
+    <h2 id="how-they-work" class="guide-h2">How Claude Code Plugins work</h2>
+    <h3 class="guide-h3">What plugins can extend</h3>
+    <ul>
+      <li>
+        <strong>Skills / commands</strong> — procedures, often namespaced as{" "}
+        <code>/plugin-name:skill-name</code>.
+      </li>
+      <li>
+        <strong>Hooks</strong> — automatic behavior on events (session start, file
+        writes, etc.). Powerful and easy to over-trigger.
+      </li>
+      <li>
+        <strong>MCP servers</strong> — tool configs shipped with the plugin so you
+        do not hand-edit JSON for common integrations.
+      </li>
+      <li>
+        <strong>Agents</strong> — predefined subagent setups for review, research,
+        or specialized roles.
+      </li>
+      <li>
+        <strong>LSP servers</strong> — language intelligence bridges for typed
+        stacks.
+      </li>
+    </ul>
+    <h3 class="guide-h3">Install and management model</h3>
+    <ul>
+      <li>
+        <strong>Marketplaces</strong> are catalogs (often a git repo with
+        marketplace metadata). Anthropic’s official directory is available by
+        default; you can add community or private marketplaces.
+      </li>
+      <li>
+        <strong>Install:</strong>{" "}
+        <code>/plugin install &lt;plugin&gt;@&lt;marketplace&gt;</code> — e.g.
+        patterns like <code>github@claude-plugins-official</code>.
+      </li>
+      <li>
+        <strong>Browse:</strong> <code>/plugin</code> interactive UI (Discover /
+        manage) or the public plugins catalog site.
+      </li>
+      <li>
+        <strong>Lifecycle:</strong> enable, disable, update, and remove through
+        plugin commands rather than deleting random folders (cache often under{" "}
+        <code>~/.claude/plugins/</code>).
+      </li>
+    </ul>
+    <h3 class="guide-h3">Limitations to respect</h3>
+    <ul>
+      <li>
+        A plugin is only as trustworthy as its author and every component it ships
+        (especially hooks + MCP with write access).
+      </li>
+      <li>
+        Bundles can <strong>duplicate</strong> tools you already configured —
+        conflicting GitHub or browser setups are common.
+      </li>
+      <li>
+        Always-on hooks increase background cost and surprise behavior; skills you
+        invoke on demand are easier to reason about.
+      </li>
+      <li>
+        Marketplace listings go stale; a “best plugin” from six months ago may be
+        abandoned.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 5. Best plugins -->
+  <section>
+    <h2 id="best-plugins" class="guide-h2">
+      Best Claude Code Plugins (2026)
+    </h2>
+    <p>
+      Selective categories and representative plugins — not every name on every
+      marketplace. Prefer official listings; treat community packs as starting
+      points to audit.
+    </p>
+
+    {
+      pluginGroups.map((group) => (
+        <div class="mt-10">
+          <h3 class="guide-h3">{group.title}</h3>
+          <p class="text-sm text-ink-muted sm:text-base">{group.blurb}</p>
+          <div class="not-prose mt-4 space-y-4">
+            {group.plugins.map((p) => (
+              <article class="card-surface p-5 sm:p-6">
+                <h4 class="text-base font-semibold text-ink">{p.name}</h4>
+                <dl class="mt-3 space-y-2 text-sm leading-relaxed text-ink-muted sm:text-[0.9375rem]">
+                  <div>
+                    <dt class="font-semibold text-ink">What it does</dt>
+                    <dd class="mt-0.5">{p.what}</dd>
+                  </div>
+                  <div>
+                    <dt class="font-semibold text-ink">Best for</dt>
+                    <dd class="mt-0.5">{p.bestFor}</dd>
+                  </div>
+                  <div>
+                    <dt class="font-semibold text-ink">Setup notes / caveats</dt>
+                    <dd class="mt-0.5">{p.setup}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+
+    <KeyTakeaway title="Shortlist heuristic">
+      If you only install a few: one <strong>integration</strong> you use daily
+      (often GitHub), one <strong>docs/quality</strong> boost (Context7-style or
+      security-guidance), and optionally one <strong>LSP</strong> for your primary
+      language. Everything else waits until a real weekly pain appears.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 6. Install -->
+  <section>
+    <h2 id="install" class="guide-h2">How to install and manage plugins</h2>
+    <h3 class="guide-h3">Step-by-step</h3>
+    <ol>
+      <li>
+        Open the plugin UI with <code>/plugin</code> (or use install commands
+        directly in the CLI).
+      </li>
+      <li>
+        Browse <strong>Discover</strong> / official catalog first. Note the exact
+        plugin and marketplace names.
+      </li>
+      <li>
+        Install:{" "}
+        <code>/plugin install &lt;plugin-name&gt;@&lt;marketplace-name&gt;</code>.
+      </li>
+      <li>
+        Complete any auth the plugin needs (GitHub token, etc.) with least
+        privilege.
+      </li>
+      <li>
+        Reload / restart the session if required; check the plugin Errors panel
+        for missing binaries (common with LSP plugins).
+      </li>
+      <li>
+        Invoke a skill explicitly once (
+        <code>/plugin-name:…</code>) before trusting auto-hooks.
+      </li>
+      <li>
+        Disable or remove plugins you are not using — do not leave experimental
+        packs enabled globally.
+      </li>
+    </ol>
+    <h3 class="guide-h3">Where to find plugins</h3>
+    <ul>
+      <li>
+        <strong>Official Anthropic marketplace</strong> — default high-trust
+        directory (install suffix patterns like{" "}
+        <code>@claude-plugins-official</code>).
+      </li>
+      <li>
+        <strong>claude.com/plugins</strong> and in-CLI Discover — browse without
+        guessing GitHub URLs.
+      </li>
+      <li>
+        <strong>Community marketplaces</strong> — added with{" "}
+        <code>/plugin marketplace add &lt;org/repo&gt;</code> (or path/URL). Higher
+        variance.
+      </li>
+      <li>
+        <strong>Private team marketplaces</strong> — git repo + marketplace
+        manifest for org standards.
+      </li>
+    </ul>
+    <h3 class="guide-h3">How to evaluate before installing</h3>
+    <InfoCallout title="Trust checklist" variant="warning">
+      <ul class="mt-1 list-disc space-y-1.5 pl-5">
+        <li>Who publishes it — Anthropic, a vendor, or a random fork?</li>
+        <li>
+          What does it bundle — skills only, or hooks + MCP with write scopes?
+        </li>
+        <li>When was it last updated? Does docs match your Claude Code version?</li>
+        <li>
+          Does it duplicate an MCP or skill you already run?
+        </li>
+        <li>
+          Can you disable it cleanly if behavior gets weird?
+        </li>
+      </ul>
+    </InfoCallout>
+  </section>
+
+  <!-- 7. Recommendations -->
+  <section>
+    <h2 id="recommendations" class="guide-h2">Practical recommendations</h2>
+    <h3 class="guide-h3">Starter plugins for new users</h3>
+    <ul>
+      <li>
+        Nothing until you can complete a basic edit → test → commit loop without
+        plugins
+      </li>
+      <li>
+        Then: official <strong>GitHub</strong> (if that is your host) or your VCS
+        equivalent when listed
+      </li>
+      <li>
+        Optional: <strong>docs/Context7-style</strong> plugin if API hallucination
+        is your top pain
+      </li>
+      <li>
+        Skip megapacks and “400 plugins” marketplaces on day one
+      </li>
+    </ul>
+    <h3 class="guide-h3">Most useful for power users</h3>
+    <ul>
+      <li>LSP plugins for your main language in large repos</li>
+      <li>Security-guidance or quality review packs with deliberate invocation</li>
+      <li>Playwright/browser when UI regression is part of the agent loop</li>
+      <li>
+        An <strong>internal team plugin</strong> that freezes conventions (better
+        than every engineer inventing skills)
+      </li>
+      <li>
+        Thin custom plugins that wrap <em>your</em> MCP + skills — not 20 random
+        community ones
+      </li>
+    </ul>
+    <h3 class="guide-h3">When to avoid adding more</h3>
+    <ul>
+      <li>You cannot name the weekly task each plugin will own</li>
+      <li>Tool lists feel noisy and Claude picks the wrong integration</li>
+      <li>Hooks fire constantly and sessions feel unpredictable</li>
+      <li>
+        You are compensating for missing process docs — write a skill or CLAUDE.md
+        first
+      </li>
+      <li>
+        Usage limits are already tight — more MCP/hooks accelerate burn (
+        <a href="/guides/claude-code/pricing/">pricing guide</a>)
+      </li>
+    </ul>
+    <KeyTakeaway>
+      Plugins shine as <strong>packaging and rollout</strong>. Skills shine as{" "}
+      <strong>clear procedures</strong>. MCP shines as <strong>live tools</strong>.
+      Mix them deliberately; do not install the ecosystem because it exists.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 8. Related -->
+  <section id="related">
+    <h2 class="guide-h2">Related guides</h2>
+    <ClaudeCodeClusterNav current="claude-code/plugins" />
+    <ul>
+      <li>
+        <a href="/guides/claude-code/">Claude Code Guide Hub</a> — full cluster
+        index
+      </li>
+      <li>
+        <a href="/guides/claude-code/skills/">Skills</a> — playbooks plugins often
+        ship ·{" "}
+        <a href="/guides/claude-code/mcp/">MCP servers</a> — tools plugins may wrap
+      </li>
+      <li>
+        <a href="/guides/claude-code/setup/">Setup</a>
+        {" · "}
+        <a href="/guides/claude-code/pricing/">Pricing</a>
+        {" · "}
+        <a href="/guides/claude-code/vs-codex/">vs Codex</a>
+        {" · "}
+        <a href="/guides/claude-code-vs-cursor/">vs Cursor</a>
+      </li>
+      <li>
+        <a href="/guides/mcp-and-tool-calling-explained/"
+          >MCP and tool calling explained</a
+        >
+        {" · "}
+        <a href="/tools/claude-code/">Claude Code tool page</a>
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. Re-check official plugin marketplaces and install
+      commands before org-wide rollout.
+    </p>
+  </section>
+
+  <RelatedComparisons slug={slug} categories={["Coding"]} />
+</GuideLayout>

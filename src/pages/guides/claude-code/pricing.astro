@@ -1,0 +1,741 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../../components/guide/ComparisonTable.astro";
+import ClaudeCodeClusterNav from "../../../components/guide/ClaudeCodeClusterNav.astro";
+import RelatedComparisons from "../../../components/RelatedComparisons.astro";
+
+const title =
+  "Claude Code Pricing in 2026: Plans, Real Costs & Which Tier to Choose";
+const description =
+  "Practical Claude Code pricing guide for 2026 — Free, Pro, Max 5x/20x, Team, Enterprise, and API. Side-by-side costs, light/medium/heavy scenarios, and which tier to pick.";
+const published = "2026-08-12";
+const readTime = "14 min";
+const slug = "claude-code/pricing";
+
+/** List-price signals from Anthropic (US, excl. tax) — verify on claude.com/pricing. */
+const planGlanceRows = [
+  {
+    label: "List price (US)",
+    cells: [
+      "$0",
+      "$20/mo ($17 annual)",
+      "$100/mo",
+      "$200/mo",
+      "$20–$25 / $100–$125 seat",
+      "$20/seat + API usage",
+    ],
+  },
+  {
+    label: "Claude Code",
+    cells: [
+      "No (paid only)",
+      "Yes",
+      "Yes",
+      "Yes",
+      "Yes (Standard & Premium)",
+      "Yes",
+    ],
+  },
+  {
+    label: "Capacity vs Pro (session)",
+    cells: [
+      "Limited",
+      "1× (standard)",
+      "~5× Pro",
+      "~20× Pro",
+      "~1.25× / ~6.25× Pro",
+      "Admin-set + metered usage",
+    ],
+  },
+  {
+    label: "Best for",
+    cells: [
+      "Trying chat, not agents",
+      "Light Code use",
+      "Daily coding agents",
+      "All-day / parallel agents",
+      "Shared billing + admin",
+      "SSO, SCIM, compliance",
+    ],
+  },
+];
+
+const realCostRows = [
+  {
+    label: "Light (few Code sessions / week)",
+    cells: [
+      "N/A — Free lacks full Code",
+      "~$17–20",
+      "Overkill (~$100)",
+      "Overkill (~$200)",
+      "Usually overkill unless you need admin",
+    ],
+  },
+  {
+    label: "Medium (daily feature work, some refactors)",
+    cells: [
+      "N/A",
+      "Often tight — plan for $20 + occasional credits",
+      "~$100 (common sweet spot)",
+      "~$200 if you thrash Pro/5x caps",
+      "Standard seats ~$20–25 each if usage fits",
+    ],
+  },
+  {
+    label: "Heavy (long agent runs, multi-hour refactors)",
+    cells: [
+      "N/A",
+      "Poor fit — expect walls + credits",
+      "~$100 + credits, or step to 20x",
+      "~$200 (+ credits on extreme weeks)",
+      "Premium seats ~$100–125 + credits; or Enterprise",
+    ],
+  },
+  {
+    label: "Cost character",
+    cells: [
+      "Chat only",
+      "Cheap entry; agent-heavy days hurt",
+      "Predictable flat for most solo devs",
+      "Flat insurance for power users",
+      "Seats + optional overage credits",
+    ],
+  },
+];
+
+const decisionFramework = [
+  {
+    type: "Individual — light Code use",
+    plan: "Pro ($20/mo or $17 annual)",
+    why: "You get Claude Code without Max. Fine for short sessions, reviews, and occasional multi-file work. Upgrade the week you hit session walls mid-morning.",
+  },
+  {
+    type: "Individual — daily product engineering",
+    plan: "Max 5x ($100/mo)",
+    why: "Most working developers who live in Claude Code land here. Roughly 5× Pro per session without Team seat floors.",
+  },
+  {
+    type: "Individual — all-day / parallel agents",
+    plan: "Max 20x ($200/mo)",
+    why: "Long autonomous runs, large refactors, and multiple sessions. Still cheaper than raw API on many heavy weeks — until you need org controls.",
+  },
+  {
+    type: "Small team (shared billing, mix of light + heavy)",
+    plan: "Team — mix Standard + Premium seats",
+    why: "Standard (~$20–25) for chat-light roles; Premium (~$100–125) for engineers running Code hard. Minimum two members; mix seat types.",
+  },
+  {
+    type: "Enterprise / regulated",
+    plan: "Enterprise ($20/seat + usage)",
+    why: "SCIM, audit logs, spend limits, retention, network controls. Budget seats plus real token spend — not seats alone.",
+  },
+  {
+    type: "Builders / variable spike load",
+    plan: "API pay-as-you-go (or sub + usage credits)",
+    why: "Best when you instrument tokens, use prompt caching, and can tolerate metered bills. Worst when you want a simple personal flat fee.",
+  },
+];
+
+const toc = [
+  { id: "introduction", label: "Why pricing confuses people" },
+  { id: "quick-verdict", label: "Quick verdict" },
+  { id: "plan-comparison", label: "Plan comparison at a glance" },
+  { id: "plan-breakdown", label: "Full plan breakdown" },
+  { id: "real-cost", label: "Real cost scenarios" },
+  { id: "vs-codex", label: "Claude Code vs Codex pricing" },
+  { id: "which-plan", label: "Which plan should you choose?" },
+  { id: "key-takeaways", label: "Key takeaways" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Buying"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="Claude Code pricing"
+  exploreCategories={["Coding", "Frameworks", "Enterprise", "No-Code"]}
+  toc={toc}
+>
+  <!-- 1. Introduction -->
+  <section>
+    <h2 id="introduction" class="guide-h2">
+      Why Claude Code pricing confuses people
+    </h2>
+    <p>
+      <a href="/tools/claude-code/">Claude Code</a> is not a separate SKU with its
+      own clean price tag. It is a terminal coding agent that rides on Claude
+      subscriptions (and, optionally, API usage). You pay for a Claude plan;
+      Code draws from the same usage pool as chat, desktop, and mobile.
+    </p>
+    <p>
+      That packaging is why list prices look simple and bills feel messy:
+    </p>
+    <ul>
+      <li>
+        <strong>One product, many surfaces.</strong> Web chat, projects, and
+        multi-hour agent runs share limits — so “I barely used chat” does not
+        mean you have headroom left for Code.
+      </li>
+      <li>
+        <strong>Capacity is relative, not a fixed prompt count.</strong> Pro is
+        the baseline; Max is “5× or 20× Pro per session.” How far that goes
+        depends on model choice, repo size, and how long each agent loop runs.
+      </li>
+      <li>
+        <strong>Team seat types look like Pro/Max but are not identical.</strong>
+        Standard and Premium seats have different multipliers and weekly caps;
+        older blog posts still disagree on Code inclusion (official line in 2026:
+        Code is on paid plans — verify for your org).
+      </li>
+      <li>
+        <strong>Overage is real.</strong> Hitting a limit means wait, upgrade, or
+        burn usage credits at API rates. Heavy agent weeks can outrun a flat
+        seat if you keep working after the wall.
+      </li>
+    </ul>
+    <p>
+      This guide covers every relevant tier — Free, Pro, Max, Team, Enterprise,
+      and API — then translates list price into practical monthly cost for light,
+      medium, and heavy Claude Code use. For workflow trade-offs against an
+      AI-native IDE, see{" "}
+      <a href="/guides/claude-code-vs-cursor/">Claude Code vs Cursor</a>.
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        Prices and packaging below reflect Anthropic’s public US list signals
+        around August 2026 (claude.com/pricing and Claude Help Center). Tax,
+        regional currency, mobile app store pricing, and mid-year plan changes
+        are not included.{" "}
+        <strong>Confirm on Anthropic’s pricing page before you buy or renew.</strong>
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 2. Quick Verdict -->
+  <section>
+    <h2 id="quick-verdict" class="guide-h2">Quick verdict</h2>
+    <KeyTakeaway title="Start here">
+      Most individuals who will actually run Claude Code should start on{" "}
+      <strong>Pro ($20/mo)</strong> only if usage is light. If Code is part of
+      your daily job,{" "}
+      <strong>Max 5x ($100/mo)</strong> is the realistic default.{" "}
+      <strong>Max 20x ($200/mo)</strong> is for all-day / parallel agent work.
+      Teams should budget{" "}
+      <strong>Team seats (mix Standard + Premium)</strong> or{" "}
+      <strong>Enterprise ($20/seat + usage)</strong> — not a pile of personal Max
+      accounts without admin.
+    </KeyTakeaway>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      <div class="card-surface p-5 sm:p-6">
+        <p class="text-xs font-bold uppercase tracking-wider text-accent">
+          Individuals
+        </p>
+        <h3 class="mt-2 text-base font-semibold text-ink">
+          Pro → Max 5x → Max 20x
+        </h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+          Use Pro to validate the workflow. Move to Max 5x when you hit session
+          walls during normal workdays. Max 20x when 5x still interrupts long
+          refactors or multi-agent sessions.
+        </p>
+      </div>
+      <div class="card-surface p-5 sm:p-6">
+        <p class="text-xs font-bold uppercase tracking-wider text-accent">
+          Heavy users &amp; teams
+        </p>
+        <h3 class="mt-2 text-base font-semibold text-ink">
+          Max 20x or Team / Enterprise
+        </h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+          Solo power users: Max 20x is the simple flat bill. Orgs: Team for
+          shared billing and SSO-ish needs; Enterprise when you need SCIM, audit
+          logs, spend limits, and metered usage visibility.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Prominent comparison table near top (AEO) -->
+  <section>
+    <h2 id="plan-comparison" class="guide-h2">
+      Claude Code plans at a glance (2026)
+    </h2>
+    <p>
+      Claude Code is included on paid Claude plans and shares that plan’s usage
+      pool. Free is not a viable Code plan.
+    </p>
+    <ComparisonTable
+      caption="Claude Code access & list pricing (US, August 2026 — verify officially)"
+      headers={[
+        "Free",
+        "Pro",
+        "Max 5x",
+        "Max 20x",
+        "Team",
+        "Enterprise",
+      ]}
+      rows={planGlanceRows}
+      highlightIndex={2}
+    />
+    <p class="text-sm text-ink-soft">
+      Team column: Standard seats ~$20 annual / $25 monthly; Premium ~$100 annual /
+      $125 monthly. Session multipliers: Standard ~1.25× Pro, Premium ~6.25× Pro
+      (per Anthropic Help Center).
+    </p>
+  </section>
+
+  <!-- 4. Full plan breakdown -->
+  <section>
+    <h2 id="plan-breakdown" class="guide-h2">Full plan breakdown</h2>
+    <p>
+      For each tier: list price, what you actually get for coding work, practical
+      limits, and who it fits. Numbers are planning signals, not a quote.
+    </p>
+
+    <h3 id="free" class="guide-h3">Free — $0</h3>
+    <ul>
+      <li>
+        <strong>Price:</strong> $0
+      </li>
+      <li>
+        <strong>What you get:</strong> Limited Claude chat on web/mobile/desktop.
+        Useful for trying the model, not for running a serious coding agent.
+      </li>
+      <li>
+        <strong>Usage / constraints:</strong> Strict session limits. Claude Code
+        is a paid-plan feature on Anthropic’s pricing page — do not plan production
+        agent work on Free.
+      </li>
+      <li>
+        <strong>Best for:</strong> Occasional Q&amp;A and evaluating Claude
+        generally before you pay for Code.
+      </li>
+    </ul>
+
+    <h3 id="pro" class="guide-h3">Pro — $20/mo ($17/mo annual)</h3>
+    <ul>
+      <li>
+        <strong>Price:</strong> $20 per month, or $200/year (~$17/mo) with annual
+        billing.
+      </li>
+      <li>
+        <strong>What you get:</strong> Claude Code included, plus the broader Pro
+        surface (more usage than Free, projects, research, additional models,
+        Cowork/Design/Science packaging as listed by Anthropic). Code and chat
+        share one pool.
+      </li>
+      <li>
+        <strong>Usage / constraints:</strong> “Standard” capacity — the baseline
+        Max multiplies against. Fine for short terminal sessions; long Opus-heavy
+        agent loops often hit the rolling 5-hour window (and weekly caps) during
+        a real workday. Paid plans can enable usage credits after limits.
+      </li>
+      <li>
+        <strong>Best for:</strong> Individuals who want Code access cheaply,
+        light daily use, or a low-risk trial before Max.
+      </li>
+    </ul>
+    <InfoCallout title="Pro is not “unlimited Code for $20”" variant="warning">
+      <p>
+        Pro is the cheapest way to run Claude Code legally on a subscription —
+        not a full-time autonomous engineering seat. If you hit the wall before
+        lunch on agent days, that is expected, not a billing bug. Step to Max or
+        enable usage credits rather than assuming Pro will stretch.
+      </p>
+    </InfoCallout>
+
+    <h3 id="max-5x" class="guide-h3">Max 5x — $100/mo</h3>
+    <ul>
+      <li>
+        <strong>Price:</strong> $100 per month (Max is monthly-billed on public
+        web pricing).
+      </li>
+      <li>
+        <strong>What you get:</strong> Everything in Pro, with roughly{" "}
+        <strong>5× Pro capacity per session</strong>, higher output limits,
+        priority access under load, and earlier feature access.
+      </li>
+      <li>
+        <strong>Usage / constraints:</strong> Still not infinite. Weekly limits
+        and model intensity still matter. For many full-time developers doing
+        normal feature work plus occasional refactors, this is the tier that
+        stops midday lockouts.
+      </li>
+      <li>
+        <strong>Best for:</strong> Individuals for whom Claude Code is a daily
+        driver — the common “worth it” step up from Pro.
+      </li>
+    </ul>
+
+    <h3 id="max-20x" class="guide-h3">Max 20x — $200/mo</h3>
+    <ul>
+      <li>
+        <strong>Price:</strong> $200 per month.
+      </li>
+      <li>
+        <strong>What you get:</strong> Same Max feature set with roughly{" "}
+        <strong>20× Pro capacity per session</strong>. Built for people who
+        collaborate with Claude across most of the workday.
+      </li>
+      <li>
+        <strong>Usage / constraints:</strong> Highest individual flat pool.
+        Extreme parallel agents or multi-day migrations can still force credits
+        or API. You are buying uninterrupted session headroom, not a blank check
+        on tokens forever.
+      </li>
+      <li>
+        <strong>Best for:</strong> Power users, staff/principal engineers on
+        large refactors, and anyone who already outgrew Max 5x.
+      </li>
+    </ul>
+
+    <h3 id="team" class="guide-h3">Team — Standard &amp; Premium seats</h3>
+    <ul>
+      <li>
+        <strong>Price (US list):</strong> Standard{" "}
+        <strong>$25/seat/mo</strong> monthly or <strong>$20/seat/mo</strong>{" "}
+        annual; Premium <strong>$125/seat/mo</strong> monthly or{" "}
+        <strong>$100/seat/mo</strong> annual. Minimum{" "}
+        <strong>two members</strong>; orgs can mix seat types. Up to ~150 seats
+        before Enterprise is the path.
+      </li>
+      <li>
+        <strong>What you get:</strong> Central billing, admin, SSO/domain
+        capture, connectors, enterprise search packaging, and — on current
+        Anthropic docs — Claude Code on Team seats (Standard includes Pro-class
+        capabilities including Code; Premium adds much higher usage). Chat and
+        Code still share each member’s pool.
+      </li>
+      <li>
+        <strong>Usage / constraints:</strong> Per-member limits, not a single
+        team bucket. Standard ≈ <strong>1.25× Pro</strong> per session; Premium
+        ≈ <strong>6.25× Pro</strong> per session, with separate weekly dynamics
+        (including Sonnet-specific weekly limits on Premium). Usage credits can
+        extend past included caps.
+      </li>
+      <li>
+        <strong>Best for:</strong> Teams that need shared admin and mixed
+        intensity (many Standard seats + Premium for engineers who live in
+        Code).
+      </li>
+    </ul>
+    <InfoCallout title="Don’t buy the wrong Team seat for developers" variant="tip">
+      <p>
+        Putting every engineer on Standard to “save money” fails when Code is
+        their primary interface — they will burn through included capacity and
+        either stall or pile on credits. Put heavy Code users on Premium (or
+        keep individuals on Max) and use Standard for lighter Claude roles.
+      </p>
+    </InfoCallout>
+
+    <h3 id="enterprise" class="guide-h3">Enterprise — $20/seat + usage</h3>
+    <ul>
+      <li>
+        <strong>Price:</strong> Public signal around{" "}
+        <strong>$20 per seat per month plus usage at API rates</strong>, billed
+        annually. Self-serve and sales-assisted paths exist; large or regulated
+        deals are quote-shaped.
+      </li>
+      <li>
+        <strong>What you get:</strong> Team-class capabilities plus spend limits,
+        finer RBAC, SCIM, audit logs, compliance API, retention controls, network
+        controls / IP allowlisting, HIPAA-ready options, and related enterprise
+        packaging.
+      </li>
+      <li>
+        <strong>Usage / constraints:</strong> Cost tracks real model use more
+        directly than Max’s flat individual bill. Budget tokens and agent hours,
+        not only headcount. Admins can cap org and user spend.
+      </li>
+      <li>
+        <strong>Best for:</strong> Companies that need governance, procurement,
+        and visibility — not hobbyists hunting the cheapest Code seat.
+      </li>
+    </ul>
+
+    <h3 id="api" class="guide-h3">API usage (and usage credits)</h3>
+    <ul>
+      <li>
+        <strong>Price:</strong> Pay-per-token on the Claude API / Claude Console.
+        Public list bands move with model generations; as of mid-2026, flagship
+        coding-oriented rates are on the order of roughly{" "}
+        <strong>$5 / $25 per MTok</strong> (input/output) for top Opus-class
+        models and lower for Sonnet/Haiku-class — always recheck the platform
+        pricing table. Batch and prompt caching change effective cost.
+      </li>
+      <li>
+        <strong>What you get:</strong> Direct control for apps, CI, and custom
+        agent harnesses. Subscription users can also attach{" "}
+        <strong>usage credits</strong> when they hit plan limits so Code keeps
+        running at API rates instead of hard-stopping.
+      </li>
+      <li>
+        <strong>Usage / constraints:</strong> A single long multi-file agent
+        session can burn more token dollars than a full Pro month. Without
+        caching, smaller models, and clear stop conditions, API-only Code is
+        easy to overrun.
+      </li>
+      <li>
+        <strong>Best for:</strong> Productized agents, spiky workloads, and power
+        users who already measure tokens — or as overflow on top of a sub.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 5. Real cost table -->
+  <section>
+    <h2 id="real-cost" class="guide-h2">Real cost table: what you’ll actually pay</h2>
+    <p>
+      List price is the floor for a quiet month. Agent intensity is the
+      multiplier. Approximate{" "}
+      <strong>all-in software cost for one person</strong> (USD, excl. tax),
+      assuming you stay inside the plan when possible and only add credits when
+      you must.
+    </p>
+    <ComparisonTable
+      caption="Approximate monthly cost by usage intensity (planning ranges)"
+      headers={["Free", "Pro", "Max 5x", "Max 20x", "Team (per seat)"]}
+      rows={realCostRows}
+      highlightIndex={2}
+    />
+
+    <h3 class="guide-h3">Why does Claude Code feel expensive?</h3>
+    <p>
+      Because you are not buying autocomplete — you are buying long-context,
+      multi-step agent work that reads large repos, edits many files, runs
+      commands, and retries. That is token- and time-heavy. Flat Max fees look
+      steep next to a $20 IDE seat until you price the same week on raw API:
+      multi-hour Opus-class agent days can exceed $100–$200 in token value
+      quickly. The subscription is often insurance and prioritization, not a
+      markup on “chat.”
+    </p>
+    <p>
+      It also feels expensive when the wrong tier is purchased: Pro for all-day
+      agents, or Team Standard for an entire eng org that lives in Code. Mis-tier
+      + overage credits is how a “cheap” plan becomes a surprise bill.
+    </p>
+
+    <h3 class="guide-h3">What’s the cheapest way to use Claude Code?</h3>
+    <ol>
+      <li>
+        <strong>Cheapest entry:</strong> Pro annual (~$17/mo) if your Code use is
+        light and you accept session limits.
+      </li>
+      <li>
+        <strong>Cheapest “it actually works daily” path:</strong> Max 5x for most
+        individuals — fewer forced stops, less credit panic.
+      </li>
+      <li>
+        <strong>Cheapest org path:</strong> Team with{" "}
+        <em>mixed</em> seats (Standard for light users, Premium only where Code
+        is heavy), annual billing, and admin spend caps — not Max 20x for every
+        employee.
+      </li>
+      <li>
+        <strong>Cheapest raw tokens (sometimes):</strong> API with Sonnet/Haiku
+        where quality allows, prompt caching, tight tools, and hard stop
+        conditions — only if you will operate that discipline.
+      </li>
+      <li>
+        <strong>False economy:</strong> Free tier “somehow,” or five overlapping
+        AI coding tools all running full agent mode for every engineer.
+      </li>
+    </ol>
+    <KeyTakeaway>
+      Optimize for <strong>cost per merged, reviewed change</strong>, not cost
+      per seat. A $100 Max month that ships clean refactors beats a $20 Pro month
+      spent waiting on limits — and beats a $200 API spike with no review bar.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 6. vs Codex -->
+  <section>
+    <h2 id="vs-codex" class="guide-h2">Claude Code vs Codex pricing</h2>
+    <p>
+      High level only — both are agentic coding products tied to a larger
+      platform bill (Anthropic vs OpenAI), not pure self-serve “Code SKUs.”
+    </p>
+    <ComparisonTable
+      caption="Cost shape comparison (not a full product review)"
+      headers={["Claude Code", "OpenAI Codex"]}
+      rows={[
+        {
+          label: "How you pay",
+          cells: [
+            "Claude Pro/Max/Team/Enterprise sub, or API tokens / usage credits",
+            "ChatGPT / OpenAI subscription or API packaging — Codex access follows OpenAI’s current product surface",
+          ],
+        },
+        {
+          label: "Individual entry",
+          cells: [
+            "Pro ~$20/mo includes Code; serious daily use often Max $100–$200",
+            "Typically via paid ChatGPT tiers or API — confirm current Codex inclusion and limits",
+          ],
+        },
+        {
+          label: "What drives spikes",
+          cells: [
+            "Long multi-file agent sessions on one shared usage pool; credits after caps",
+            "Cloud agent runs and model/usage meters inside OpenAI’s stack",
+          ],
+        },
+        {
+          label: "Team budgeting",
+          cells: [
+            "Team Standard/Premium mix or Enterprise seat + usage",
+            "OpenAI Team/Enterprise or API commitments — seat vs usage mix varies",
+          ],
+        },
+        {
+          label: "When cost favors Claude Code",
+          cells: [
+            "You already standardize on Claude and want CLI agents on the same sub",
+            "—",
+          ],
+        },
+        {
+          label: "When cost favors Codex",
+          cells: [
+            "—",
+            "You already pay for OpenAI/ChatGPT at scale and want coding agents inside that ecosystem without a second platform bill",
+          ],
+        },
+      ]}
+    />
+    <p>
+      Product fit (terminal vs cloud agent, model preference, repo workflow)
+      usually dominates pure list-price comparisons. For the full head-to-head
+      (workflow, autonomy, ecosystem, and cost), see{" "}
+      <a href="/guides/claude-code/vs-codex/">Claude Code vs Codex</a>. Also
+      useful:{" "}
+      <a href="/guides/claude-code-vs-cursor/">Claude Code vs Cursor</a>,{" "}
+      <a href="/tools/claude-code/">Claude Code tool profile</a>, and{" "}
+      <a href="/tools/openai-codex/">OpenAI Codex profile</a>.
+    </p>
+  </section>
+
+  <!-- 7. Which plan -->
+  <section>
+    <h2 id="which-plan" class="guide-h2">Which plan should you choose?</h2>
+    <p>
+      Use this as a decision framework, not marketing. Pick the cheapest tier that
+      does not interrupt real work more than once a week.
+    </p>
+    <div class="not-prose mt-8 space-y-4">
+      {
+        decisionFramework.map((item) => (
+          <div class="card-surface p-5 sm:p-6">
+            <p class="text-xs font-bold uppercase tracking-wider text-ink-soft">
+              {item.type}
+            </p>
+            <h3 class="mt-1.5 text-base font-semibold text-ink">{item.plan}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-[0.9375rem]">
+              {item.why}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+    <h3 class="guide-h3">A simple upgrade path</h3>
+    <ol>
+      <li>Week 1–2: Pro. Measure how often you hit limits during real tasks.</li>
+      <li>
+        If you block on capacity mid-task more than occasionally → Max 5x.
+      </li>
+      <li>
+        If 5x still clips long agent days or parallel sessions → Max 20x (solo)
+        or Team Premium seats (org).
+      </li>
+      <li>
+        If you need SSO, SCIM, audit, or formal spend controls → Enterprise, and
+        model token budget explicitly.
+      </li>
+      <li>
+        Revisit quarterly: model prices, limits, and your agent habits move
+        faster than annual planning cycles.
+      </li>
+    </ol>
+    <p>
+      Still choosing between terminal agents and an AI IDE? Read{" "}
+      <a href="/guides/claude-code-vs-cursor/">Claude Code vs Cursor</a>. For a
+      wider coding-agent shortlist, see{" "}
+      <a href="/guides/best-ai-coding-agents-2026/">Best AI Coding Agents in 2026</a>.
+    </p>
+  </section>
+
+  <!-- 8. Key takeaways -->
+  <section>
+    <h2 id="key-takeaways" class="guide-h2">Key takeaways</h2>
+    <ul>
+      <li>
+        Claude Code has <strong>no separate forever-free full agent tier</strong> —
+        you pay via Claude Pro/Max/Team/Enterprise or API.
+      </li>
+      <li>
+        <strong>Pro (~$20)</strong> is the cheapest subscription path;{" "}
+        <strong>Max 5x ($100)</strong> is the practical daily driver for most
+        individuals; <strong>Max 20x ($200)</strong> is for heavy, all-day use.
+      </li>
+      <li>
+        Team is <strong>Standard + Premium seats</strong> (mix them). Premium is
+        for Code-heavy engineers; Standard is for lighter Claude use.
+      </li>
+      <li>
+        Enterprise is <strong>$20/seat + metered usage</strong> — budget tokens
+        and governance, not seats alone.
+      </li>
+      <li>
+        Chat and Code share one usage pool. Limits reset on session/weekly
+        windows; credits keep you working at API rates after the wall.
+      </li>
+      <li>
+        It feels expensive because agent loops are expensive to run. The cheapest
+        durable setup is the lowest tier that does not stall shipping.
+      </li>
+      <li>
+        For IDE vs CLI product choice, see{" "}
+        <a href="/guides/claude-code-vs-cursor/">Claude Code vs Cursor</a>; for
+        Anthropic vs OpenAI agents, see{" "}
+        <a href="/guides/claude-code/vs-codex/">Claude Code vs Codex</a>; for
+        platform profile and scores, see{" "}
+        <a href="/tools/claude-code/">Claude Code</a>.
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. Always verify current prices and Code inclusion
+      on Anthropic’s official pricing and plan pages before purchase.
+    </p>
+  </section>
+
+  <section id="related">
+    <h2 class="guide-h2">Related guides</h2>
+    <ClaudeCodeClusterNav current="claude-code/pricing" />
+    <ul>
+      <li>
+        <a href="/guides/claude-code/">Claude Code Guide Hub</a> — setup, skills,
+        plugins, MCP, and comparisons
+      </li>
+      <li>
+        <a href="/guides/claude-code/setup/">Install &amp; setup</a>
+        {" · "}
+        <a href="/guides/claude-code/vs-codex/">vs Codex</a>
+        {" · "}
+        <a href="/guides/claude-code-vs-cursor/">vs Cursor</a>
+      </li>
+      <li>
+        <a href="/guides/ai-agent-platforms-tco-2026/"
+          >AI agent platform TCO</a
+        >{" "}
+        — broader cost stack beyond Claude seats
+      </li>
+    </ul>
+  </section>
+
+  <RelatedComparisons slug={slug} categories={["Coding"]} />
+</GuideLayout>

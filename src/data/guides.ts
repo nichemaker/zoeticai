@@ -16,6 +16,84 @@ export type GuidePreview = {
  */
 export const latestGuides: GuidePreview[] = [
   {
+    slug: "claude-code",
+    title:
+      "Claude Code Guide Hub (2026): Pricing, Setup, Skills, Plugins, MCP & Comparisons",
+    excerpt:
+      "Central hub for Claude Code — setup, pricing, skills, plugins, MCP servers, and comparisons with Codex and Cursor.",
+    category: "Pillar",
+    readTime: "6 min",
+    date: "2026-08-12",
+  },
+  {
+    slug: "claude-code/troubleshooting",
+    title:
+      "Claude Code Troubleshooting Guide (2026): Common Errors & Fixes",
+    excerpt:
+      "Install/path, auth, permissions, performance, skills, plugins, MCP, and model issues — symptom to fix.",
+    category: "Technical",
+    readTime: "12 min",
+    date: "2026-08-12",
+  },
+  {
+    slug: "claude-code/setup",
+    title: "How to Install and Set Up Claude Code in 2026",
+    excerpt:
+      "Native installer, npm, desktop, auth, first config, and fixes — get Claude Code working cleanly, then extend it.",
+    category: "Technical",
+    readTime: "10 min",
+    date: "2026-08-12",
+  },
+  {
+    slug: "claude-code/plugins",
+    title:
+      "Claude Code Plugins in 2026: Best Plugins, How They Work & When to Use Them",
+    excerpt:
+      "Plugins vs skills and MCP, marketplace install, and a selective shortlist of useful Claude Code plugins.",
+    category: "Technical",
+    readTime: "11 min",
+    date: "2026-08-12",
+  },
+  {
+    slug: "claude-code/mcp",
+    title: "Best MCP Servers for Claude Code in 2026",
+    excerpt:
+      "Trusted shortlist: GitHub, Playwright, Figma, Context7, Supabase, Slack, Linear, Notion — how to choose and set up MCP for Claude Code.",
+    category: "Technical",
+    readTime: "12 min",
+    date: "2026-08-12",
+  },
+  {
+    slug: "claude-code/skills",
+    title:
+      "Claude Code Skills in 2026: Best Skills, How They Work & How to Use Them",
+    excerpt:
+      "What Claude Code Skills are vs plugins and agents, how to install them, best skills by use case, and when to build your own.",
+    category: "Technical",
+    readTime: "12 min",
+    date: "2026-08-12",
+  },
+  {
+    slug: "claude-code/vs-codex",
+    title:
+      "Claude Code vs Codex in 2026: Which AI Coding Agent Should You Use?",
+    excerpt:
+      "Terminal-first Claude Code vs OpenAI Codex — workflow, autonomy, pricing, and which coding agent fits your stack.",
+    category: "Comparison",
+    readTime: "13 min",
+    date: "2026-08-12",
+  },
+  {
+    slug: "claude-code/pricing",
+    title:
+      "Claude Code Pricing in 2026: Plans, Real Costs & Which Tier to Choose",
+    excerpt:
+      "Pro, Max 5x/20x, Team, Enterprise, and API — list prices, real monthly scenarios, and which Claude Code tier to pick.",
+    category: "Buying",
+    readTime: "14 min",
+    date: "2026-08-12",
+  },
+  {
     slug: "ai-agent-platforms-guide",
     title:
       "AI Agent Platforms Guide 2026 — How to Choose, Compare & Evaluate",
@@ -176,6 +254,7 @@ function resolveGuideSlugs(slugs: string[], exclude?: string): GuidePreview[] {
 /** Head-to-head comparison guides used for cross-linking */
 export const comparisonGuideSlugs = [
   "langgraph-vs-crewai",
+  "claude-code/vs-codex",
   "claude-code-vs-cursor",
   "copilot-studio-vs-agentforce",
   "n8n-vs-make-vs-zapier-agents",
@@ -187,6 +266,7 @@ export type ComparisonGuideSlug = (typeof comparisonGuideSlugs)[number];
 /** Short anchor text for SEO-friendly internal links */
 export const comparisonLinkLabels: Record<ComparisonGuideSlug, string> = {
   "langgraph-vs-crewai": "LangGraph vs CrewAI comparison",
+  "claude-code/vs-codex": "Claude Code vs Codex comparison",
   "claude-code-vs-cursor": "Claude Code vs Cursor comparison",
   "copilot-studio-vs-agentforce":
     "Copilot Studio vs Agentforce comparison",
@@ -207,6 +287,14 @@ export function comparisonLinkLabel(slug: string): string {
 const shortGuideLabels: Record<string, string> = {
   "mcp-and-tool-calling-explained": "MCP and tool calling explained",
   "mcp-server-implementation": "How to build and run MCP servers",
+  "claude-code/pricing": "Claude Code pricing (2026)",
+  "claude-code/vs-codex": "Claude Code vs Codex",
+  "claude-code/skills": "Claude Code Skills (2026)",
+  "claude-code/mcp": "Best MCP servers for Claude Code",
+  "claude-code/plugins": "Claude Code Plugins (2026)",
+  "claude-code/setup": "Install & set up Claude Code",
+  "claude-code/troubleshooting": "Claude Code troubleshooting",
+  "claude-code": "Claude Code Guide Hub",
 };
 
 /** Display title for related-link cards (shorter labels for comparisons). */
@@ -253,13 +341,125 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "mcp-and-tool-calling-explained",
     "mcp-server-implementation",
   ],
+  "claude-code": [
+    "claude-code/setup",
+    "claude-code/troubleshooting",
+    "claude-code/pricing",
+    "claude-code/skills",
+    "claude-code/plugins",
+    "claude-code/mcp",
+    "claude-code/vs-codex",
+    "claude-code-vs-cursor",
+    "best-ai-coding-agents-2026",
+    "mcp-and-tool-calling-explained",
+    "ai-agent-platforms-guide",
+  ],
   "claude-code-vs-cursor": [
+    "claude-code",
+    "claude-code/vs-codex",
+    "claude-code/pricing",
+    "claude-code/setup",
+    "claude-code/troubleshooting",
+    "claude-code/skills",
     "best-ai-coding-agents-2026",
     "ai-agent-platforms-guide",
     "ai-agent-platforms-tco-2026",
     "how-to-evaluate-ai-agent-platforms",
     "mcp-and-tool-calling-explained",
     "mcp-server-implementation",
+  ],
+  "claude-code/vs-codex": [
+    "claude-code",
+    "claude-code-vs-cursor",
+    "claude-code/pricing",
+    "claude-code/setup",
+    "claude-code/troubleshooting",
+    "claude-code/skills",
+    "best-ai-coding-agents-2026",
+    "ai-agent-platforms-tco-2026",
+    "ai-agent-platforms-guide",
+    "how-to-evaluate-ai-agent-platforms",
+    "mcp-and-tool-calling-explained",
+  ],
+  "claude-code/pricing": [
+    "claude-code",
+    "claude-code/setup",
+    "claude-code/troubleshooting",
+    "claude-code/vs-codex",
+    "claude-code-vs-cursor",
+    "claude-code/skills",
+    "claude-code/plugins",
+    "claude-code/mcp",
+    "best-ai-coding-agents-2026",
+    "ai-agent-platforms-tco-2026",
+    "how-to-evaluate-ai-agent-platforms",
+    "ai-agent-platforms-guide",
+    "mcp-and-tool-calling-explained",
+  ],
+  "claude-code/skills": [
+    "claude-code",
+    "claude-code/setup",
+    "claude-code/troubleshooting",
+    "claude-code/plugins",
+    "claude-code/mcp",
+    "claude-code/pricing",
+    "claude-code/vs-codex",
+    "claude-code-vs-cursor",
+    "best-ai-coding-agents-2026",
+    "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
+    "ai-agent-platforms-guide",
+  ],
+  "claude-code/mcp": [
+    "claude-code",
+    "claude-code/setup",
+    "claude-code/troubleshooting",
+    "claude-code/plugins",
+    "claude-code/skills",
+    "mcp-and-tool-calling-explained",
+    "mcp-server-implementation",
+    "claude-code/pricing",
+    "claude-code/vs-codex",
+    "claude-code-vs-cursor",
+    "best-ai-coding-agents-2026",
+    "ai-agent-platforms-guide",
+  ],
+  "claude-code/plugins": [
+    "claude-code",
+    "claude-code/setup",
+    "claude-code/troubleshooting",
+    "claude-code/skills",
+    "claude-code/mcp",
+    "claude-code/pricing",
+    "claude-code/vs-codex",
+    "claude-code-vs-cursor",
+    "best-ai-coding-agents-2026",
+    "mcp-and-tool-calling-explained",
+    "ai-agent-platforms-guide",
+  ],
+  "claude-code/setup": [
+    "claude-code",
+    "claude-code/troubleshooting",
+    "claude-code/pricing",
+    "claude-code/skills",
+    "claude-code/plugins",
+    "claude-code/mcp",
+    "claude-code/vs-codex",
+    "claude-code-vs-cursor",
+    "best-ai-coding-agents-2026",
+    "ai-agent-platforms-guide",
+  ],
+  "claude-code/troubleshooting": [
+    "claude-code",
+    "claude-code/setup",
+    "claude-code/skills",
+    "claude-code/plugins",
+    "claude-code/mcp",
+    "claude-code/pricing",
+    "claude-code/vs-codex",
+    "claude-code-vs-cursor",
+    "best-ai-coding-agents-2026",
+    "mcp-and-tool-calling-explained",
   ],
   "copilot-studio-vs-agentforce": [
     "ai-agent-platforms-guide",
@@ -310,6 +510,8 @@ const relatedGuidesBySlug: Record<string, string[]> = {
   ],
   "mcp-and-tool-calling-explained": [
     "mcp-server-implementation",
+    "claude-code/mcp",
+    "claude-code/skills",
     "ai-agent-platforms-guide",
     "best-ai-coding-agents-2026",
     "best-open-source-ai-agent-frameworks-2026",
@@ -318,6 +520,8 @@ const relatedGuidesBySlug: Record<string, string[]> = {
   ],
   "mcp-server-implementation": [
     "mcp-and-tool-calling-explained",
+    "claude-code/mcp",
+    "claude-code/skills",
     "ai-agent-platforms-guide",
     "best-ai-coding-agents-2026",
     "best-open-source-ai-agent-frameworks-2026",
@@ -337,7 +541,14 @@ const relatedGuidesBySlug: Record<string, string[]> = {
   ],
   "best-ai-coding-agents-2026": [
     "ai-agent-platforms-guide",
+    "claude-code",
     "claude-code-vs-cursor",
+    "claude-code/vs-codex",
+    "claude-code/setup",
+    "claude-code/skills",
+    "claude-code/plugins",
+    "claude-code/mcp",
+    "claude-code/pricing",
     "ai-agent-platforms-tco-2026",
     "mcp-and-tool-calling-explained",
     "mcp-server-implementation",
@@ -350,6 +561,7 @@ const relatedGuidesBySlug: Record<string, string[]> = {
     "n8n-vs-make-vs-zapier-agents",
     "lindy-vs-relevance-ai-vs-dust",
     "best-ai-coding-agents-2026",
+    "claude-code/pricing",
     "copilot-studio-vs-agentforce",
   ],
   "best-ai-agent-platforms-for-smbs-2026": [
@@ -418,7 +630,8 @@ export function getPrimaryComparisonForTool(
   const map: Record<string, ComparisonGuideSlug> = {
     langgraph: "langgraph-vs-crewai",
     crewai: "langgraph-vs-crewai",
-    "claude-code": "claude-code-vs-cursor",
+    "claude-code": "claude-code/vs-codex",
+    "openai-codex": "claude-code/vs-codex",
     cursor: "claude-code-vs-cursor",
     "microsoft-copilot-studio": "copilot-studio-vs-agentforce",
     "salesforce-agentforce": "copilot-studio-vs-agentforce",
@@ -443,6 +656,10 @@ export const comparisonToolProfiles: Record<
   "langgraph-vs-crewai": [
     { slug: "langgraph", label: "LangGraph platform profile" },
     { slug: "crewai", label: "CrewAI platform profile" },
+  ],
+  "claude-code/vs-codex": [
+    { slug: "claude-code", label: "Claude Code platform profile" },
+    { slug: "openai-codex", label: "OpenAI Codex platform profile" },
   ],
   "claude-code-vs-cursor": [
     { slug: "cursor", label: "Cursor platform profile" },
@@ -513,7 +730,15 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
   }
   if (cats.includes("Coding")) {
     add("best-ai-coding-agents-2026");
+    add("claude-code");
     add("claude-code-vs-cursor");
+    add("claude-code/vs-codex");
+    add("claude-code/setup");
+    add("claude-code/troubleshooting");
+    add("claude-code/skills");
+    add("claude-code/plugins");
+    add("claude-code/mcp");
+    add("claude-code/pricing");
   }
   if (
     tool.features.mcpSupport ||
@@ -523,6 +748,7 @@ export function getRelatedGuidesForTool(tool: Tool): GuidePreview[] {
   ) {
     add("mcp-and-tool-calling-explained");
     add("mcp-server-implementation");
+    add("claude-code/mcp");
   }
   if (cats.includes("No-Code") || cats.includes("Workflow")) {
     add("best-ai-agent-platforms-for-smbs-2026");
@@ -571,7 +797,15 @@ export function getRelatedGuidesForCategory(
     ],
     Coding: [
       "best-ai-coding-agents-2026",
+      "claude-code",
       "claude-code-vs-cursor",
+      "claude-code/vs-codex",
+      "claude-code/setup",
+      "claude-code/troubleshooting",
+      "claude-code/skills",
+      "claude-code/plugins",
+      "claude-code/mcp",
+      "claude-code/pricing",
       "ai-agent-platforms-guide",
       "ai-agent-platforms-tco-2026",
       "mcp-and-tool-calling-explained",
@@ -614,7 +848,7 @@ export function getFeaturedGuideForCategory(
 /* Topic clusters (hub & spoke)                                               */
 /* -------------------------------------------------------------------------- */
 
-export type TopicHubId = "coding-agents" | "agent-platforms";
+export type TopicHubId = "coding-agents" | "agent-platforms" | "claude-code";
 
 export type HubSpokeGuide = {
   slug: string;
@@ -667,6 +901,66 @@ export function getHubBacklinkCopy(
  */
 export const topicHubs: TopicHub[] = [
   {
+    id: "claude-code",
+    slug: "claude-code",
+    name: "Claude Code",
+    title:
+      "Claude Code Guide Hub (2026): Pricing, Setup, Skills, Plugins, MCP & Comparisons",
+    description:
+      "Central hub for Claude Code — setup, pricing, skills, plugins, MCP servers, and comparisons with Codex and Cursor.",
+    backlinkLabel: "See the full Claude Code Guide Hub",
+    backlinkDetail:
+      "Part of our Claude Code cluster — setup, pricing, skills, plugins, MCP, and comparisons.",
+    spokeGuides: [
+      {
+        slug: "claude-code/setup",
+        blurb:
+          "Install and first-time setup — native installer, auth, verify, then extend.",
+      },
+      {
+        slug: "claude-code/troubleshooting",
+        blurb:
+          "Common errors and fixes — install, auth, performance, skills, plugins, MCP.",
+      },
+      {
+        slug: "claude-code/pricing",
+        blurb:
+          "Plans and real costs — Pro, Max, Team, Enterprise, and usage scenarios.",
+      },
+      {
+        slug: "claude-code/skills",
+        blurb:
+          "Skills vs plugins and agents — best skills and when to write your own.",
+      },
+      {
+        slug: "claude-code/plugins",
+        blurb:
+          "Plugin marketplaces, install flow, and when plugins beat raw skills or MCP.",
+      },
+      {
+        slug: "claude-code/mcp",
+        blurb:
+          "Best MCP servers for Claude Code — GitHub, Playwright, Figma, team tools.",
+      },
+      {
+        slug: "claude-code/vs-codex",
+        blurb:
+          "Claude Code vs OpenAI Codex — workflow, autonomy, and cost.",
+      },
+      {
+        slug: "claude-code-vs-cursor",
+        blurb:
+          "Claude Code vs Cursor — terminal agent vs AI-native IDE.",
+      },
+    ],
+    spokeTools: [
+      {
+        slug: "claude-code",
+        blurb: "Directory profile — scores, features, and pricing notes.",
+      },
+    ],
+  },
+  {
     id: "coding-agents",
     slug: "best-ai-coding-agents-2026",
     name: "AI Coding Agents",
@@ -678,9 +972,19 @@ export const topicHubs: TopicHub[] = [
       "Part of our AI Coding Agents topic cluster — ranked picks, comparison, and directory profiles.",
     spokeGuides: [
       {
+        slug: "claude-code",
+        blurb:
+          "Claude Code guide hub — setup, pricing, skills, plugins, MCP, and comparisons.",
+      },
+      {
         slug: "claude-code-vs-cursor",
         blurb:
           "Head-to-head: IDE-first Cursor vs terminal-first Claude Code — workflow, autonomy, pricing, and when to use both.",
+      },
+      {
+        slug: "claude-code/vs-codex",
+        blurb:
+          "Terminal-first Claude Code vs OpenAI Codex — workflow, autonomy, cost, and which agent to standardize on.",
       },
     ],
     spokeTools: [
@@ -750,6 +1054,42 @@ export const topicHubs: TopicHub[] = [
         detail:
           "Coding agents sit in a separate lane — the full guide maps every platform category.",
       },
+      "claude-code/pricing": {
+        label:
+          "This pricing guide is part of our complete AI Agent Platforms Guide",
+        detail:
+          "Coding-agent costs sit in a separate lane — the full guide maps platforms, TCO, and comparisons.",
+      },
+      "claude-code/vs-codex": {
+        label:
+          "This comparison is part of our complete AI Agent Platforms Guide",
+        detail:
+          "Coding agents sit in a separate lane — the full guide maps every platform category.",
+      },
+      "claude-code/skills": {
+        label:
+          "This skills guide is part of our complete AI Agent Platforms Guide",
+        detail:
+          "Coding-agent extensions sit in a separate lane — the full guide maps platforms and comparisons.",
+      },
+      "claude-code/mcp": {
+        label:
+          "This MCP shortlist is part of our complete AI Agent Platforms Guide",
+        detail:
+          "Tool calling and MCP sit under platform evaluation — see decision paths and related deep-dives.",
+      },
+      "claude-code/plugins": {
+        label:
+          "This plugins guide is part of our complete AI Agent Platforms Guide",
+        detail:
+          "Coding-agent extensions sit in a separate lane — the full guide maps platforms and comparisons.",
+      },
+      "claude-code/setup": {
+        label:
+          "This setup guide is part of our complete AI Agent Platforms Guide",
+        detail:
+          "Coding agents sit in a separate lane — the full guide maps platforms, comparisons, and evaluation.",
+      },
       "best-ai-agent-platforms-for-smbs-2026": {
         label: "Part of our complete AI Agent Platforms Guide",
         detail:
@@ -788,6 +1128,12 @@ export const topicHubs: TopicHub[] = [
       "best-ai-coding-agents-2026": {
         label:
           "See the full AI Agent Platforms Guide for more comparisons and decision frameworks",
+        detail:
+          "Coding agents are one lane — the platforms pillar maps frameworks, enterprise, no-code, and workflow too.",
+      },
+      "claude-code": {
+        label:
+          "This Claude Code hub is part of our complete AI Agent Platforms Guide",
         detail:
           "Coding agents are one lane — the platforms pillar maps frameworks, enterprise, no-code, and workflow too.",
       },
@@ -854,9 +1200,19 @@ export const topicHubs: TopicHub[] = [
           "IDE, CLI, and cloud coding agents — separate buying lane for software teams.",
       },
       {
+        slug: "claude-code",
+        blurb:
+          "Claude Code guide hub — setup, pricing, skills, plugins, MCP, and comparisons.",
+      },
+      {
         slug: "claude-code-vs-cursor",
         blurb:
           "IDE-first vs terminal-first coding agents — the two most common daily drivers.",
+      },
+      {
+        slug: "claude-code/vs-codex",
+        blurb:
+          "Anthropic’s terminal agent vs OpenAI’s coding agent — stack fit and cost.",
       },
     ],
   },
@@ -955,9 +1311,71 @@ export const guideExampleTools: Record<
     label: "Compare these multi-agent frameworks",
     slugs: ["langgraph", "crewai", "openai-agents-sdk", "pydantic-ai", "mastra"],
   },
+  "claude-code": {
+    label: "Claude Code and related coding agents",
+    slugs: ["claude-code", "cursor", "openai-codex", "github-copilot-agents", "cline"],
+  },
   "claude-code-vs-cursor": {
     label: "Compare coding agents",
     slugs: ["cursor", "claude-code", "github-copilot-agents", "cline", "devin"],
+  },
+  "claude-code/vs-codex": {
+    label: "Compare these coding agents",
+    slugs: ["claude-code", "openai-codex", "cursor", "github-copilot-agents", "cline"],
+  },
+  "claude-code/pricing": {
+    label: "Claude Code and related coding agents",
+    slugs: ["claude-code", "cursor", "openai-codex", "github-copilot-agents", "cline"],
+  },
+  "claude-code/skills": {
+    label: "Skills pair well with these coding tools",
+    slugs: [
+      "claude-code",
+      "cursor",
+      "cline",
+      "anthropic-claude-agent-sdk",
+      "openai-codex",
+    ],
+  },
+  "claude-code/mcp": {
+    label: "MCP-friendly coding and agent tools",
+    slugs: [
+      "claude-code",
+      "cursor",
+      "cline",
+      "anthropic-claude-agent-sdk",
+      "langgraph",
+    ],
+  },
+  "claude-code/plugins": {
+    label: "Plugins fit these coding agents",
+    slugs: [
+      "claude-code",
+      "cursor",
+      "cline",
+      "anthropic-claude-agent-sdk",
+      "openai-codex",
+    ],
+  },
+  "claude-code/setup": {
+    label: "Start here, then explore coding agents",
+    slugs: [
+      "claude-code",
+      "cursor",
+      "openai-codex",
+      "cline",
+      "github-copilot-agents",
+    ],
+  },
+  "claude-code/troubleshooting": {
+    label: "Coding agents related to troubleshooting workflows",
+    slugs: [
+      "claude-code",
+      "cursor",
+      "cline",
+      "openai-codex",
+      "github-copilot-agents",
+    ],
   },
   "copilot-studio-vs-agentforce": {
     label: "Compare enterprise agent platforms",

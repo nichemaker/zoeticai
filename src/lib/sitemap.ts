@@ -53,14 +53,16 @@ export function getSitemapMeta(pageUrl: string): SitemapMeta {
   }
 
   // Guide article — use guide date; topic hubs get higher priority
-  const guideMatch = path.match(/^\/guides\/([^/]+)$/);
+  // Supports nested slugs (e.g. /guides/claude-code/pricing/)
+  const guideMatch = path.match(/^\/guides\/(.+)$/);
   if (guideMatch && guideMatch[1]) {
-    const guide = latestGuides.find((g) => g.slug === guideMatch[1]);
+    const guideSlug = guideMatch[1];
+    const guide = latestGuides.find((g) => g.slug === guideSlug);
     const hubSlugs = new Set([
       "ai-agent-platforms-guide",
       "best-ai-coding-agents-2026",
     ]);
-    const isHub = hubSlugs.has(guideMatch[1]);
+    const isHub = hubSlugs.has(guideSlug);
     return {
       lastmod: guide ? parseDate(guide.date) : BUILD_DATE,
       changefreq: isHub ? "weekly" : "monthly",

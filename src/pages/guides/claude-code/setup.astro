@@ -1,0 +1,563 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import ClaudeCodeClusterNav from "../../../components/guide/ClaudeCodeClusterNav.astro";
+import RelatedComparisons from "../../../components/RelatedComparisons.astro";
+
+const title = "How to Install and Set Up Claude Code in 2026";
+const description =
+  "Step-by-step Claude Code install and setup for 2026 — system requirements, native installer, npm, desktop, auth, first config, and fixes for common problems.";
+const published = "2026-08-12";
+const readTime = "10 min";
+const slug = "claude-code/setup";
+
+const toc = [
+  { id: "introduction", label: "What this guide covers" },
+  { id: "key-takeaway", label: "Key takeaway" },
+  { id: "requirements", label: "System requirements" },
+  { id: "install", label: "Installation methods" },
+  { id: "first-time", label: "First-time setup" },
+  { id: "first-config", label: "Recommended first config" },
+  { id: "troubleshooting", label: "Common problems & fixes" },
+  { id: "next-steps", label: "Next steps" },
+  { id: "related", label: "Related guides" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Technical"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="Claude Code setup"
+  exploreCategories={["Coding", "Frameworks", "Enterprise", "No-Code"]}
+  toc={toc}
+>
+  <!-- 1. Introduction -->
+  <section>
+    <h2 id="introduction" class="guide-h2">What this guide covers</h2>
+    <p>
+      This is a practical companion for getting{" "}
+      <a href="/tools/claude-code/">Claude Code</a> installed, authenticated, and
+      verified — without drowning in ecosystem theory. It is for{" "}
+      <strong>new users</strong> who want a clean first setup, and for anyone
+      reinstalling after a machine change or a broken PATH.
+    </p>
+    <p>
+      You will get: requirements, the recommended install path (plus solid
+      alternatives), first-time auth, a minimal day-one config, troubleshooting,
+      then links into the rest of the Claude Code hub (skills, plugins, MCP,
+      pricing, comparisons).
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        Installer URLs, package managers, and plan packaging change. Prefer{" "}
+        <a href="https://code.claude.com/docs/en/setup">official Claude Code setup
+        docs</a>{" "}
+        if a command below fails.{" "}
+        <strong
+          >Claude Code needs a paid Claude plan (Pro/Max/Team/Enterprise) or
+          Console/API access — Free chat alone is not enough.</strong
+        >
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 2. Key takeaway -->
+  <section id="key-takeaway">
+    <h2 class="guide-h2">Key takeaway</h2>
+    <KeyTakeaway>
+      Fastest reliable path: use the{" "}
+      <strong>native installer</strong> (
+      <code>curl … | bash</code> on macOS/Linux/WSL, PowerShell script on
+      Windows) → run <code>claude</code> → complete browser login on a Pro+ (or
+      API) account → open a real project → ask for a small safe change → run{" "}
+      <code>claude doctor</code> if anything fails. Skip npm, plugins, and MCP
+      until that loop works.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 3. Requirements -->
+  <section>
+    <h2 id="requirements" class="guide-h2">System requirements</h2>
+    <h3 class="guide-h3">Supported platforms (typical 2026 docs)</h3>
+    <ul>
+      <li>
+        <strong>macOS</strong> 13.0+
+      </li>
+      <li>
+        <strong>Windows</strong> 10 (1809+) or Windows Server 2019+ (native
+        PowerShell/CMD; WSL also common for dev workflows)
+      </li>
+      <li>
+        <strong>Linux</strong> — Ubuntu 20.04+, Debian 10+, Alpine 3.19+, and
+        similar modern distros
+      </li>
+      <li>
+        <strong>Hardware</strong> — roughly 4 GB+ RAM; x64 or ARM64
+      </li>
+      <li>
+        <strong>Network</strong> — outbound internet for install, auth, and model
+        calls
+      </li>
+    </ul>
+    <h3 class="guide-h3">Prerequisites</h3>
+    <ul>
+      <li>
+        A <strong>Claude account with Code access</strong> — Pro, Max, Team, or
+        Enterprise (or Anthropic Console / approved API path). See{" "}
+        <a href="/guides/claude-code/pricing/">Claude Code pricing</a>.
+      </li>
+      <li>
+        A terminal you actually use (Terminal.app, iTerm, Windows Terminal, etc.)
+      </li>
+      <li>
+        <strong>Git</strong> installed if you expect normal repo workflows
+        (especially on Windows Desktop Code tab)
+      </li>
+      <li>
+        For the <strong>npm install path only</strong>: Node.js 22+ (native
+        installer does <em>not</em> require Node)
+      </li>
+    </ul>
+    <h3 class="guide-h3">Commonly missed</h3>
+    <ul>
+      <li>
+        Being on Claude Free and wondering why Code never unlocks
+      </li>
+      <li>
+        Installing via npm with <code>sudo</code> (permission mess — do not)
+      </li>
+      <li>
+        Two installs at once (old npm global + new native) fighting on PATH
+      </li>
+      <li>
+        Corporate proxy / firewall blocking auth or API hosts
+      </li>
+      <li>
+        Expecting Desktop “Code” without a paid plan that includes Code
+      </li>
+    </ul>
+  </section>
+
+  <!-- 4. Installation methods -->
+  <section>
+    <h2 id="install" class="guide-h2">Installation methods</h2>
+
+    <h3 class="guide-h3">1. Official native installer (recommended)</h3>
+    <p>
+      <strong>When to use:</strong> Almost always — first install on a personal
+      machine. No Node required; ships the native binary and update path Anthropic
+      documents first.
+    </p>
+    <p><strong>Steps — macOS, Linux, WSL:</strong></p>
+    <pre
+      class="not-prose my-4 overflow-x-auto rounded-[var(--radius-card)] border border-border bg-surface-muted p-4 text-sm text-ink"
+    ><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+    <p><strong>Steps — Windows PowerShell:</strong></p>
+    <pre
+      class="not-prose my-4 overflow-x-auto rounded-[var(--radius-card)] border border-border bg-surface-muted p-4 text-sm text-ink"
+    ><code>irm https://claude.ai/install.ps1 | iex</code></pre>
+    <p>
+      <strong>Windows CMD:</strong> official docs also provide an{" "}
+      <code>install.cmd</code> download-and-run flow if you are not on PowerShell.
+    </p>
+    <p>
+      After install, open a <strong>new</strong> terminal and verify:
+    </p>
+    <pre
+      class="not-prose my-4 overflow-x-auto rounded-[var(--radius-card)] border border-border bg-surface-muted p-4 text-sm text-ink"
+    ><code>claude --version
+claude doctor</code></pre>
+    <InfoCallout title="Common failure points" variant="warning">
+      <ul class="mt-1 list-disc space-y-1.5 pl-5">
+        <li>
+          Shell still using an old session — restart the terminal after install
+        </li>
+        <li>
+          <code>claude: command not found</code> — PATH not updated; re-source
+          shell config or reinstall
+        </li>
+        <li>
+          Policy blocks on corporate Windows — need admin/IT approval for scripts
+        </li>
+        <li>
+          Curl/TLS failures — proxy or outdated CA store
+        </li>
+      </ul>
+    </InfoCallout>
+
+    <h3 class="guide-h3">2. Package managers (Homebrew / WinGet)</h3>
+    <p>
+      <strong>When to use:</strong> You already manage tools via brew or winget
+      and want upgrades in that workflow.
+    </p>
+    <pre
+      class="not-prose my-4 overflow-x-auto rounded-[var(--radius-card)] border border-border bg-surface-muted p-4 text-sm text-ink"
+    ><code># macOS (Homebrew cask — confirm formula name if brew search differs)
+brew install --cask claude-code
+
+# Windows
+winget install Anthropic.ClaudeCode</code></pre>
+    <p>
+      <strong>Failure points:</strong> stale cask mirrors, wrong package ID,
+      brew/winget not on PATH, needing a full logout after first install.
+    </p>
+
+    <h3 class="guide-h3">3. npm global (alternative CLI path)</h3>
+    <p>
+      <strong>When to use:</strong> Node 22+ is already standard in your
+      environment, or you pin versions via npm. Official docs still support this;
+      native installer remains the default recommendation for new users.
+    </p>
+    <pre
+      class="not-prose my-4 overflow-x-auto rounded-[var(--radius-card)] border border-border bg-surface-muted p-4 text-sm text-ink"
+    ><code>npm install -g @anthropic-ai/claude-code
+claude --version</code></pre>
+    <p>
+      The package typically installs the same native binary style under the hood.
+      <strong>Do not use <code>sudo npm install -g</code></strong> — fix npm
+      permissions or use a version manager instead.
+    </p>
+    <p>
+      <strong>Failure points:</strong> Node too old (EBADENGINE warnings), global
+      bin directory not on PATH, conflict with a separate native install (uninstall
+      one: <code>npm uninstall -g @anthropic-ai/claude-code</code>).
+    </p>
+
+    <h3 class="guide-h3">4. Claude Desktop (Code tab)</h3>
+    <p>
+      <strong>When to use:</strong> You want a GUI session model (Code tab inside
+      Claude Desktop) rather than living only in the terminal. Still requires a
+      plan that includes Claude Code.
+    </p>
+    <ol>
+      <li>
+        Download Claude Desktop from Anthropic’s download page for macOS, Windows,
+        or Linux (beta where offered).
+      </li>
+      <li>Install, launch, and sign in with your Claude account.</li>
+      <li>
+        Open the <strong>Code</strong> tab. On Windows, install Git for Windows if
+        prompted and restart the app.
+      </li>
+      <li>
+        Point a session at a project folder and run a small task to verify.
+      </li>
+    </ol>
+    <p>
+      <strong>Failure points:</strong> Free plan without Code; missing Git on
+      Windows; corporate device management blocking the app; confusing Desktop Chat
+      with the Code product surface.
+    </p>
+    <InfoCallout title="CLI vs Desktop" variant="tip">
+      <p>
+        Most of this hub assumes the <strong>CLI agent</strong> workflow. Desktop
+        Code is valid for GUI-first users; advanced skills/plugins/MCP workflows
+        are still easiest to document and automate from the terminal CLI.
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 5. First-time setup -->
+  <section>
+    <h2 id="first-time" class="guide-h2">First-time setup</h2>
+    <h3 class="guide-h3">Authentication</h3>
+    <ol>
+      <li>
+        In a terminal, <code>cd</code> to a project you care about (or an empty
+        test folder with a git repo).
+      </li>
+      <li>
+        Run <code>claude</code> (or the documented login command if your build
+        separates it).
+      </li>
+      <li>
+        Complete the <strong>browser login</strong> when prompted. Use the same
+        account that has Pro/Max/Team/Enterprise (or Console).
+      </li>
+      <li>
+        If you use API keys instead: set{" "}
+        <code>ANTHROPIC_API_KEY</code> per official auth docs; Claude Code may
+        prompt once to approve the key rather than opening a browser.
+      </li>
+    </ol>
+    <p>
+      Team/Enterprise users may need org SSO and admin-enabled Code access — if
+      login succeeds but Code is denied, check plan and org settings, not the
+      installer.
+    </p>
+    <h3 class="guide-h3">Initial configuration</h3>
+    <ul>
+      <li>
+        Accept sensible permission defaults for the first session; tighten later.
+      </li>
+      <li>
+        Prefer working inside a real git repository so diffs and reverts stay easy.
+      </li>
+      <li>
+        Optional: add a short project <code>CLAUDE.md</code> with stack, test
+        command, and “do not touch” paths — keep it small on day one.
+      </li>
+    </ul>
+    <h3 class="guide-h3">Recommended starting settings</h3>
+    <ul>
+      <li>One project at a time — do not enable every MCP globally yet</li>
+      <li>
+        Explicit approvals for shell commands until you trust the workflow
+      </li>
+      <li>
+        Use a branch for the first agent edits
+      </li>
+    </ul>
+    <h3 class="guide-h3">Verify everything works</h3>
+    <ol>
+      <li>
+        <code>claude --version</code> prints a version
+      </li>
+      <li>
+        <code>claude doctor</code> reports no critical failures
+      </li>
+      <li>
+        Inside a repo: ask Claude to explain the project structure (read-only)
+      </li>
+      <li>
+        Ask for a trivial change (comment or README line), review the diff, accept
+        or reject
+      </li>
+      <li>
+        Run your usual tests/lint if the change warrants it
+      </li>
+    </ol>
+    <p>
+      If step 1–2 fail, fix install/PATH/auth before adding skills or plugins.
+    </p>
+  </section>
+
+  <!-- 6. Recommended first config -->
+  <section>
+    <h2 id="first-config" class="guide-h2">
+      Recommended first configuration
+    </h2>
+    <h3 class="guide-h3">Useful defaults (day one)</h3>
+    <ul>
+      <li>
+        Native CLI install + browser auth on a paid plan
+      </li>
+      <li>
+        Project opened from its git root
+      </li>
+      <li>
+        Short <code>CLAUDE.md</code>: language, package manager, test command,
+        code style links
+      </li>
+      <li>
+        No marketplace megapacks yet
+      </li>
+    </ul>
+    <h3 class="guide-h3">Add later (with links)</h3>
+    <ul>
+      <li>
+        <a href="/guides/claude-code/skills/">Skills</a> — when you repeat the
+        same checklist or release process
+      </li>
+      <li>
+        <a href="/guides/claude-code/plugins/">Plugins</a> — when you want a
+        maintained bundle (e.g. GitHub integration) via marketplace
+      </li>
+      <li>
+        <a href="/guides/claude-code/mcp/">MCP servers</a> — GitHub, Context7,
+        Playwright first; only what you use weekly
+      </li>
+    </ul>
+    <h3 class="guide-h3">What not to over-configure on day one</h3>
+    <ul>
+      <li>Twenty MCP servers and three community plugin marketplaces</li>
+      <li>
+        Aggressive always-on hooks you have not read
+      </li>
+      <li>
+        Production DB credentials “just to try”
+      </li>
+      <li>
+        Dual native + npm installs “for safety”
+      </li>
+      <li>
+        Max 20x spend before you know your usage pattern — start on the plan you
+        have; upgrade when limits block real work (
+        <a href="/guides/claude-code/pricing/">pricing</a>)
+      </li>
+    </ul>
+    <KeyTakeaway>
+      Day-one success = <strong>install + auth + one real edit in a real
+      repo</strong>. Ecosystem depth comes after that baseline is boringly
+      reliable.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 7. Troubleshooting -->
+  <section>
+    <h2 id="troubleshooting" class="guide-h2">
+      Common setup problems &amp; fixes
+    </h2>
+    <h3 class="guide-h3">Installation errors</h3>
+    <ul>
+      <li>
+        <strong>Script fails mid-download</strong> — retry; check network/proxy;
+        try package manager path
+      </li>
+      <li>
+        <strong>npm EBADENGINE / weird globals</strong> — upgrade Node to 22+, or
+        switch to native installer
+      </li>
+      <li>
+        <strong>Permission denied on global npm</strong> — never sudo; fix npm
+        prefix or use nvm/fnm
+      </li>
+    </ul>
+    <h3 class="guide-h3">Permission issues</h3>
+    <ul>
+      <li>
+        Claude cannot write files — check directory ownership and sandbox/approval
+        prompts
+      </li>
+      <li>
+        macOS privacy prompts for terminal disk access — allow for your terminal
+        app
+      </li>
+    </ul>
+    <h3 class="guide-h3">Auth problems</h3>
+    <ul>
+      <li>
+        Browser never opens / callback fails — complete login URL manually if
+        shown; check popup blockers
+      </li>
+      <li>
+        Logged in but no Code — plan is Free or org has not enabled Code
+      </li>
+      <li>
+        API key rejected — wrong env var, expired key, or key without required
+        access
+      </li>
+      <li>
+        SSO loops on Team/Enterprise — finish org login in browser; contact admin
+      </li>
+    </ul>
+    <h3 class="guide-h3">Path / environment issues</h3>
+    <ul>
+      <li>
+        <code>command not found: claude</code> — new terminal; verify install
+        location on PATH; remove duplicate installs
+      </li>
+      <li>
+        Wrong binary version — <code>which claude</code> /{" "}
+        <code>Get-Command claude</code>; uninstall the stale one
+      </li>
+      <li>
+        WSL vs Windows native confusion — install and run in the environment where
+        your code lives
+      </li>
+    </ul>
+    <h3 class="guide-h3">Quick troubleshooting checklist</h3>
+    <ol>
+      <li>New terminal window</li>
+      <li>
+        <code>claude --version</code>
+      </li>
+      <li>
+        <code>claude doctor</code>
+      </li>
+      <li>
+        Confirm paid plan / org access
+      </li>
+      <li>
+        Only one install method active
+      </li>
+      <li>
+        Network can reach Anthropic auth/API endpoints
+      </li>
+      <li>
+        Retry login; only then reinstall
+      </li>
+    </ol>
+    <p class="mt-4">
+      Deeper symptom → fix coverage (performance, skills, plugins, MCP, model
+      issues):{" "}
+      <a href="/guides/claude-code/troubleshooting/"
+        >Claude Code troubleshooting guide</a
+      >.
+    </p>
+  </section>
+
+  <!-- 8. Next steps -->
+  <section>
+    <h2 id="next-steps" class="guide-h2">Next steps after setup</h2>
+    <p>
+      Once <code>claude doctor</code> is clean and you have landed one good diff:
+    </p>
+    <ul>
+      <li>
+        <a href="/guides/claude-code/pricing/">Claude Code pricing</a> — Pro vs Max
+        vs Team when limits hit
+      </li>
+      <li>
+        <a href="/guides/claude-code/skills/">Claude Code Skills</a> — reusable
+        playbooks without stuffing CLAUDE.md
+      </li>
+      <li>
+        <a href="/guides/claude-code/plugins/">Claude Code Plugins</a> —
+        marketplace bundles for integrations and team standards
+      </li>
+      <li>
+        <a href="/guides/claude-code/mcp/">Best MCP servers for Claude Code</a> —
+        GitHub, Playwright, Context7, and friends
+      </li>
+      <li>
+        <a href="/guides/claude-code/vs-codex/">Claude Code vs Codex</a>
+        {" · "}
+        <a href="/guides/claude-code-vs-cursor/">Claude Code vs Cursor</a> — if you
+        are still choosing a daily driver
+      </li>
+    </ul>
+  </section>
+
+  <!-- 9. Related -->
+  <section id="related">
+    <h2 class="guide-h2">Related guides</h2>
+    <ClaudeCodeClusterNav current="claude-code/setup" />
+    <ul>
+      <li>
+        <a href="/guides/claude-code/">Claude Code Guide Hub</a> — full cluster
+        index
+      </li>
+      <li>
+        <a href="/tools/claude-code/">Claude Code tool page</a> — product profile
+        and scores
+      </li>
+      <li>
+        <a href="/guides/best-ai-coding-agents-2026/"
+          >Best AI Coding Agents in 2026</a
+        >{" "}
+        — broader shortlist
+      </li>
+      <li>
+        <a href="/guides/mcp-and-tool-calling-explained/"
+          >MCP and tool calling explained</a
+        >
+        {" · "}
+        <a href="/guides/mcp-server-implementation/"
+          >MCP server implementation</a
+        >
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. When in doubt, match the official setup page for
+      your OS and re-run <code>claude doctor</code>.
+    </p>
+  </section>
+
+  <RelatedComparisons slug={slug} categories={["Coding"]} />
+</GuideLayout>

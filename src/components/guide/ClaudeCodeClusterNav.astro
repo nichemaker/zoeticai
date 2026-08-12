@@ -1,0 +1,113 @@
+---
+/**
+ * Claude Code topic cluster navigation — hub + spokes for related sections.
+ */
+export type ClaudeCodeClusterSlug =
+  | "claude-code"
+  | "claude-code/setup"
+  | "claude-code/troubleshooting"
+  | "claude-code/pricing"
+  | "claude-code/skills"
+  | "claude-code/plugins"
+  | "claude-code/mcp"
+  | "claude-code/vs-codex"
+  | "claude-code-vs-cursor";
+
+interface Props {
+  /** Current page slug — highlighted, not linked */
+  current: ClaudeCodeClusterSlug | string;
+  title?: string;
+}
+
+const { current, title = "Claude Code guides" } = Astro.props;
+
+const items: { slug: ClaudeCodeClusterSlug; href: string; label: string }[] = [
+  {
+    slug: "claude-code",
+    href: "/guides/claude-code/",
+    label: "Claude Code Guide Hub",
+  },
+  {
+    slug: "claude-code/setup",
+    href: "/guides/claude-code/setup/",
+    label: "Install & setup",
+  },
+  {
+    slug: "claude-code/troubleshooting",
+    href: "/guides/claude-code/troubleshooting/",
+    label: "Troubleshooting",
+  },
+  {
+    slug: "claude-code/pricing",
+    href: "/guides/claude-code/pricing/",
+    label: "Pricing",
+  },
+  {
+    slug: "claude-code/skills",
+    href: "/guides/claude-code/skills/",
+    label: "Skills",
+  },
+  {
+    slug: "claude-code/plugins",
+    href: "/guides/claude-code/plugins/",
+    label: "Plugins",
+  },
+  {
+    slug: "claude-code/mcp",
+    href: "/guides/claude-code/mcp/",
+    label: "Best MCP servers",
+  },
+  {
+    slug: "claude-code/vs-codex",
+    href: "/guides/claude-code/vs-codex/",
+    label: "vs Codex",
+  },
+  {
+    slug: "claude-code-vs-cursor",
+    href: "/guides/claude-code-vs-cursor/",
+    label: "vs Cursor",
+  },
+];
+---
+
+<nav
+  class="not-prose my-8 rounded-[var(--radius-card)] border border-border bg-surface-muted/50 p-5 sm:p-6"
+  aria-label="Claude Code guide cluster"
+>
+  <p class="text-xs font-bold uppercase tracking-wider text-accent">{title}</p>
+  <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+    {
+      items.map((item) =>
+        item.slug === current ? (
+          <li>
+            <span class="font-semibold text-ink" aria-current="page">
+              {item.label}
+            </span>
+          </li>
+        ) : (
+          <li>
+            <a
+              href={item.href}
+              class="font-semibold text-accent hover:text-accent-hover"
+            >
+              {item.label}
+            </a>
+          </li>
+        ),
+      )
+    }
+  </ul>
+  <p class="mt-3 text-xs text-ink-soft">
+    <a
+      href="/tools/claude-code/"
+      class="font-semibold text-accent hover:text-accent-hover"
+      >Claude Code tool page</a
+    >
+    {" · "}
+    <a
+      href="/guides/best-ai-coding-agents-2026/"
+      class="font-semibold text-accent hover:text-accent-hover"
+      >Best AI Coding Agents</a
+    >
+  </p>
+</nav>

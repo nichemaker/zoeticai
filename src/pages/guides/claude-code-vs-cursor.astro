@@ -4,6 +4,7 @@ import KeyTakeaway from "../../components/guide/KeyTakeaway.astro";
 import InfoCallout from "../../components/guide/InfoCallout.astro";
 import ComparisonTable from "../../components/guide/ComparisonTable.astro";
 import ToolReviewCard from "../../components/guide/ToolReviewCard.astro";
+import ClaudeCodeClusterNav from "../../components/guide/ClaudeCodeClusterNav.astro";
 import RelatedComparisons from "../../components/RelatedComparisons.astro";
 import { getToolBySlug } from "../../data/tools";
 
@@ -472,7 +473,18 @@ const toc = [
             <strong class="font-semibold text-ink"
               >Verify on cursor.com and Anthropic’s pricing pages</strong
             >{" "}
-            before you buy or roll out.
+            before you buy or roll out. For a full Claude Code tier breakdown
+            (Pro, Max, Team, Enterprise, real monthly scenarios), see{" "}
+            <a
+              href="/guides/claude-code/pricing/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Claude Code pricing in 2026</a
+            >. For Anthropic’s agent vs OpenAI’s coding agent, see{" "}
+            <a
+              href="/guides/claude-code/vs-codex/"
+              class="font-semibold text-accent hover:text-accent-hover"
+              >Claude Code vs Codex</a
+            >.
           </p>
 
           
@@ -727,6 +739,31 @@ const toc = [
             >.
           </p>
         </section>
+
+  <section id="related" class="mt-14 sm:mt-16">
+    <h2 class="guide-h2">Related guides</h2>
+    <ClaudeCodeClusterNav current="claude-code-vs-cursor" />
+    <ul class="mt-4">
+      <li>
+        <a href="/guides/claude-code/">Claude Code Guide Hub</a> — setup, pricing,
+        skills, plugins, MCP
+      </li>
+      <li>
+        <a href="/guides/claude-code/vs-codex/">Claude Code vs Codex</a>
+        {" · "}
+        <a href="/guides/claude-code/pricing/">Claude Code pricing</a>
+        {" · "}
+        <a href="/guides/claude-code/setup/">Setup</a>
+      </li>
+      <li>
+        <a href="/guides/best-ai-coding-agents-2026/">Best AI Coding Agents in 2026</a>
+        {" · "}
+        <a href="/tools/claude-code/">Claude Code</a>
+        {" · "}
+        <a href="/tools/cursor/">Cursor</a>
+      </li>
+    </ul>
+  </section>
 
   <div class="mt-10 border-t border-border pt-10">
     <RelatedComparisons

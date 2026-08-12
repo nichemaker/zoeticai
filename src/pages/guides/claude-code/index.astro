@@ -1,0 +1,273 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import ClaudeCodeClusterNav from "../../../components/guide/ClaudeCodeClusterNav.astro";
+import RelatedComparisons from "../../../components/RelatedComparisons.astro";
+
+const title =
+  "Claude Code Guide Hub (2026): Pricing, Setup, Skills, Plugins, MCP & Comparisons";
+const description =
+  "Central hub for Claude Code in 2026 — setup, pricing, skills, plugins, MCP servers, and comparisons with Codex and Cursor. Start here, then open the deep-dive you need.";
+const published = "2026-08-12";
+const readTime = "6 min";
+const slug = "claude-code";
+
+const quickStart = [
+  {
+    who: "New users",
+    action: "Install and authenticate",
+    href: "/guides/claude-code/setup/",
+    label: "Setup guide",
+  },
+  {
+    who: "Choosing a plan",
+    action: "Pro, Max, Team, real monthly cost",
+    href: "/guides/claude-code/pricing/",
+    label: "Pricing guide",
+  },
+  {
+    who: "Getting more power",
+    action: "Skills, plugins, and MCP tools",
+    href: "/guides/claude-code/skills/",
+    label: "Skills → then Plugins & MCP",
+  },
+  {
+    who: "Picking a tool",
+    action: "vs Codex or vs Cursor",
+    href: "/guides/claude-code/vs-codex/",
+    label: "Comparisons",
+  },
+];
+
+const allGuides = [
+  {
+    href: "/guides/claude-code/setup/",
+    title: "How to Install and Set Up Claude Code",
+    excerpt:
+      "Native installer, npm, desktop, auth, first config, and common fixes.",
+    tag: "Start here",
+  },
+  {
+    href: "/guides/claude-code/troubleshooting/",
+    title: "Claude Code Troubleshooting",
+    excerpt:
+      "Install/path, auth, performance, skills, plugins, MCP — symptom → fix.",
+    tag: "Fix it",
+  },
+  {
+    href: "/guides/claude-code/pricing/",
+    title: "Claude Code Pricing",
+    excerpt:
+      "Free, Pro, Max 5x/20x, Team, Enterprise, API — real light/medium/heavy costs.",
+    tag: "Buying",
+  },
+  {
+    href: "/guides/claude-code/skills/",
+    title: "Claude Code Skills",
+    excerpt:
+      "What skills are vs plugins and agents, best skills, and when to write your own.",
+    tag: "Extend",
+  },
+  {
+    href: "/guides/claude-code/plugins/",
+    title: "Claude Code Plugins",
+    excerpt:
+      "Marketplaces, install flow, and when a plugin beats a lone skill or MCP.",
+    tag: "Extend",
+  },
+  {
+    href: "/guides/claude-code/mcp/",
+    title: "Best MCP Servers for Claude Code",
+    excerpt:
+      "Selective shortlist: GitHub, Playwright, Figma, Context7, team tools, setup.",
+    tag: "Extend",
+  },
+  {
+    href: "/guides/claude-code/vs-codex/",
+    title: "Claude Code vs Codex",
+    excerpt:
+      "Terminal-first Anthropic agent vs OpenAI’s coding agent — workflow and cost.",
+    tag: "Compare",
+  },
+  {
+    href: "/guides/claude-code-vs-cursor/",
+    title: "Claude Code vs Cursor",
+    excerpt:
+      "CLI agent vs AI-native IDE — daily workflow, autonomy, and when to use both.",
+    tag: "Compare",
+  },
+];
+
+const toc = [
+  { id: "introduction", label: "What this hub is" },
+  { id: "quick-start", label: "Quick start path" },
+  { id: "all-guides", label: "All Claude Code guides" },
+  { id: "when-to-use", label: "When to use Claude Code" },
+  { id: "related", label: "Related resources" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Pillar"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="Claude Code hub"
+  exploreCategories={["Coding", "Frameworks", "Enterprise", "No-Code"]}
+  toc={toc}
+  showHubBacklink={true}
+>
+  <section>
+    <h2 id="introduction" class="guide-h2">Claude Code, mapped in one place</h2>
+    <p>
+      <a href="/tools/claude-code/">Claude Code</a> is Anthropic’s
+      terminal-native coding agent: it plans changes, edits files, runs commands,
+      and works across multi-file refactors with Claude’s long-context strengths.
+      This hub is the index for every practical guide we publish about it.
+    </p>
+    <p>
+      <strong>Who it is for:</strong> developers and eng leads evaluating Claude
+      Code, setting it up, controlling cost, or extending it with skills, plugins,
+      and MCP — and people choosing between Claude Code, Cursor, and Codex.
+    </p>
+    <p>
+      <strong>What you can do from here:</strong> follow a quick-start path,
+      open any deep-dive card below, or jump to the directory profile and wider
+      coding-agent shortlist.
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        Pricing, installers, plugins, and MCP packaging move during the year.
+        Each spoke notes its own data date; treat vendor docs as the final check
+        before you buy or standardize.
+      </p>
+    </InfoCallout>
+  </section>
+
+  <section>
+    <h2 id="quick-start" class="guide-h2">Quick start path</h2>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      {
+        quickStart.map((item) => (
+          <a
+            href={item.href}
+            class="card-interactive group flex flex-col p-5 sm:p-6"
+          >
+            <span class="text-xs font-bold uppercase tracking-wider text-accent">
+              {item.who}
+            </span>
+            <span class="mt-2 text-base font-semibold text-ink group-hover:text-accent">
+              {item.label} →
+            </span>
+            <span class="mt-1.5 text-sm leading-relaxed text-ink-muted">
+              {item.action}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+    <KeyTakeaway>
+      New to Claude Code? Do{" "}
+      <a href="/guides/claude-code/setup/">setup</a> first, then{" "}
+      <a href="/guides/claude-code/pricing/">pricing</a> if limits or plan choice
+      matter. Add{" "}
+      <a href="/guides/claude-code/skills/">skills</a> /{" "}
+      <a href="/guides/claude-code/plugins/">plugins</a> /{" "}
+      <a href="/guides/claude-code/mcp/">MCP</a> only after a clean
+      edit-test loop works.
+    </KeyTakeaway>
+  </section>
+
+  <section>
+    <h2 id="all-guides" class="guide-h2">All Claude Code guides</h2>
+    <p>
+      Every spoke in this cluster. Open the one that matches your next decision.
+    </p>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      {
+        allGuides.map((g) => (
+          <a
+            href={g.href}
+            class="card-interactive group flex flex-col p-5 sm:p-6"
+          >
+            <span class="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+              {g.tag}
+            </span>
+            <span class="mt-2 text-base font-semibold text-ink group-hover:text-accent">
+              {g.title}
+            </span>
+            <span class="mt-2 text-sm leading-relaxed text-ink-muted">
+              {g.excerpt}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+    <ClaudeCodeClusterNav current="claude-code" title="Jump to any guide" />
+  </section>
+
+  <section>
+    <h2 id="when-to-use" class="guide-h2">When to use Claude Code</h2>
+    <ul>
+      <li>
+        You want a <strong>terminal-first agent</strong> for multi-file refactors,
+        migrations, and scriptable sessions
+      </li>
+      <li>
+        Your team already standardizes on <strong>Claude</strong> (Pro/Max/Team)
+        and wants coding agents on the same bill
+      </li>
+      <li>
+        MCP, skills, and CLI control matter more than an AI-native IDE chrome
+      </li>
+    </ul>
+    <p>
+      Prefer an IDE daily driver? See{" "}
+      <a href="/guides/claude-code-vs-cursor/">Claude Code vs Cursor</a>. Prefer
+      OpenAI’s stack? See{" "}
+      <a href="/guides/claude-code/vs-codex/">Claude Code vs Codex</a>. For the
+      wider field (Copilot, Cline, Devin, and more), start with{" "}
+      <a href="/guides/best-ai-coding-agents-2026/">Best AI Coding Agents in 2026</a>.
+    </p>
+  </section>
+
+  <section id="related">
+    <h2 class="guide-h2">Related resources</h2>
+    <ul>
+      <li>
+        <a href="/tools/claude-code/">Claude Code tool page</a> — scores, features,
+        pricing notes
+      </li>
+      <li>
+        <a href="/guides/mcp-and-tool-calling-explained/"
+          >MCP and tool calling explained</a
+        >
+        {" · "}
+        <a href="/guides/mcp-server-implementation/"
+          >How to build MCP servers</a
+        >
+      </li>
+      <li>
+        <a href="/guides/best-ai-coding-agents-2026/"
+          >Best AI Coding Agents in 2026</a
+        >{" "}
+        — coding-agents hub
+      </li>
+      <li>
+        <a href="/guides/ai-agent-platforms-guide/"
+          >AI Agent Platforms Guide 2026</a
+        >{" "}
+        — pillar for frameworks, enterprise, no-code, and TCO
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. This hub is navigational — deep claims and prices
+      live on the spoke pages.
+    </p>
+  </section>
+
+  <RelatedComparisons slug={slug} categories={["Coding"]} />
+</GuideLayout>

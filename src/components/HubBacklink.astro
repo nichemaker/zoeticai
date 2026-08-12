@@ -40,12 +40,15 @@ if (hubId) {
   hubs = getHubsForTool(toolSlug);
 }
 
-/** Prefer agent-platforms hub first when a page sits in multiple clusters. */
-hubs = [...hubs].sort((a, b) => {
-  if (a.id === "agent-platforms") return -1;
-  if (b.id === "agent-platforms") return 1;
-  return 0;
-});
+/** Prefer the most specific hub first (Claude Code → coding agents → platforms). */
+const hubRank: Record<string, number> = {
+  "claude-code": 0,
+  "coding-agents": 1,
+  "agent-platforms": 2,
+};
+hubs = [...hubs].sort(
+  (a, b) => (hubRank[a.id] ?? 9) - (hubRank[b.id] ?? 9),
+);
 
 const spokeKey = guideSlug ?? toolSlug;
 ---

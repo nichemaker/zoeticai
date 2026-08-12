@@ -1,0 +1,642 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../../components/guide/ComparisonTable.astro";
+import ClaudeCodeClusterNav from "../../../components/guide/ClaudeCodeClusterNav.astro";
+import RelatedComparisons from "../../../components/RelatedComparisons.astro";
+
+const title =
+  "Claude Code Skills in 2026: Best Skills, How They Work & How to Use Them";
+const description =
+  "Practical guide to Claude Code Skills in 2026 — what they are vs plugins and agents, how to install them, best skills by use case, and when to build your own.";
+const published = "2026-08-12";
+const readTime = "12 min";
+const slug = "claude-code/skills";
+
+const extensionCompare = [
+  {
+    label: "What it is",
+    cells: [
+      "On-demand procedure / domain playbook (SKILL.md + optional files)",
+      "Installable package that can ship skills, hooks, and config",
+      "Separate Claude instance with its own context for a subtask",
+      "Slash entry point; now largely unified with skills",
+    ],
+  },
+  {
+    label: "When it loads",
+    cells: [
+      "When relevant or when you invoke /name",
+      "When installed/enabled for the session or project",
+      "When the main agent (or you) spins it up for a job",
+      "On explicit /command (or auto via skill rules)",
+    ],
+  },
+  {
+    label: "Best for",
+    cells: [
+      "Repeatable workflows you do not want in every session’s context",
+      "Sharing and updating a set of capabilities across machines/teams",
+      "Isolated research, review, or long side work without polluting main chat",
+      "Quick manual triggers for known procedures",
+    ],
+  },
+  {
+    label: "Not for",
+    cells: [
+      "Always-on project facts (use CLAUDE.md)",
+      "Raw external APIs/tools alone (use MCP servers)",
+      "Permanent global rules that must always apply",
+      "Large reference dumps that should stay lazy-loaded as skills",
+    ],
+  },
+];
+
+const skillGroups: {
+  useCase: string;
+  skills: {
+    name: string;
+    what: string;
+    bestFor: string;
+    setup: string;
+  }[];
+}[] = [
+  {
+    useCase: "Built-in / bundled (start here)",
+    skills: [
+      {
+        name: "/code-review",
+        what: "Structured review pass over changes — risks, style, missing tests, simpler alternatives.",
+        bestFor: "PR hygiene before you push or open a review.",
+        setup: "Bundled with Claude Code. Invoke explicitly; no install.",
+      },
+      {
+        name: "/doctor",
+        what: "Environment and setup diagnostics when Claude Code misbehaves or tools fail.",
+        bestFor: "First response to “why is this broken?” days.",
+        setup: "Bundled. Use before rewriting config blindly.",
+      },
+      {
+        name: "/debug",
+        what: "Focused debugging workflow: reproduce, isolate, fix, verify.",
+        bestFor: "Bugs with unclear root cause across files.",
+        setup: "Bundled. Pair with a failing test or clear repro steps.",
+      },
+      {
+        name: "/batch",
+        what: "Apply a repeated change pattern across many files or targets more deliberately.",
+        bestFor: "Mechanical multi-file updates with a clear template.",
+        setup: "Bundled. Define the pattern first; do not batch vague goals.",
+      },
+      {
+        name: "/loop",
+        what: "Iterative loop until a stop condition — useful for fix → test → fix cycles.",
+        bestFor: "Tight feedback loops with automated checks.",
+        setup: "Bundled. Give a hard stop (tests green, lint clean).",
+      },
+      {
+        name: "/claude-api",
+        what: "Guidance for building against Anthropic’s API patterns from inside Code.",
+        bestFor: "SDK/API integration work in Anthropic-heavy projects.",
+        setup: "Bundled. Confirm current API docs when models change.",
+      },
+    ],
+  },
+  {
+    useCase: "Quality, design & delivery",
+    skills: [
+      {
+        name: "Code review / PR checklist skill (custom or community)",
+        what: "Your team’s review bar as a skill: security, migrations, observability, rollback.",
+        bestFor: "Orgs tired of re-pasting the same PR checklist.",
+        setup: "Easy. One SKILL.md in .claude/skills/; commit it to the repo.",
+      },
+      {
+        name: "Frontend design skill (official / community packs)",
+        what: "Visual and UX quality guidance for UI work — spacing, hierarchy, accessibility cues.",
+        bestFor: "Product UI polish when default agent output looks “AI-generic.”",
+        setup: "Medium. Install from a trusted marketplace source; skim instructions first.",
+      },
+      {
+        name: "Simplify / refactor skill",
+        what: "Bias toward smaller diffs, less abstraction, and deleting dead paths.",
+        bestFor: "Codebases that accrete cleverness under agent edits.",
+        setup: "Easy–medium. Custom version often beats a generic one.",
+      },
+      {
+        name: "Test-writing skill",
+        what: "How your repo writes tests: runner, fixtures, naming, what not to mock.",
+        bestFor: "Consistent tests without re-explaining conventions each session.",
+        setup: "Easy. Point at example tests in-repo; keep CLAUDE.md for stack facts.",
+      },
+    ],
+  },
+  {
+    useCase: "Ops, docs & team process",
+    skills: [
+      {
+        name: "Release / deploy skill",
+        what: "Step order for versioning, changelog, deploy, smoke checks, and rollback.",
+        bestFor: "Releases you do often enough to mess up under fatigue.",
+        setup: "Medium. Encode real commands; never invent prod steps.",
+      },
+      {
+        name: "Incident / debug runbook skill",
+        what: "Where logs live, how to bisect, who to page, what not to restart.",
+        bestFor: "On-call and production triage with Code in the loop.",
+        setup: "Medium. Keep secrets out of the skill; use env/docs links.",
+      },
+      {
+        name: "Docs / ADR skill",
+        what: "Templates for ADRs, README sections, and API notes in your house style.",
+        bestFor: "Teams that want agents to write docs that match existing tone.",
+        setup: "Easy. Ship markdown templates next to SKILL.md.",
+      },
+      {
+        name: "Skill-creator / meta skill",
+        what: "Helps you draft new SKILL.md files with good frontmatter and structure.",
+        bestFor: "Power users standardizing many workflows.",
+        setup: "Easy if available in your pack; otherwise copy a good example skill.",
+      },
+    ],
+  },
+];
+
+const starterSkills = [
+  "Bundled /code-review and /doctor — zero install, immediate payoff",
+  "One project skill: “how we open a PR in this repo”",
+  "One personal skill: your preferred debugging or commit message style",
+  "Only then: a marketplace pack if a real gap remains",
+];
+
+const powerUserSkills = [
+  "Domain packs for your stack (migrations, frontend design, security review)",
+  "Release and incident runbooks as project skills",
+  "Skills that call into MCP tools with clear guardrails",
+  "Subagent + skill combos for review-while-implement workflows",
+  "A small internal marketplace or monorepo of company skills",
+];
+
+const toc = [
+  { id: "introduction", label: "Why skills matter" },
+  { id: "quick-verdict", label: "Quick verdict" },
+  { id: "what-are-skills", label: "What are Claude Code Skills?" },
+  { id: "how-to-use", label: "How to add and use skills" },
+  { id: "best-skills", label: "Best skills (2026)" },
+  { id: "vs-plugins-agents", label: "Skills vs plugins vs agents" },
+  { id: "marketplace", label: "Marketplace & discovery" },
+  { id: "recommendations", label: "Practical recommendations" },
+  { id: "related", label: "Related guides" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Technical"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="Claude Code Skills"
+  exploreCategories={["Coding", "Frameworks", "Enterprise", "No-Code"]}
+  toc={toc}
+>
+  <!-- 1. Introduction -->
+  <section>
+    <h2 id="introduction" class="guide-h2">
+      Claude Code Skills, without the jargon
+    </h2>
+    <p>
+      <a href="/tools/claude-code/">Claude Code</a> is strong out of the box. Skills
+      are how you make it <strong>reliably good at your</strong> workflows —
+      review checklists, deploy steps, test conventions, domain playbooks —
+      without pasting the same instructions every session.
+    </p>
+    <p>
+      A skill is a small package (usually a folder with a <code>SKILL.md</code>) that
+      teaches Claude a procedure or specialty. Claude can load it when the task
+      matches, or you can invoke it with a slash command like{" "}
+      <code>/code-review</code>. Unlike dumping everything into{" "}
+      <code>CLAUDE.md</code>, skill bodies typically load{" "}
+      <strong>on demand</strong>, so long playbooks cost almost nothing until you
+      need them.
+    </p>
+    <p>
+      This guide covers what skills are (vs plugins, agents, and commands), how to
+      install and organize them, a practical 2026 shortlist, where to discover more,
+      and when to build your own.
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        Skills packaging, bundled commands, and marketplace UX move with Claude
+        Code releases. Treat paths and slash names below as the common 2026 model
+        (<code>~/.claude/skills/</code>, <code>.claude/skills/</code>, Agent
+        Skills / <code>SKILL.md</code>).{" "}
+        <strong>Confirm against current Claude Code docs before standardizing a
+        team workflow.</strong>
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 2. Quick verdict -->
+  <section>
+    <h2 id="quick-verdict" class="guide-h2">Quick verdict</h2>
+    <KeyTakeaway>
+      Think of Skills as <strong>lazy-loaded playbooks</strong>, not as plugins
+      or as always-on memory. Put stable project facts in{" "}
+      <code>CLAUDE.md</code>; put repeatable procedures in skills; put external
+      tools in MCP; put isolated heavy jobs in subagents. People who get the most
+      value are teams with <strong>repeated multi-step workflows</strong> and
+      power users tired of re-explaining the same process.
+    </KeyTakeaway>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      <div class="card-surface p-5 sm:p-6">
+        <p class="text-xs font-bold uppercase tracking-wider text-accent">
+          High value if you…
+        </p>
+        <ul class="mt-3 space-y-2 text-sm text-ink-muted">
+          <li>Ship the same PR / release / review ritual weekly</li>
+          <li>Onboard others who need the same Code behavior</li>
+          <li>Already hit context bloat from a huge CLAUDE.md</li>
+        </ul>
+      </div>
+      <div class="card-surface p-5 sm:p-6">
+        <p class="text-xs font-bold uppercase tracking-wider text-accent">
+          Lower priority if you…
+        </p>
+        <ul class="mt-3 space-y-2 text-sm text-ink-muted">
+          <li>Still learning basic Claude Code edit/test loops</li>
+          <li>Only run one-off tasks with no repeated process</li>
+          <li>Have not written down any team conventions yet</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. What are skills -->
+  <section>
+    <h2 id="what-are-skills" class="guide-h2">What are Claude Code Skills?</h2>
+    <p>
+      In Claude Code, a skill is a modular capability package. At minimum it is a
+      directory with a <code>SKILL.md</code> file: YAML frontmatter (name,
+      description, optional controls) plus markdown instructions. Optional
+      supporting files — templates, checklists, scripts — live beside it. Claude
+      Code’s skills align with the broader{" "}
+      <strong>Agent Skills</strong> open standard used across multiple coding
+      agents, with Claude-specific extras (invocation control, subagent execution,
+      dynamic context) depending on version.
+    </p>
+
+    <h3 class="guide-h3">Skills vs plugins vs agents vs commands</h3>
+    <ul>
+      <li>
+        <strong>Skills</strong> — reusable “how we do X” knowledge and workflows.
+        Loaded when relevant or via <code>/skill-name</code>.
+      </li>
+      <li>
+        <strong>Plugins</strong> — distribution and packaging. A marketplace
+        plugin can install one or more skills (and related config) so you are not
+        copying folders by hand.
+      </li>
+      <li>
+        <strong>Agents / subagents</strong> — separate Claude runs with their own
+        context. Use them to isolate long side work; they are not a substitute for
+        a skill’s written procedure.
+      </li>
+      <li>
+        <strong>Commands</strong> — slash triggers. In current Claude Code,
+        custom commands have largely{" "}
+        <strong>merged into skills</strong>:{" "}
+        <code>.claude/commands/deploy.md</code> and{" "}
+        <code>.claude/skills/deploy/SKILL.md</code> both tend to expose{" "}
+        <code>/deploy</code>. Prefer skills for anything that needs supporting
+        files or auto-invocation rules.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">How skills extend Claude Code</h3>
+    <p>
+      Base Claude Code can edit files and run tools. Skills add{" "}
+      <strong>judgment and sequence</strong>: your definition of a good review,
+      the exact migrate-and-smoke order, which tests must pass, what “done” means.
+      That turns a general agent into something closer to a trained teammate for
+      specific jobs — without burning tokens on those instructions every chat.
+    </p>
+
+    <h3 class="guide-h3">Where skills live and how they load</h3>
+    <ul>
+      <li>
+        <strong>Personal:</strong>{" "}
+        <code>~/.claude/skills/&lt;skill-name&gt;/</code> — available across
+        projects on your machine.
+      </li>
+      <li>
+        <strong>Project:</strong>{" "}
+        <code>.claude/skills/&lt;skill-name&gt;/</code> — shared via git with
+        everyone who clones the repo.
+      </li>
+      <li>
+        <strong>Bundled:</strong> shipped with Claude Code (e.g. review, doctor,
+        debug-style skills/commands).
+      </li>
+      <li>
+        <strong>Via plugins / marketplace:</strong> installed through Claude
+        Code’s plugin flow into the skill locations your setup uses.
+      </li>
+    </ul>
+    <p>
+      Claude discovers installed skills and may auto-apply when the task matches
+      the skill description. You can also invoke directly with the slash name.
+      Keep descriptions precise so auto-load does not fire on unrelated work.
+    </p>
+  </section>
+
+  <!-- 4. How to add and use -->
+  <section>
+    <h2 id="how-to-use" class="guide-h2">How to add and use skills</h2>
+
+    <h3 class="guide-h3">Step-by-step</h3>
+    <ol>
+      <li>
+        <strong>Use what is already bundled.</strong> Try{" "}
+        <code>/code-review</code>, <code>/doctor</code>, or{" "}
+        <code>/debug</code> on a real task before installing anything.
+      </li>
+      <li>
+        <strong>Add a project skill for team process.</strong> Create{" "}
+        <code>.claude/skills/pr-checklist/SKILL.md</code> (name it for your
+        workflow). Write frontmatter + clear steps. Commit it.
+      </li>
+      <li>
+        <strong>Or install from a marketplace.</strong> In Claude Code, add a
+        trusted marketplace (official Anthropic skills repos are the usual
+        starting point), browse plugins, install the skill pack you need. Prefer
+        official or well-audited sources.
+      </li>
+      <li>
+        <strong>Or copy a skill folder.</strong> Place it under personal or
+        project <code>skills/</code>. Restart or open a new session if discovery
+        does not pick it up immediately.
+      </li>
+      <li>
+        <strong>Invoke on purpose the first times.</strong> Call{" "}
+        <code>/your-skill</code> or say “use the pr-checklist skill” so you can
+        judge output quality before relying on auto-load.
+      </li>
+      <li>
+        <strong>Iterate the SKILL.md.</strong> If Claude skips a step, the skill
+        is underspecified — fix the skill, not only the one-off chat.
+      </li>
+    </ol>
+
+    <h3 class="guide-h3">Organizing skills</h3>
+    <ul>
+      <li>
+        <strong>Project = team truth.</strong> Review, test, release, and stack
+        conventions belong in the repo.
+      </li>
+      <li>
+        <strong>Personal = your style.</strong> Commit messages, personal review
+        biases, experimental packs — keep these out of the shared tree unless the
+        team adopts them.
+      </li>
+      <li>
+        <strong>One skill, one job.</strong> “Do frontend” is a bad skill. “Follow
+        our design tokens and a11y checklist for React UI” is a good one.
+      </li>
+      <li>
+        <strong>Link, don’t paste libraries.</strong> Point at example files in
+        the repo; keep SKILL.md short enough to follow.
+      </li>
+      <li>
+        <strong>Version with git.</strong> Treat skills like code: review changes
+        that alter release or security behavior.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Common mistakes</h3>
+    <InfoCallout title="Avoid these" variant="warning">
+      <ul class="mt-1 list-disc space-y-1.5 pl-5">
+        <li>
+          Installing large community packs without reading a single{" "}
+          <code>SKILL.md</code> or script
+        </li>
+        <li>
+          Duplicating the same rules in CLAUDE.md <em>and</em> three skills
+          (conflicting instructions)
+        </li>
+        <li>
+          Putting secrets, tokens, or prod credentials inside skill files
+        </li>
+        <li>
+          Expecting skills to replace MCP when you need live tool access
+        </li>
+        <li>
+          Auto-loading vague skills that trigger on every prompt and waste
+          context
+        </li>
+      </ul>
+    </InfoCallout>
+  </section>
+
+  <!-- 5. Best skills -->
+  <section>
+    <h2 id="best-skills" class="guide-h2">Best Claude Code Skills (2026)</h2>
+    <p>
+      Not an exhaustive marketplace dump — a{" "}
+      <strong>practical shortlist</strong> of skill types that consistently pay
+      off. Names of bundled skills match common Claude Code builds; community
+      skill titles vary by pack, so judge by job, not brand.
+    </p>
+
+    {
+      skillGroups.map((group) => (
+        <div class="mt-10">
+          <h3 class="guide-h3">{group.useCase}</h3>
+          <div class="not-prose mt-4 space-y-4">
+            {group.skills.map((s) => (
+              <div class="card-surface p-5 sm:p-6">
+                <h4 class="text-base font-semibold text-ink">{s.name}</h4>
+                <dl class="mt-3 space-y-2 text-sm leading-relaxed text-ink-muted">
+                  <div>
+                    <dt class="font-semibold text-ink">What it does</dt>
+                    <dd class="mt-0.5">{s.what}</dd>
+                  </div>
+                  <div>
+                    <dt class="font-semibold text-ink">Best for</dt>
+                    <dd class="mt-0.5">{s.bestFor}</dd>
+                  </div>
+                  <div>
+                    <dt class="font-semibold text-ink">Setup</dt>
+                    <dd class="mt-0.5">{s.setup}</dd>
+                  </div>
+                </dl>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+
+    <KeyTakeaway title="Selection rule">
+      Install a skill only if you can name the <strong>repeated task</strong> it
+      removes from your paste buffer. If you cannot, write the process down once
+      as a project skill instead of browsing for a silver bullet.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 6. Skills vs plugins vs agents -->
+  <section>
+    <h2 id="vs-plugins-agents" class="guide-h2">
+      Skills vs plugins vs agents
+    </h2>
+    <p>
+      Use this when you are stuck choosing an extension type. (Commands are folded
+      into the skills column in practice.)
+    </p>
+    <ComparisonTable
+      caption="When to use which extension surface"
+      headers={["Skills", "Plugins", "Subagents", "Commands"]}
+      rows={extensionCompare}
+      highlightIndex={0}
+    />
+    <p>
+      <strong>MCP</strong> is a separate layer: it connects tools and servers
+      (browser, DB, internal APIs). Skills tell Claude{" "}
+      <em>how</em> to work; MCP gives Claude{" "}
+      <em>what</em> it can call. They stack well — a deploy skill might require an
+      MCP server for your platform API. See{" "}
+      <a href="/guides/mcp-and-tool-calling-explained/">MCP and tool calling</a>{" "}
+      and the{" "}
+      <a href="/guides/mcp-server-implementation/">MCP server implementation guide</a>.
+    </p>
+  </section>
+
+  <!-- 7. Marketplace -->
+  <section>
+    <h2 id="marketplace" class="guide-h2">Skills marketplace &amp; discovery</h2>
+    <h3 class="guide-h3">Where to find skills</h3>
+    <ul>
+      <li>
+        <strong>Official Anthropic sources</strong> — Claude Code docs, bundled
+        skills, and official skill/plugin repositories registered as marketplaces
+        (e.g. Anthropic’s public skills repos via{" "}
+        <code>/plugin marketplace add …</code> when documented).
+      </li>
+      <li>
+        <strong>GitHub</strong> — <code>SKILL.md</code>-based repos and “awesome
+        skills” lists. Quality varies wildly; star count is not a security audit.
+      </li>
+      <li>
+        <strong>Community packs</strong> — multi-agent skill libraries that also
+        target Codex, Cursor, Gemini CLI, etc. Useful for ideas; still audit
+        before install.
+      </li>
+      <li>
+        <strong>Your org</strong> — private git repos or internal plugin
+        marketplaces for company-only runbooks.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">How to evaluate before installing</h3>
+    <ol>
+      <li>
+        Read the full <code>SKILL.md</code> — does it match your stack?
+      </li>
+      <li>
+        List every script and network call; reject unexplained binary blobs.
+      </li>
+      <li>
+        Check maintenance: last update, open issues, who owns it.
+      </li>
+      <li>
+        Install in a throwaway project first; invoke explicitly; watch file and
+        shell actions.
+      </li>
+      <li>
+        Prefer project-scoped install for experiments; promote to personal or org
+        only after it earns trust.
+      </li>
+    </ol>
+    <InfoCallout title="Trust model" variant="tip">
+      <p>
+        A skill can instruct Claude to run shell commands and edit files. Treat
+        third-party skills like third-party CI scripts:{" "}
+        <strong>minimum privilege, read first, pin versions when you can.</strong>
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 8. Recommendations -->
+  <section>
+    <h2 id="recommendations" class="guide-h2">Practical recommendations</h2>
+
+    <h3 class="guide-h3">Starter skills for new users</h3>
+    <ul>
+      {starterSkills.map((item) => <li>{item}</li>)}
+    </ul>
+
+    <h3 class="guide-h3">Worth adding for power users</h3>
+    <ul>
+      {powerUserSkills.map((item) => <li>{item}</li>)}
+    </ul>
+
+    <h3 class="guide-h3">When to build your own</h3>
+    <p>Build a custom skill when:</p>
+    <ul>
+      <li>The workflow is specific to your repo, compliance, or deploy graph</li>
+      <li>You have pasted the same 20–40 lines into chat more than twice</li>
+      <li>Community skills almost fit but fight your conventions</li>
+      <li>You need templates or scripts that must stay private</li>
+    </ul>
+    <p>
+      Do <strong>not</strong> build a skill for one-off tasks, for facts that
+      belong in <code>CLAUDE.md</code>, or for raw tool access that MCP already
+      solves. Start from a thin SKILL.md: goal, inputs, steps, definition of done,
+      and one example. Expand only when Claude still misses steps.
+    </p>
+    <KeyTakeaway>
+      The highest-ROI skills are usually <strong>yours</strong>: short, opinionated,
+      checked into the repo, and tied to a command you actually run weekly — not
+      a 200-skill pack you never invoke.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 9. Related -->
+  <section id="related">
+    <h2 class="guide-h2">Related guides</h2>
+    <ClaudeCodeClusterNav current="claude-code/skills" />
+    <ul>
+      <li>
+        <a href="/guides/claude-code/">Claude Code Guide Hub</a> — full cluster
+        index
+      </li>
+      <li>
+        <a href="/guides/claude-code/plugins/">Plugins</a> package skills;{" "}
+        <a href="/guides/claude-code/mcp/">MCP servers</a> give tools skills can
+        call
+      </li>
+      <li>
+        <a href="/guides/claude-code/setup/">Setup</a>
+        {" · "}
+        <a href="/guides/claude-code/pricing/">Pricing</a>
+        {" · "}
+        <a href="/guides/claude-code/vs-codex/">vs Codex</a>
+        {" · "}
+        <a href="/guides/claude-code-vs-cursor/">vs Cursor</a>
+      </li>
+      <li>
+        <a href="/guides/mcp-and-tool-calling-explained/">MCP and tool calling explained</a>
+        {" · "}
+        <a href="/guides/mcp-server-implementation/">How to build MCP servers</a>
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. Re-check Claude Code docs for current skill paths,
+      bundled names, and marketplace commands before team rollout.
+    </p>
+  </section>
+
+  <RelatedComparisons slug={slug} categories={["Coding"]} />
+</GuideLayout>

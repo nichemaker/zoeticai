@@ -1,0 +1,582 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import ClaudeCodeClusterNav from "../../../components/guide/ClaudeCodeClusterNav.astro";
+import RelatedComparisons from "../../../components/RelatedComparisons.astro";
+
+const title = "Best MCP Servers for Claude Code in 2026";
+const description =
+  "Trusted shortlist of MCP servers for Claude Code in 2026 — GitHub, Playwright, Figma, Context7, Supabase, Slack, Linear, Notion, and how to choose and set them up.";
+const published = "2026-08-12";
+const readTime = "12 min";
+const slug = "claude-code/mcp";
+
+type Server = {
+  name: string;
+  enables: string;
+  bestFor: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  notes: string;
+};
+
+type ServerGroup = {
+  id: string;
+  title: string;
+  blurb: string;
+  servers: Server[];
+};
+
+const serverGroups: ServerGroup[] = [
+  {
+    id: "core-coding",
+    title: "Core coding & repo",
+    blurb:
+      "The default stack most Claude Code users should consider first — PRs, docs, and browser verification.",
+    servers: [
+      {
+        name: "GitHub MCP",
+        enables:
+          "Issues, PRs, code search, reviews, and repo operations without leaving the agent loop. Claude can open PRs, comment, and pull context from the remote.",
+        bestFor:
+          "Any team whose work already lives on GitHub — the highest-leverage coding MCP for most people.",
+        difficulty: "Easy",
+        notes:
+          "Prefer official/hosted GitHub MCP packaging when available. Scope tokens tightly (least privilege). Large tool surfaces can crowd context — enable only what you use.",
+      },
+      {
+        name: "Context7 (library docs MCP)",
+        enables:
+          "Up-to-date library and framework documentation lookups so Claude stops inventing APIs from stale training data.",
+        bestFor:
+          "Day-to-day coding against fast-moving stacks (React, Next, SDKs, cloud clients).",
+        difficulty: "Easy",
+        notes:
+          "Often cited as a near-default for Claude Code. Still verify critical API calls against official docs for production.",
+      },
+      {
+        name: "Playwright MCP",
+        enables:
+          "Real browser automation — open pages, click, fill forms, capture state, drive accessibility-tree style interactions for E2E checks.",
+        bestFor:
+          "UI verification, smoke tests, and “does this flow actually work?” after agent edits.",
+        difficulty: "Medium",
+        notes:
+          "Among the most-used MCP servers in 2026 for coding agents. Heavier than pure file edits; keep sessions intentional. Microsoft/official Playwright MCP packaging is the usual starting point.",
+      },
+      {
+        name: "Filesystem MCP (scoped)",
+        enables:
+          "Controlled read/write outside the default working tree when you must touch adjacent projects or shared paths.",
+        bestFor:
+          "Monorepo-adjacent work and multi-repo local layouts — not a blank “whole disk” mount.",
+        difficulty: "Easy",
+        notes:
+          "Claude Code already edits the project tree; only add filesystem MCP with narrow allowed paths. Over-broad mounts are a security smell.",
+      },
+    ],
+  },
+  {
+    id: "design-product",
+    title: "Design → code",
+    blurb: "When the source of truth is a design tool, not a ticket description.",
+    servers: [
+      {
+        name: "Figma MCP (Dev Mode)",
+        enables:
+          "Live structure from selected Figma frames — hierarchy, layout, tokens, components — so Claude generates UI against real design data, not screenshots alone.",
+        bestFor:
+          "Frontend implementers turning Figma into components with fewer layout guess mistakes.",
+        difficulty: "Medium",
+        notes:
+          "Quality tracks how clean the Figma file is. Expect better results with auto-layout and components; messy frames still produce messy code.",
+      },
+    ],
+  },
+  {
+    id: "data-backend",
+    title: "Data & backend",
+    blurb: "Schema, queries, and app backends Claude should inspect carefully — not invent.",
+    servers: [
+      {
+        name: "Supabase MCP",
+        enables:
+          "Project-aware database and backend operations in Supabase-shaped apps (schema, queries, related platform actions depending on server).",
+        bestFor:
+          "Builders shipping on Supabase who want agent help with SQL, policies, and project context.",
+        difficulty: "Medium",
+        notes:
+          "Treat credentials like production keys. Prefer read-only or staging projects until you trust the workflow.",
+      },
+      {
+        name: "PostgreSQL / SQLite MCP",
+        enables:
+          "Schema inspection and queries against databases you deliberately expose.",
+        bestFor:
+          "Debugging data bugs, writing migrations, and validating agent-proposed SQL.",
+        difficulty: "Medium",
+        notes:
+          "Never point unrestricted write access at production. Use read replicas or local dumps when possible.",
+      },
+    ],
+  },
+  {
+    id: "team-ops",
+    title: "Team tools & ops",
+    blurb:
+      "High-intent product integrations — only install what your team actually uses daily.",
+    servers: [
+      {
+        name: "Linear MCP",
+        enables:
+          "Read and update issues, projects, and status so Claude can implement against real tickets and leave trails.",
+        bestFor: "Eng teams standardized on Linear for delivery.",
+        difficulty: "Easy",
+        notes:
+          "Cleaner API surface than some legacy trackers. Still limit write scopes if you only need context.",
+      },
+      {
+        name: "Jira / Atlassian MCP",
+        enables:
+          "Issue read/write, search, and workflow updates in Jira-centric orgs (exact tools vary by server).",
+        bestFor: "Enterprise teams where tickets live in Jira (and sometimes Confluence).",
+        difficulty: "Medium",
+        notes:
+          "Permission models and field customizations make setup harder than Linear. Test on a non-prod project first.",
+      },
+      {
+        name: "Slack MCP",
+        enables:
+          "Search channels, read threads, draft or post messages when the agent needs team context or status updates.",
+        bestFor:
+          "Incident context, product decisions buried in Slack, and optional status posts.",
+        difficulty: "Medium",
+        notes:
+          "Powerful and easy to abuse. Prefer read-only tokens initially. Do not auto-post without a human gate.",
+      },
+      {
+        name: "Notion MCP",
+        enables:
+          "Read (and sometimes write) specs, wikis, and project docs stored in Notion.",
+        bestFor: "Teams whose PRDs and runbooks actually live in Notion.",
+        difficulty: "Medium",
+        notes:
+          "Worthless if Notion is a graveyard. Scope to specific pages/databases; full-workspace access is rarely needed.",
+      },
+      {
+        name: "Sentry (or error-tracking) MCP",
+        enables:
+          "Pull stack traces, issue frequency, and release health into the coding session.",
+        bestFor: "Fixing production bugs with evidence, not guesswork.",
+        difficulty: "Medium",
+        notes:
+          "Great paired with Claude Code debug loops. Watch PII in error payloads.",
+      },
+    ],
+  },
+  {
+    id: "web-context",
+    title: "Web context & research",
+    blurb: "When Claude needs fresh web content beyond built-in search habits.",
+    servers: [
+      {
+        name: "Firecrawl / Exa-style web MCP",
+        enables:
+          "Clean page extraction, site crawls, or semantic web search for research and competitive/docs pulls.",
+        bestFor:
+          "Docs that are not in Context7, content migrations, and research-heavy tasks.",
+        difficulty: "Easy",
+        notes:
+          "Usage may be metered. Prefer for targeted pulls; do not crawl the internet on every prompt.",
+      },
+      {
+        name: "Brave Search (or similar search MCP)",
+        enables: "Real-time search results the agent can cite and follow up on.",
+        bestFor: "Quick fact checks and finding current package/docs URLs.",
+        difficulty: "Easy",
+        notes:
+          "Complements Context7; does not replace reading the actual doc page.",
+      },
+    ],
+  },
+];
+
+const chooseCriteria = [
+  {
+    title: "Reliability & maintenance",
+    body: "Prefer official vendor servers (GitHub, Figma, Playwright) or actively maintained OSS. Abandoned MCP repos break silently after API changes.",
+  },
+  {
+    title: "Permissions & blast radius",
+    body: "What can it read or write? Can it post to Slack, close issues, or drop tables? Start read-only; expand only when the agent earns trust.",
+  },
+  {
+    title: "Actual weekly use",
+    body: "If you would not open the app this week, do not install its MCP. Idle servers still cost setup, secrets, and tool-list noise.",
+  },
+  {
+    title: "Context cost",
+    body: "Each server adds tools Claude must consider. Ten vague MCPs often beat zero; twenty noisy ones make the agent worse.",
+  },
+  {
+    title: "Security review",
+    body: "Treat MCP like installing a CLI with your tokens. Review env vars, network calls, and who published the package.",
+  },
+];
+
+const toc = [
+  { id: "introduction", label: "Why MCP matters for Claude Code" },
+  { id: "key-takeaway", label: "Key takeaway" },
+  { id: "how-mcp-works", label: "What MCP servers do" },
+  { id: "best-servers", label: "Best MCP servers (2026)" },
+  { id: "how-to-choose", label: "How to choose" },
+  { id: "setup", label: "How to set up" },
+  { id: "best-practices", label: "Best practices" },
+  { id: "related", label: "Related guides" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Technical"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="MCP servers for Claude Code"
+  exploreCategories={["Coding", "Frameworks", "Enterprise", "No-Code"]}
+  toc={toc}
+>
+  <!-- 1. Introduction -->
+  <section>
+    <h2 id="introduction" class="guide-h2">
+      Why MCP matters for Claude Code users
+    </h2>
+    <p>
+      <a href="/tools/claude-code/">Claude Code</a> already plans, edits files, and
+      runs shell commands in your project. That is enough for a lot of work — until
+      the truth lives somewhere else: a GitHub PR, a Figma frame, a Linear ticket, a
+      Postgres schema, or a browser that has to actually click through a flow.
+    </p>
+    <p>
+      <strong>MCP (Model Context Protocol)</strong> is how Claude Code connects to
+      those systems as tools, instead of you pasting screenshots and CSV exports into
+      the chat. The right servers turn Code from “smart terminal editor” into an agent
+      that can pull real context and take scoped actions. The wrong pile of servers
+      adds noise, token cost, and security risk.
+    </p>
+    <p>
+      This guide is a <strong>selective shortlist</strong> of MCP servers that
+      consistently help Claude Code users in 2026 — not an exhaustive registry dump.
+      Use it to pick a small set that matches your stack, then set them up carefully.
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        MCP server names, install commands, and official packaging change quickly.
+        Prefer vendor docs and the{" "}
+        <a href="https://github.com/modelcontextprotocol/servers"
+          >MCP servers ecosystem</a
+        >{" "}
+        over copied configs from random blogs.{" "}
+        <strong
+          >Verify auth scopes and current install steps before you put tokens on a
+          machine.</strong
+        >
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 2. Key takeaway -->
+  <section id="key-takeaway">
+    <h2 class="guide-h2">Key takeaway</h2>
+    <KeyTakeaway>
+      Start with <strong>GitHub + Context7 + Playwright</strong> if you ship software
+      in a browser-facing stack. Add <strong>one</strong> design, data, or team tool
+      MCP only when that system is a daily source of truth. Treat every server as a
+      privileged integration: least privilege, staging first, and fewer tools than
+      you think you need.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 3. What MCP does -->
+  <section>
+    <h2 id="how-mcp-works" class="guide-h2">
+      What MCP servers do in Claude Code
+    </h2>
+    <p>
+      An MCP server exposes tools (and sometimes resources/prompts) over a standard
+      protocol. Claude Code acts as a client: it discovers those tools, decides when
+      to call them, and feeds results back into the agent loop. You configure servers
+      in Claude Code settings (user, project, or project-local MCP config — exact
+      files vary by version), often via{" "}
+      <code>claude mcp add …</code> or a JSON <code>mcpServers</code> block.
+    </p>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      <div class="card-surface p-5 sm:p-6">
+        <h3 class="text-base font-semibold text-ink">Built-in Claude Code</h3>
+        <ul class="mt-3 space-y-2 text-sm text-ink-muted">
+          <li>Local repo read/edit</li>
+          <li>Shell, git, test commands you allow</li>
+          <li>Skills / CLAUDE.md procedures</li>
+          <li>No native deep access to SaaS APIs you have not connected</li>
+        </ul>
+      </div>
+      <div class="card-surface p-5 sm:p-6">
+        <h3 class="text-base font-semibold text-ink">With MCP servers</h3>
+        <ul class="mt-3 space-y-2 text-sm text-ink-muted">
+          <li>Remote issues, PRs, designs, DBs, chat</li>
+          <li>Browser automation beyond local files</li>
+          <li>Live docs and external system actions</li>
+          <li>Requires auth, maintenance, and trust decisions</li>
+        </ul>
+      </div>
+    </div>
+    <p class="mt-6">
+      Skills tell Claude <em>how</em> to work; MCP gives Claude <em>what</em> it can
+      call. They pair well — for example a release skill that uses GitHub MCP — but
+      they solve different problems. Background:{" "}
+      <a href="/guides/mcp-and-tool-calling-explained/"
+        >MCP and tool calling explained</a
+      >.
+    </p>
+  </section>
+
+  <!-- 4. Best servers -->
+  <section>
+    <h2 id="best-servers" class="guide-h2">
+      Best MCP servers for Claude Code (2026)
+    </h2>
+    <p>
+      Organized by use case. Difficulty is relative setup + ops burden, not model
+      quality.
+    </p>
+
+    {
+      serverGroups.map((group) => (
+        <div class="mt-12" id={group.id}>
+          <h3 class="guide-h3">{group.title}</h3>
+          <p class="text-sm text-ink-muted sm:text-base">{group.blurb}</p>
+          <div class="not-prose mt-5 space-y-4">
+            {group.servers.map((s) => (
+              <article class="card-surface p-5 sm:p-6">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h4 class="text-base font-semibold text-ink sm:text-lg">
+                    {s.name}
+                  </h4>
+                  <span class="pill-accent normal-case tracking-normal">
+                    Setup: {s.difficulty}
+                  </span>
+                </div>
+                <dl class="mt-4 space-y-3 text-sm leading-relaxed text-ink-muted sm:text-[0.9375rem]">
+                  <div>
+                    <dt class="font-semibold text-ink">Enables in Claude Code</dt>
+                    <dd class="mt-0.5">{s.enables}</dd>
+                  </div>
+                  <div>
+                    <dt class="font-semibold text-ink">Best for</dt>
+                    <dd class="mt-0.5">{s.bestFor}</dd>
+                  </div>
+                  <div>
+                    <dt class="font-semibold text-ink">Notes / caveats</dt>
+                    <dd class="mt-0.5">{s.notes}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+
+    <InfoCallout title="Honorable mentions" variant="tip">
+      <p>
+        Depending on stack: <strong>Kubernetes / cloud CLIs via MCP</strong> for
+        platform teams, <strong>n8n or workflow MCPs</strong> for automation-heavy
+        ops, and <strong>memory / sequential-thinking</strong> style servers when
+        you want structured multi-step scaffolding. Add these only after the core
+        coding trio is stable — they are easy to over-install.
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 5. How to choose -->
+  <section>
+    <h2 id="how-to-choose" class="guide-h2">How to choose MCP servers</h2>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      {
+        chooseCriteria.map((c) => (
+          <div class="card-surface p-5">
+            <h3 class="text-base font-semibold text-ink">{c.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted">{c.body}</p>
+          </div>
+        ))
+      }
+    </div>
+    <h3 class="guide-h3">Worth adding vs noise</h3>
+    <ul>
+      <li>
+        <strong>Worth adding:</strong> You already copy-paste from that system into
+        Claude weekly (tickets, designs, DB schemas, PR links).
+      </li>
+      <li>
+        <strong>Noise:</strong> “Might be cool,” duplicate servers for the same job
+        (two browser MCPs), or write access you never intend to use.
+      </li>
+      <li>
+        <strong>Skip for now:</strong> Anything that requires a second full product
+        subscription you do not have — or a server with no clear owner.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 6. Setup -->
+  <section>
+    <h2 id="setup" class="guide-h2">
+      How to set up MCP servers in Claude Code
+    </h2>
+    <h3 class="guide-h3">High-level steps</h3>
+    <ol>
+      <li>
+        <strong>Pick one server</strong> that maps to a real weekly task (usually
+        GitHub).
+      </li>
+      <li>
+        <strong>Create a least-privilege token</strong> or OAuth app in the target
+        system. Prefer read-only or staging.
+      </li>
+      <li>
+        <strong>Register the server with Claude Code</strong> — via CLI (
+        <code>claude mcp add …</code> patterns where supported) or by editing MCP
+        config in user/project settings / <code>.mcp.json</code> as your version
+        documents.
+      </li>
+      <li>
+        <strong>Confirm discovery</strong> — list MCP servers / tools in Claude Code
+        and ensure the process starts without auth errors.
+      </li>
+      <li>
+        <strong>Run a narrow pilot task</strong> (“summarize open PRs,” “open the
+        staging login page”) before multi-hour agent sessions.
+      </li>
+      <li>
+        <strong>Commit project-level config carefully</strong> — never commit
+        secrets; use env vars and local overrides.
+      </li>
+    </ol>
+    <h3 class="guide-h3">Common issues</h3>
+    <ul>
+      <li>
+        <strong>Server starts but tools never fire</strong> — description mismatch
+        or too many tools; try an explicit instruction to use the named server.
+      </li>
+      <li>
+        <strong>Auth loops / 401s</strong> — expired tokens, wrong env var names,
+        or org SSO blocks. Fix auth before blaming the model.
+      </li>
+      <li>
+        <strong>Node/npx flakiness</strong> — pin versions, ensure Node is on PATH
+        in the environment Claude Code launches.
+      </li>
+      <li>
+        <strong>Permission prompts fatigue</strong> — tighten tool allowlists so you
+        are not approving noise every turn.
+      </li>
+      <li>
+        <strong>Context bloat</strong> — disable unused servers per project; do not
+        run every MCP globally.
+      </li>
+    </ul>
+    <p>
+      Building or hardening your own server? Use the deeper guides:{" "}
+      <a href="/guides/mcp-and-tool-calling-explained/"
+        >MCP and tool calling explained</a
+      >{" "}
+      and{" "}
+      <a href="/guides/mcp-server-implementation/"
+        >how to build and run MCP servers</a
+      >.
+    </p>
+  </section>
+
+  <!-- 7. Best practices -->
+  <section>
+    <h2 id="best-practices" class="guide-h2">Best practices</h2>
+    <ul>
+      <li>
+        <strong>Start small.</strong> One to three servers that match real work beat
+        a fifteen-server “AI OS.”
+      </li>
+      <li>
+        <strong>Prefer well-maintained servers.</strong> Official vendor or
+        high-signal OSS with recent commits and clear docs.
+      </li>
+      <li>
+        <strong>Guard permissions and secrets.</strong> Env-based tokens, no secrets
+        in git, staging projects for write tools, human approval for posts and
+        deploys.
+      </li>
+      <li>
+        <strong>Keep the tool list focused.</strong> Disable MCP packs you are not
+        using this month. Project-scoped config &gt; global kitchen sink.
+      </li>
+      <li>
+        <strong>Pair with skills.</strong> A thin skill (“how we open PRs”) plus
+        GitHub MCP beats either alone. See{" "}
+        <a href="/guides/claude-code/skills/">Claude Code Skills</a>.
+      </li>
+      <li>
+        <strong>Watch the bill.</strong> MCP does not replace Claude usage limits —
+        browser and multi-tool loops burn Max/API budget faster. See{" "}
+        <a href="/guides/claude-code/pricing/">Claude Code pricing</a>.
+      </li>
+    </ul>
+    <KeyTakeaway title="Default stack">
+      Most developers: <strong>GitHub + Context7</strong>, add{" "}
+      <strong>Playwright</strong> when UI matters, then exactly one of Figma /
+      Supabase / Linear (or Jira) based on where your truth lives. Everything else
+      is optional until proven.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 8. Related -->
+  <section id="related">
+    <h2 class="guide-h2">Related guides</h2>
+    <ClaudeCodeClusterNav current="claude-code/mcp" />
+    <ul>
+      <li>
+        <a href="/guides/claude-code/">Claude Code Guide Hub</a> — full cluster
+        index
+      </li>
+      <li>
+        <a href="/guides/mcp-and-tool-calling-explained/"
+          >MCP and tool calling explained</a
+        >
+        {" · "}
+        <a href="/guides/mcp-server-implementation/"
+          >How to build and run MCP servers</a
+        >
+      </li>
+      <li>
+        <a href="/guides/claude-code/skills/">Skills</a>
+        {" · "}
+        <a href="/guides/claude-code/plugins/">Plugins</a> — playbooks and packages
+        that pair with MCP
+      </li>
+      <li>
+        <a href="/guides/claude-code/setup/">Setup</a>
+        {" · "}
+        <a href="/guides/claude-code/pricing/">Pricing</a>
+        {" · "}
+        <a href="/guides/claude-code/vs-codex/">vs Codex</a>
+        {" · "}
+        <a href="/guides/claude-code-vs-cursor/">vs Cursor</a>
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. Re-check official MCP server docs and Claude Code
+      configuration paths before team rollout.
+    </p>
+  </section>
+
+  <RelatedComparisons slug={slug} categories={["Coding"]} />
+</GuideLayout>

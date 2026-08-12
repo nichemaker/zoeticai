@@ -1,0 +1,604 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import ComparisonTable from "../../../components/guide/ComparisonTable.astro";
+import ToolReviewCard from "../../../components/guide/ToolReviewCard.astro";
+import ClaudeCodeClusterNav from "../../../components/guide/ClaudeCodeClusterNav.astro";
+import RelatedComparisons from "../../../components/RelatedComparisons.astro";
+import { getToolBySlug } from "../../../data/tools";
+
+const title =
+  "Claude Code vs Codex in 2026: Which AI Coding Agent Should You Use?";
+const description =
+  "Honest 2026 comparison of Claude Code and OpenAI Codex: workflow, autonomy, codebase context, DX, pricing, and which coding agent fits solo devs, power users, and teams.";
+const published = "2026-08-12";
+const readTime = "13 min";
+const slug = "claude-code/vs-codex";
+
+const claudeCode = getToolBySlug("claude-code");
+const codex = getToolBySlug("openai-codex");
+
+const comparisonRows = [
+  {
+    label: "Workflow style",
+    cells: [
+      "Terminal-first agent loop: plan, edit, run commands, iterate in the shell. IDE optional.",
+      "Cloud / product-surface agent: delegated tasks and agent runs inside OpenAI’s ChatGPT + Codex stack (CLI/API options vary by packaging).",
+    ],
+  },
+  {
+    label: "Autonomy / agent capabilities",
+    cells: [
+      "High autonomy for multi-step local workflows — file edits, shell commands, MCP-extended tools when configured.",
+      "Strong for delegated software tasks and async cloud agent runs; less “live in my terminal all day” by default than Claude Code.",
+    ],
+  },
+  {
+    label: "Codebase understanding",
+    cells: [
+      "Leans on Claude long-context + repo exploration in-session; strong for large multi-file reasoning passes on local trees.",
+      "Repo context for cloud/agent tasks; fit depends on how you connect the codebase and what OpenAI’s environment can see.",
+    ],
+  },
+  {
+    label: "Speed & developer experience",
+    cells: [
+      "Fast for CLI-native engineers; friction if the team only wants GUI IDE flows.",
+      "Fast when you already live in ChatGPT/OpenAI; context switch if your day is pure local terminal + git.",
+    ],
+  },
+  {
+    label: "Pricing model",
+    cells: [
+      "Claude Pro/Max/Team/Enterprise (or API). Code shares the Claude usage pool. Serious daily use often Max ($100–$200).",
+      "Bundled with ChatGPT tiers (Free/Go/Plus/Pro/Business/Enterprise signals) and/or API meters — limits scale by OpenAI plan.",
+    ],
+  },
+  {
+    label: "Best for",
+    cells: [
+      "Anthropic-centric shops, terminal-first seniors, long multi-file refactors with local control.",
+      "OpenAI-centric shops, async/cloud agent delegation, teams already paying for ChatGPT at scale.",
+    ],
+  },
+  {
+    label: "Limitations",
+    cells: [
+      "Pro limits bite hard on agent days; cost jumps to Max. Not an IDE. Shared pool with chat can surprise you.",
+      "Not a pure local-first daily driver for everyone. Packaging and limits track OpenAI product changes; model/ecosystem lock-in is real.",
+    ],
+  },
+];
+
+const pricingRows = [
+  {
+    label: "Entry / light use",
+    cells: [
+      "Claude Pro ~$20/mo ($17 annual) includes Code; light sessions only before walls.",
+      "Codex on lower ChatGPT tiers (Free/Go/Plus ~$0–$20) for light or few weekly sessions — verify current inclusion.",
+    ],
+  },
+  {
+    label: "Daily individual driver",
+    cells: [
+      "Max 5x ~$100/mo is the common “real work” tier; Max 20x ~$200 for all-day agents.",
+      "ChatGPT Pro-class tiers often ~$100–$200/mo for higher Codex rate limits (5×/20× style packaging where offered).",
+    ],
+  },
+  {
+    label: "Team / org",
+    cells: [
+      "Team Standard/Premium seats or Enterprise ($20/seat + usage). Mix seats for Code-heavy vs light users.",
+      "ChatGPT Business/Enterprise + Codex inclusion; seat + credit/token economics — confirm admin packaging.",
+    ],
+  },
+  {
+    label: "What blows the bill",
+    cells: [
+      "Long Opus-class agent loops, multi-hour refactors, credits after session/weekly caps.",
+      "Heavy cloud agent task volume, high model tiers, and token credits beyond included plan limits.",
+    ],
+  },
+  {
+    label: "When Claude Code costs more",
+    cells: [
+      "You need Max for daily Code while Codex on Plus still covers light agent work — or you double-pay Claude chat + Code intensity.",
+      "—",
+    ],
+  },
+  {
+    label: "When Codex costs more",
+    cells: [
+      "—",
+      "You push Pro-tier ChatGPT for coding agents while Claude Pro would have been enough for light CLI work — or cloud task volume outruns included credits.",
+    ],
+  },
+];
+
+const chooseClaudeCode = [
+  "You want a terminal-native agent that plans, edits, and runs commands on your machine/workflow",
+  "Large multi-file refactors and migrations are a primary use case, with local repo control",
+  "Your org already standardizes on Claude (chat, projects, Max/Team) and wants one model family",
+  "MCP / tool extension around the CLI agent is part of how you work",
+  "You prefer scriptable agent sessions over cloud-delegated ticket runs",
+  "CLI-first seniors will own the tool more than junior GUI-only users",
+];
+
+const chooseCodex = [
+  "You already live in ChatGPT / OpenAI and want coding agents inside that ecosystem",
+  "Async or cloud-delegated software tasks matter more than a pure local shell loop",
+  "Your company is standardized on OpenAI for models, procurement, and data agreements",
+  "You want agent access that tracks ChatGPT plan tiers you already buy for non-coding work",
+  "Your workflow is “hand off a task and review the result” more than “pair in the terminal for hours”",
+  "Team packaging and admin already sit on OpenAI Business/Enterprise",
+];
+
+const bothNotes = [
+  {
+    title: "Split by task type",
+    body: "Use Claude Code for local multi-file refactors and CLI-heavy work. Use Codex for delegated cloud tasks or when the surrounding tooling is already OpenAI-native.",
+  },
+  {
+    title: "One review bar",
+    body: "Same branch rules, tests, secret handling, and human review — regardless of which agent wrote the diff. Agents are writers; your CI and reviewers are the gate.",
+  },
+  {
+    title: "Avoid double max spend",
+    body: "Running Max 20x Claude and top-tier ChatGPT Pro for every engineer is rarely rational. Assign a default by role or task; keep the second tool for exceptions.",
+  },
+  {
+    title: "Model-family preference is legitimate",
+    body: "Some teams simply trust Claude more for long refactors and OpenAI more for other product work. That is a valid split — document it so individuals do not freestyle five tools.",
+  },
+];
+
+const decisionTree = [
+  {
+    type: "Solo developer (light agents)",
+    pick: "Start with the stack you already pay for",
+    detail:
+      "Already on Claude? Pro + Code. Already on ChatGPT Plus? Try Codex there first. Do not buy two $20–$100 stacks until one fails real tasks.",
+  },
+  {
+    type: "Power user (daily agents)",
+    pick: "Claude Code on Max 5x/20x — or ChatGPT Pro-class for Codex",
+    detail:
+      "If the terminal is home, Claude Code + Max is the direct path. If you prefer OpenAI cloud agents and ChatGPT as HQ, scale Codex limits on Pro-class plans.",
+  },
+  {
+    type: "Team (mixed seniority)",
+    pick: "Default one agent + optional second for specialists",
+    detail:
+      "Pick a default for onboarding and docs. Offer the other only where workflow demands it. Measure review time and rework, not demo speed.",
+  },
+  {
+    type: "OpenAI-centric org",
+    pick: "Codex first",
+    detail:
+      "Procurement, identity, and model agreements already point at OpenAI. Add Claude Code only if terminal-local Claude work clearly wins a pilot.",
+  },
+  {
+    type: "Anthropic-centric org",
+    pick: "Claude Code first",
+    detail:
+      "You already pay for Claude seats or Max. Code is the natural coding agent. Add Codex only for OpenAI-specific gaps or preference, not default dual seats.",
+  },
+];
+
+const toc = [
+  { id: "introduction", label: "Why this comparison matters" },
+  { id: "verdict", label: "Quick verdict" },
+  { id: "comparison", label: "Detailed comparison" },
+  { id: "philosophy", label: "Core difference" },
+  { id: "pricing", label: "Pricing comparison" },
+  { id: "scores", label: "Directory scores" },
+  { id: "choose-claude-code", label: "Choose Claude Code if…" },
+  { id: "choose-codex", label: "Choose Codex if…" },
+  { id: "both", label: "Can you use both?" },
+  { id: "decision", label: "Final recommendation" },
+  { id: "profiles", label: "Platform profiles" },
+  { id: "related", label: "Related guides" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Comparison"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="Claude Code vs Codex"
+  exploreCategories={["Coding", "Frameworks", "Enterprise", "No-Code"]}
+  toc={toc}
+>
+  <!-- 1. Introduction -->
+  <section>
+    <h2 id="introduction" class="guide-h2">
+      Why this comparison matters in 2026
+    </h2>
+    <p>
+      Coding agents stopped being a novelty. Engineers now pick tools that edit
+      many files, run commands, and carry multi-step work — and they pay
+      subscription or token bills that show up in real budgets. Two names dominate
+      shortlists next to IDE agents like Cursor:{" "}
+      <a href="/tools/claude-code/">Claude Code</a> and{" "}
+      <a href="/tools/openai-codex/">OpenAI Codex</a>.
+    </p>
+    <p>
+      <strong>Claude Code</strong> is Anthropic’s terminal-native agentic coding
+      tool: plan, edit, run, iterate from the CLI, with Claude’s long-context
+      strengths and optional MCP tooling.{" "}
+      <strong>Codex</strong> is OpenAI’s coding agent surface — oriented toward
+      delegated software work in the OpenAI / ChatGPT ecosystem, with cloud agent
+      runs and plan-tied access rather than “Anthropic CLI as the product.”
+    </p>
+    <p>
+      Choosing wrong is expensive in two ways: the wrong workflow (cloud vs local
+      terminal) and the wrong bill (two full AI stacks when one would do). This
+      guide is for developers and eng leads who need a practical default — not a
+      hype round.
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        Product packaging and list prices move. Details below use public signals
+        around August 2026 and our directory profiles.{" "}
+        <strong
+          >Verify access, limits, and pricing on Anthropic and OpenAI before you
+          buy or standardize.</strong
+        >
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 2. Quick Verdict -->
+  <section>
+    <h2 id="verdict" class="guide-h2">Quick verdict</h2>
+    <div
+      class="not-prose rounded-2xl border border-accent/20 bg-accent-soft/40 p-6 sm:p-8"
+    >
+      <p
+        class="text-[11px] font-semibold uppercase tracking-[0.16em] text-accent"
+      >
+        One-line guidance
+      </p>
+      <div class="mt-5 grid gap-5 sm:grid-cols-2">
+        <div class="rounded-xl border border-border bg-surface p-5">
+          <h3 class="text-base font-semibold text-ink">Claude Code is best for</h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+            Terminal-first engineers and Anthropic-centric teams who want a local
+            agent loop for multi-file refactors, migrations, and long CLI
+            sessions.
+          </p>
+        </div>
+        <div class="rounded-xl border border-border bg-surface p-5">
+          <h3 class="text-base font-semibold text-ink">Codex is best for</h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-muted">
+            OpenAI-centric teams and developers who want coding agents inside the
+            ChatGPT / OpenAI stack — especially delegated or cloud-style agent
+            work.
+          </p>
+        </div>
+      </div>
+    </div>
+    <KeyTakeaway>
+      Pick <strong>Claude Code</strong> when the control surface is the{" "}
+      <strong>terminal + local repo</strong> and you standardize on Claude. Pick{" "}
+      <strong>Codex</strong> when the control surface is the{" "}
+      <strong>OpenAI product stack</strong> and you already pay for ChatGPT at
+      useful limits. Many orgs need one default; dual seats for everyone is usually
+      waste.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 3. Detailed comparison early (AEO / scannability) -->
+  <section>
+    <h2 id="comparison" class="guide-h2">Detailed comparison</h2>
+    <p>
+      Scannable side-by-side. Deep dives on philosophy and pricing follow.
+    </p>
+    <ComparisonTable
+      caption="Claude Code vs Codex (2026) — planning snapshot"
+      headers={["Claude Code", "OpenAI Codex"]}
+      rows={comparisonRows}
+      highlightIndex={0}
+    />
+  </section>
+
+  <!-- 4. Core difference -->
+  <section>
+    <h2 id="philosophy" class="guide-h2">Core difference</h2>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      <div class="card-surface p-5 sm:p-6">
+        <h3 class="text-base font-semibold text-accent">Claude Code</h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+          <strong class="text-ink">Terminal-first, agentic, local-leaning.</strong>{" "}
+          The unit of work is a session: explore the repo, plan a change, edit
+          files, run tests/commands, fix failures. Autonomy is high when you trust
+          the loop. Context is what Claude can pull from the tree and tools in that
+          session — long-context models help on wide refactors.
+        </p>
+      </div>
+      <div class="card-surface p-5 sm:p-6">
+        <h3 class="text-base font-semibold text-accent">Codex</h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">
+          <strong class="text-ink">OpenAI-stack, often cloud / async in spirit.</strong>{" "}
+          The unit of work is often a delegated software task: give the agent a
+          goal, let it run in OpenAI’s coding-agent environment, review the
+          outcome. Autonomy is real, but the default gravity is the ChatGPT/OpenAI
+          product surface rather than “live in my shell.”
+        </p>
+      </div>
+    </div>
+    <h3 class="guide-h3">Autonomy, context, multi-file work</h3>
+    <ul>
+      <li>
+        <strong>Autonomy:</strong> Both can drive multi-step coding work. Claude
+        Code optimizes for interactive CLI agency (you watch the terminal agent
+        grind). Codex optimizes for agent runs you can treat more like delegated
+        jobs inside OpenAI’s world.
+      </li>
+      <li>
+        <strong>Context:</strong> Claude Code is strong when the repo is local and
+        the model can explore/edit in place with long context. Codex depends on
+        how the task and codebase are connected into OpenAI’s agent environment —
+        excellent when that path is clean, weaker when your work is purely local
+        and CLI-shaped.
+      </li>
+      <li>
+        <strong>Multi-file work:</strong> Both handle multi-file changes. Prefer
+        Claude Code for large coordinated refactors you want to drive from a
+        shell with tight feedback. Prefer Codex when async cloud agent execution
+        and OpenAI packaging matter more than terminal purity.
+      </li>
+    </ul>
+    <InfoCallout title="Not the same comparison as Claude Code vs Cursor" variant="tip">
+      <p>
+        Cursor is an AI-native IDE for the daily editor loop. Codex is another
+        coding <em>agent</em> in a different vendor stack. If your real question is
+        IDE vs terminal, read{" "}
+        <a href="/guides/claude-code-vs-cursor/">Claude Code vs Cursor</a>{" "}
+        instead (or as well).
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 5. Pricing -->
+  <section>
+    <h2 id="pricing" class="guide-h2">Pricing comparison</h2>
+    <p>
+      Neither product is a simple “$X for Code forever” SKU. Claude Code rides
+      Claude subscriptions (and API/credits). Codex rides ChatGPT / OpenAI
+      packaging (and API meters). Approximate cost reality for planning:
+    </p>
+    <ComparisonTable
+      caption="Cost reality (US list signals, August 2026 — verify officially)"
+      headers={["Claude Code", "OpenAI Codex"]}
+      rows={pricingRows}
+    />
+    <h3 class="guide-h3">When one becomes more expensive</h3>
+    <ul>
+      <li>
+        <strong>Claude Code costs more</strong> when daily agent work forces Max
+        ($100–$200) while light Codex use still fits a lower ChatGPT tier — or when
+        chat + Code share a pool and you burn credits after weekly/session walls.
+      </li>
+      <li>
+        <strong>Codex costs more</strong> when you need ChatGPT Pro-class limits
+        for serious agent volume, cloud task meters stack up, or the whole org
+        buys high OpenAI tiers “for coding” without using the rest of the suite.
+      </li>
+      <li>
+        <strong>Both cost too much</strong> when every engineer has top-tier Claude
+        <em>and</em> top-tier ChatGPT with no role-based default.
+      </li>
+    </ul>
+    <p>
+      Full Claude tier breakdown (Pro, Max 5x/20x, Team, Enterprise, real monthly
+      scenarios):{" "}
+      <a href="/guides/claude-code/pricing/">Claude Code pricing in 2026</a>.
+    </p>
+    <KeyTakeaway>
+      At ~$20/mo entry, both can look cheap. The real fork is whether{" "}
+      <strong>daily agent volume</strong> pushes you to ~$100–$200 individual tiers
+      — and whether you already pay that bill on one vendor for non-coding work.
+    </KeyTakeaway>
+  </section>
+
+  <!-- Scores -->
+  {
+    claudeCode && codex && (
+      <section id="scores">
+        <h2 class="guide-h2">Directory scores (editorial snapshot)</h2>
+        <p>
+          From our{" "}
+          <a href="/methodology/">methodology</a> — a structured second opinion,
+          not a lab benchmark. Re-score after your own pilot.
+        </p>
+        <div class="not-prose mt-6 overflow-x-auto rounded-2xl border border-border">
+          <table class="w-full min-w-[32rem] text-left text-sm">
+            <thead class="bg-surface-muted text-xs font-semibold uppercase tracking-wider text-ink-soft">
+              <tr>
+                <th class="px-4 py-3 font-semibold">Metric</th>
+                <th class="px-4 py-3 font-semibold">Claude Code</th>
+                <th class="px-4 py-3 font-semibold">OpenAI Codex</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border bg-surface text-ink-muted">
+              <tr>
+                <td class="px-4 py-3 font-medium text-ink">Overall</td>
+                <td class="px-4 py-3 tabular-nums font-semibold text-ink">
+                  {claudeCode.scores.overall.toFixed(1)}
+                </td>
+                <td class="px-4 py-3 tabular-nums font-semibold text-ink">
+                  {codex.scores.overall.toFixed(1)}
+                </td>
+              </tr>
+              {(
+                [
+                  ["Capability", "capability"],
+                  ["Ease of use", "easeOfUse"],
+                  ["Integrations", "integrations"],
+                  ["Enterprise", "enterprise"],
+                  ["Developer experience", "developerExperience"],
+                  ["Value", "value"],
+                ] as const
+              ).map(([label, key]) => (
+                <tr>
+                  <td class="px-4 py-3 font-medium text-ink">{label}</td>
+                  <td class="px-4 py-3 tabular-nums">
+                    {claudeCode.scores[key].toFixed(1)}
+                  </td>
+                  <td class="px-4 py-3 tabular-nums">
+                    {codex.scores[key].toFixed(1)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 6. Choose Claude Code -->
+  <section>
+    <h2 id="choose-claude-code" class="guide-h2">When to choose Claude Code</h2>
+    <ul class="not-prose mt-6 space-y-3">
+      {
+        chooseClaudeCode.map((item) => (
+          <li class="flex gap-3 text-sm leading-relaxed text-ink-muted sm:text-base">
+            <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+            <span>{item}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-6">
+      Profile:{" "}
+      <a href="/tools/claude-code/">Claude Code in the directory</a>. Cost detail:{" "}
+      <a href="/guides/claude-code/pricing/">Claude Code pricing</a>.
+    </p>
+  </section>
+
+  <!-- 7. Choose Codex -->
+  <section>
+    <h2 id="choose-codex" class="guide-h2">When to choose Codex</h2>
+    <ul class="not-prose mt-6 space-y-3">
+      {
+        chooseCodex.map((item) => (
+          <li class="flex gap-3 text-sm leading-relaxed text-ink-muted sm:text-base">
+            <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+            <span>{item}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-6">
+      Profile:{" "}
+      <a href="/tools/openai-codex/">OpenAI Codex in the directory</a>.
+    </p>
+  </section>
+
+  <!-- 8. Both -->
+  <section>
+    <h2 id="both" class="guide-h2">Can you use both?</h2>
+    <p>
+      Yes — carefully. Using both is rational when task types differ, not when
+      everyone maxes both subscriptions out of FOMO.
+    </p>
+    <div class="not-prose mt-6 grid gap-4 sm:grid-cols-2">
+      {
+        bothNotes.map((n) => (
+          <div class="card-surface p-5">
+            <h3 class="text-base font-semibold text-ink">{n.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted">{n.body}</p>
+          </div>
+        ))
+      }
+    </div>
+    <InfoCallout title="Pilot rule" variant="warning">
+      <p>
+        Run the same three tasks on both: a small feature, a multi-file refactor,
+        and a failing-test fix. Compare human review time and rework. Keep the
+        winner as default; keep the loser only if a clear residual use case
+        remains.
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 9. Decision framework -->
+  <section>
+    <h2 id="decision" class="guide-h2">Final recommendation framework</h2>
+    <p>
+      Simple decision tree by user type. Prefer the vendor you already trust and
+      pay for unless the other tool wins a head-to-head pilot on your repos.
+    </p>
+    <div class="not-prose mt-8 space-y-4">
+      {
+        decisionTree.map((item) => (
+          <div class="card-surface p-5 sm:p-6">
+            <p class="text-xs font-bold uppercase tracking-wider text-ink-soft">
+              {item.type}
+            </p>
+            <h3 class="mt-1.5 text-base font-semibold text-ink">{item.pick}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-muted sm:text-[0.9375rem]">
+              {item.detail}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+    <KeyTakeaway title="Bottom line">
+      There is no universal winner. <strong>Claude Code</strong> wins terminal-first,
+      Anthropic-standardized, local multi-file agent work. <strong>Codex</strong>{" "}
+      wins OpenAI-standardized teams and cloud/delegated agent workflows. Choose a
+      default, measure review cost, and revisit when pricing tiers move.
+    </KeyTakeaway>
+  </section>
+
+  <!-- Profiles -->
+  <section id="profiles">
+    <h2 class="guide-h2">Platform profiles</h2>
+    <p>
+      Scored listings with features, pricing notes, and similar tools.
+    </p>
+    <ToolReviewCard slug="claude-code" rank={1} badge="Terminal-first" />
+    <ToolReviewCard slug="openai-codex" rank={2} badge="OpenAI stack" />
+  </section>
+
+  <!-- 10. Related guides -->
+  <section id="related">
+    <h2 class="guide-h2">Related guides</h2>
+    <ClaudeCodeClusterNav current="claude-code/vs-codex" />
+    <ul>
+      <li>
+        <a href="/guides/claude-code/">Claude Code Guide Hub</a> — setup, pricing,
+        skills, plugins, MCP
+      </li>
+      <li>
+        <a href="/guides/claude-code-vs-cursor/">Claude Code vs Cursor</a> — IDE
+        daily driver vs terminal agent
+      </li>
+      <li>
+        <a href="/guides/claude-code/pricing/">Claude Code pricing</a>
+        {" · "}
+        <a href="/guides/claude-code/setup/">Setup</a>
+        {" · "}
+        <a href="/guides/best-ai-coding-agents-2026/">Best AI Coding Agents</a>
+      </li>
+      <li>
+        <a href="/tools/claude-code/">Claude Code tool page</a>
+        {" · "}
+        <a href="/tools/openai-codex/">OpenAI Codex tool page</a>
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. Always re-check vendor pricing and feature
+      inclusion before rollout.
+    </p>
+  </section>
+
+  <RelatedComparisons slug={slug} categories={["Coding"]} />
+</GuideLayout>

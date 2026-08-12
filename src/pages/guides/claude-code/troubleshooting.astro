@@ -1,0 +1,628 @@
+---
+import GuideLayout from "../../../layouts/GuideLayout.astro";
+import KeyTakeaway from "../../../components/guide/KeyTakeaway.astro";
+import InfoCallout from "../../../components/guide/InfoCallout.astro";
+import ClaudeCodeClusterNav from "../../../components/guide/ClaudeCodeClusterNav.astro";
+import RelatedComparisons from "../../../components/RelatedComparisons.astro";
+
+const title =
+  "Claude Code Troubleshooting Guide (2026): Common Errors & Fixes";
+const description =
+  "Fix Claude Code problems in 2026 — install/path, auth, permissions, performance, skills, plugins, MCP, and model issues. Symptom → fix, highly scannable.";
+const published = "2026-08-12";
+const readTime = "12 min";
+const slug = "claude-code/troubleshooting";
+
+const diagnostics = [
+  {
+    step: "1",
+    title: "Reproduce with a clean shell",
+    body: "New terminal window. No custom aliases. cd to a small test repo.",
+  },
+  {
+    step: "2",
+    title: "Check the binary",
+    body: "claude --version · which claude (or Get-Command claude). One install only.",
+  },
+  {
+    step: "3",
+    title: "Run doctor",
+    body: "claude doctor — fix anything critical before chasing model quality.",
+  },
+  {
+    step: "4",
+    title: "Confirm entitlement",
+    body: "Pro/Max/Team/Enterprise or Console/API — Free chat alone is not Code.",
+  },
+  {
+    step: "5",
+    title: "Disable extensions",
+    body: "Temporarily turn off extra MCP, plugins, and custom skills. Retest.",
+  },
+  {
+    step: "6",
+    title: "Isolate the task",
+    body: "Ask for a read-only summary, then a one-line file edit. Note which step fails.",
+  },
+];
+
+const toc = [
+  { id: "introduction", label: "How to use this guide" },
+  { id: "key-takeaway", label: "Key takeaway" },
+  { id: "checklist", label: "Quick diagnostic checklist" },
+  { id: "install", label: "Installation & setup" },
+  { id: "auth", label: "Authentication & access" },
+  { id: "performance", label: "Performance & stability" },
+  { id: "extensions", label: "Skills / plugins / MCP" },
+  { id: "model", label: "Model / output issues" },
+  { id: "platform", label: "Platform-specific notes" },
+  { id: "still-stuck", label: "Still stuck?" },
+  { id: "related", label: "Related guides" },
+];
+---
+
+<GuideLayout
+  title={title}
+  description={description}
+  category="Technical"
+  published={published}
+  readTime={readTime}
+  slug={slug}
+  breadcrumbLabel="Claude Code troubleshooting"
+  exploreCategories={["Coding", "Frameworks", "Enterprise", "No-Code"]}
+  toc={toc}
+>
+  <!-- 1. Introduction -->
+  <section>
+    <h2 id="introduction" class="guide-h2">How to use this guide</h2>
+    <p>
+      When{" "}
+      <a href="/tools/claude-code/">Claude Code</a> misbehaves, long theory rarely
+      helps. This page is a <strong>symptom → fix</strong> companion: find the
+      section that matches what you see, apply the steps, re-test, then move on.
+    </p>
+    <p>
+      It covers install and PATH, auth and plan access, performance, skills /
+      plugins / MCP, weak or refused outputs, and a few OS-specific traps. For a
+      clean first install, start with the{" "}
+      <a href="/guides/claude-code/setup/">setup guide</a>; use this page when
+      something breaks after that.
+    </p>
+    <InfoCallout title="Data updated: August 2026" variant="info">
+      <p>
+        Exact error strings and CLI flags change with Claude Code releases. Prefer{" "}
+        <code>claude doctor</code> and official docs when a step does not match
+        your build.{" "}
+        <strong>Never paste API keys or org tokens into public issue trackers.</strong>
+      </p>
+    </InfoCallout>
+  </section>
+
+  <!-- 2. Key takeaway -->
+  <section id="key-takeaway">
+    <h2 class="guide-h2">Key takeaway</h2>
+    <KeyTakeaway>
+      Most Claude Code failures land in five buckets:{" "}
+      <strong>install/PATH</strong>, <strong>auth/entitlement</strong>,{" "}
+      <strong>permissions/sandbox</strong>, <strong>model/access limits</strong>,
+      and <strong>extension conflicts</strong> (MCP, plugins, hooks). Fix the
+      bucket first; do not tune prompts while <code>claude</code> is not on PATH
+      or login is broken.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 3. Checklist -->
+  <section>
+    <h2 id="checklist" class="guide-h2">Quick diagnostic checklist</h2>
+    <p>Run these in order before deep troubleshooting.</p>
+    <ol class="not-prose mt-6 space-y-3">
+      {
+        diagnostics.map((d) => (
+          <li class="flex gap-4 rounded-[var(--radius-card)] border border-border bg-surface-muted/40 p-4 sm:p-5">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-accent text-sm font-bold text-accent-fg"
+              aria-hidden="true"
+            >
+              {d.step}
+            </span>
+            <div>
+              <p class="text-sm font-semibold text-ink sm:text-base">{d.title}</p>
+              <p class="mt-1 text-sm leading-relaxed text-ink-muted">{d.body}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="mt-6">
+      Jump by symptom:{" "}
+      <a href="#install">install</a>
+      {" · "}
+      <a href="#auth">auth</a>
+      {" · "}
+      <a href="#performance">performance</a>
+      {" · "}
+      <a href="#extensions">extensions</a>
+      {" · "}
+      <a href="#model">model/output</a>
+      {" · "}
+      <a href="#platform">platform</a>
+    </p>
+  </section>
+
+  <!-- 4. Install -->
+  <section>
+    <h2 id="install" class="guide-h2">Installation &amp; setup issues</h2>
+
+    <h3 class="guide-h3">Install failures</h3>
+    <ul>
+      <li>
+        <strong>curl/bash or PowerShell script dies mid-way</strong> — retry on a
+        stable network; check proxy/VPN; try{" "}
+        <code>brew install --cask claude-code</code> or{" "}
+        <code>winget install Anthropic.ClaudeCode</code> if those match your OS.
+      </li>
+      <li>
+        <strong>npm install fails / EBADENGINE</strong> — need Node 22+ for the
+        npm path, or skip npm and use the{" "}
+        <a href="/guides/claude-code/setup/">native installer</a> (no Node
+        required).
+      </li>
+      <li>
+        <strong>Permission denied with npm -g</strong> — do not use{" "}
+        <code>sudo</code>. Fix npm prefix or use nvm/fnm; prefer native install.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">CLI not found / PATH issues</h3>
+    <ul>
+      <li>
+        Open a <strong>new</strong> terminal after install.
+      </li>
+      <li>
+        Run <code>which claude</code> (macOS/Linux) or{" "}
+        <code>Get-Command claude</code> (PowerShell). Empty result → PATH not
+        updated; re-run installer or add the documented install dir to PATH.
+      </li>
+      <li>
+        Two binaries (npm + native) → pick one. Uninstall the other (
+        <code>npm uninstall -g @anthropic-ai/claude-code</code> if leaving
+        native).
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Desktop app problems</h3>
+    <ul>
+      <li>
+        <strong>No Code tab / Code locked</strong> — plan is Free or org has not
+        enabled Code. See{" "}
+        <a href="/guides/claude-code/pricing/">pricing</a>.
+      </li>
+      <li>
+        <strong>Windows: Git missing</strong> — install Git for Windows, restart
+        Desktop, reopen Code tab.
+      </li>
+      <li>
+        <strong>App opens but sessions fail</strong> — sign out/in; check network;
+        try the CLI in the same project to see if the issue is Desktop-only.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Version mismatches &amp; tooling conflicts</h3>
+    <ul>
+      <li>
+        <code>claude --version</code> unexpected → stale PATH entry; remove old
+        install directories.
+      </li>
+      <li>
+        Shell plugins rewriting PATH (asdf, direnv, corporate wrappers) — test in
+        a clean login shell.
+      </li>
+      <li>
+        Full setup walkthrough:{" "}
+        <a href="/guides/claude-code/setup/">How to install and set up Claude Code</a>.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 5. Auth -->
+  <section>
+    <h2 id="auth" class="guide-h2">Authentication &amp; access issues</h2>
+
+    <h3 class="guide-h3">Login / API key problems</h3>
+    <ul>
+      <li>
+        <strong>Browser never opens</strong> — copy the printed URL manually;
+        disable popup blockers; try another browser.
+      </li>
+      <li>
+        <strong>Callback / localhost fails</strong> — allow local redirect; retry
+        login; avoid locked-down environments that block loopback.
+      </li>
+      <li>
+        <strong>API key rejected</strong> — confirm{" "}
+        <code>ANTHROPIC_API_KEY</code> (or documented env) is set in the same
+        shell; no quotes/spaces; key not revoked; key has required product access.
+      </li>
+      <li>
+        <strong>Wrong account</strong> — you authenticated a personal Free account
+        while the paid org is elsewhere. Log out and use the entitled account.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Plan or entitlement issues</h3>
+    <ul>
+      <li>
+        Free Claude.ai does <strong>not</strong> include full Claude Code. Upgrade
+        or use Console/API packaging your org provides.
+      </li>
+      <li>
+        Team/Enterprise: admin may need to enable Code, Skills, or connectors. SSO
+        incomplete = “logged in” but features missing.
+      </li>
+      <li>
+        Hitting usage walls mid-session looks like “Code is broken” — wait for
+        reset, upgrade tier, or enable usage credits. Details in{" "}
+        <a href="/guides/claude-code/pricing/">Claude Code pricing</a>.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Session / token problems</h3>
+    <ul>
+      <li>Force re-login after org membership changes.</li>
+      <li>
+        Clear stale auth only via documented CLI/settings paths — do not delete
+        random config dirs unless you know what they hold.
+      </li>
+      <li>
+        Clock skew on VMs/containers can break OAuth — sync system time.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 6. Performance -->
+  <section>
+    <h2 id="performance" class="guide-h2">Performance &amp; stability issues</h2>
+
+    <h3 class="guide-h3">Slow responses</h3>
+    <ul>
+      <li>
+        Large repos + many MCP tools = slower planning. Disable unused MCP; open
+        the subfolder you care about when possible.
+      </li>
+      <li>
+        Peak-hour capacity and model choice matter — try a lighter model for
+        mechanical edits if your plan allows.
+      </li>
+      <li>
+        Network latency/VPN — test off VPN; check corporate SSL inspection.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Hangs / freezes</h3>
+    <ul>
+      <li>
+        Waiting on an approval prompt you missed — check the terminal for
+        permission requests.
+      </li>
+      <li>
+        Long shell commands (installs, full test suites) — watch the process list;
+        interrupt and narrow the command.
+      </li>
+      <li>
+        Stuck browser MCP — kill the browser driver process; restart Claude Code
+        without that server.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">High resource usage</h3>
+    <ul>
+      <li>
+        Multiple parallel sessions + Playwright/browser MCP — close extras.
+      </li>
+      <li>
+        Huge context (monorepo dumps) — prefer targeted file reads; split tasks.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Context or long-running task failures</h3>
+    <ul>
+      <li>
+        Mid-task cutoffs often = usage limits or context pressure — summarize
+        progress, start a fresh session with a tighter goal.
+      </li>
+      <li>
+        Prefer smaller milestones: “make tests pass for package X” not “rewrite
+        the monorepo.”
+      </li>
+      <li>
+        Use subagents/skills for isolated work instead of one infinite chat. See{" "}
+        <a href="/guides/claude-code/skills/">Skills</a>.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 7. Extensions -->
+  <section>
+    <h2 id="extensions" class="guide-h2">
+      Skills / plugins / MCP problems
+    </h2>
+
+    <h3 class="guide-h3">Skill not loading</h3>
+    <ul>
+      <li>
+        Path: project <code>.claude/skills/&lt;name&gt;/SKILL.md</code> or
+        personal <code>~/.claude/skills/…</code>. New session after adding.
+      </li>
+      <li>
+        Invoke explicitly: <code>/skill-name</code> or “use the X skill” before
+        relying on auto-load.
+      </li>
+      <li>
+        Vague descriptions cause wrong auto-triggers — tighten frontmatter
+        description. Guide:{" "}
+        <a href="/guides/claude-code/skills/">Claude Code Skills</a>.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Plugin conflicts</h3>
+    <ul>
+      <li>
+        Disable recent plugins via <code>/plugin</code> UI; re-enable one at a
+        time.
+      </li>
+      <li>
+        Duplicate GitHub/browser/docs tooling from plugin + manual MCP — keep one
+        path.
+      </li>
+      <li>
+        Always-on hooks that fire every edit — disable until you trust the pack.{" "}
+        <a href="/guides/claude-code/plugins/">Plugins guide</a>.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">MCP server connection failures</h3>
+    <ul>
+      <li>
+        Server process crash on start — run the same command in a bare terminal;
+        fix Node/PATH/env.
+      </li>
+      <li>
+        Auth 401/403 — expired token, wrong env var name, insufficient scopes.
+      </li>
+      <li>
+        Tools never called — too many servers; ask Claude to use the named server;
+        reduce tool noise.
+      </li>
+      <li>
+        Shortlist and setup notes:{" "}
+        <a href="/guides/claude-code/mcp/">Best MCP servers for Claude Code</a>{" "}
+        · deeper protocol:{" "}
+        <a href="/guides/mcp-and-tool-calling-explained/"
+          >MCP and tool calling</a
+        >.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Permission and secrets issues</h3>
+    <ul>
+      <li>
+        Never commit tokens in skill/plugin/MCP config. Use env vars and local
+        overrides.
+      </li>
+      <li>
+        Over-broad filesystem MCP mounts — restrict allowed paths.
+      </li>
+      <li>
+        Agent denied writes — directory permissions or approval mode; review
+        prompts carefully, do not “always allow” blindly on untrusted tasks.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 8. Model -->
+  <section>
+    <h2 id="model" class="guide-h2">Model / output issues</h2>
+
+    <h3 class="guide-h3">Unexpected refusals</h3>
+    <ul>
+      <li>
+        Safety/policy refusals on dual-use topics — rephrase to legitimate
+        engineering context; do not try to jailbreak.
+      </li>
+      <li>
+        Org policy / enterprise controls blocking tools — check admin settings.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Weak or incomplete code edits</h3>
+    <ul>
+      <li>
+        Add a short <code>CLAUDE.md</code>: stack, test command, “do not touch”
+        paths.
+      </li>
+      <li>
+        Demand a plan → patch → test loop; reject giant speculative rewrites.
+      </li>
+      <li>
+        Stale APIs — add Context7/docs MCP or paste current docs. See{" "}
+        <a href="/guides/claude-code/mcp/">MCP shortlist</a>.
+      </li>
+      <li>
+        Usage limit mid-task → incomplete diffs; upgrade or continue after reset.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Tool-calling failures</h3>
+    <ul>
+      <li>
+        Shell command failed — run it yourself; fix env; give Claude the error
+        log.
+      </li>
+      <li>
+        MCP tool errors — inspect server logs; simplify the request; verify
+        scopes.
+      </li>
+      <li>
+        Too many tools → model picks poorly — disable unused MCP/plugins.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Context window / memory problems</h3>
+    <ul>
+      <li>
+        “Forgot” earlier decisions — start a new session with a summary of
+        constraints; put durable rules in CLAUDE.md or a skill.
+      </li>
+      <li>
+        Oversized pastes — link to files in-repo instead of dumping megabytes into
+        chat.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 9. Platform -->
+  <section>
+    <h2 id="platform" class="guide-h2">Platform-specific notes</h2>
+
+    <h3 class="guide-h3">macOS</h3>
+    <ul>
+      <li>
+        Full Disk Access / files-and-folders prompts for Terminal/iTerm — grant if
+        Code cannot read the project.
+      </li>
+      <li>
+        Rosetta vs native ARM confusion rare on current builds — prefer native
+        install on Apple Silicon.
+      </li>
+      <li>
+        Homebrew cask vs curl installer — do not run both without cleaning PATH.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Windows</h3>
+    <ul>
+      <li>
+        Prefer PowerShell install script; restart terminal after PATH changes.
+      </li>
+      <li>
+        WSL vs native: install Claude Code where your source tree lives; do not
+        mix paths carelessly.
+      </li>
+      <li>
+        Desktop Code tab needs Git for Windows; antivirus can quarantine
+        installers — check quarantine logs.
+      </li>
+      <li>
+        Execution policy may block scripts — use documented installer patterns or
+        adjust policy only if your IT allows.
+      </li>
+    </ul>
+
+    <h3 class="guide-h3">Linux</h3>
+    <ul>
+      <li>
+        Ensure installer target dir is on PATH for non-login shells (systemd user
+        services, IDE terminals).
+      </li>
+      <li>
+        Headless servers: browser login may need a different auth path (API key /
+        device flow per current docs).
+      </li>
+      <li>
+        Snap/flatpak Node vs system Node can break npm-based MCP servers — align
+        runtimes.
+      </li>
+    </ul>
+  </section>
+
+  <!-- 10. Still stuck -->
+  <section>
+    <h2 id="still-stuck" class="guide-h2">Still stuck?</h2>
+    <h3 class="guide-h3">Gather this before asking for help</h3>
+    <ul>
+      <li>OS + version; install method (native / brew / winget / npm / desktop)</li>
+      <li>
+        <code>claude --version</code> and non-sensitive{" "}
+        <code>claude doctor</code> output
+      </li>
+      <li>
+        Exact error text (redact tokens, emails, internal hostnames)
+      </li>
+      <li>
+        Whether it fails offline of plugins/MCP (yes/no)
+      </li>
+      <li>
+        Plan type (Pro/Max/Team/Enterprise/API) — not payment details
+      </li>
+      <li>
+        Minimal repro: three-step task that always fails
+      </li>
+    </ul>
+    <h3 class="guide-h3">Where to check</h3>
+    <ul>
+      <li>Official Claude Code documentation and status/changelog for your build</li>
+      <li>
+        Anthropic support / org admin (entitlement and SSO issues)
+      </li>
+      <li>
+        Community forums with redacted logs — still treat third-party advice as
+        untrusted for install scripts
+      </li>
+    </ul>
+    <p>
+      Cluster entry points:{" "}
+      <a href="/guides/claude-code/">Claude Code hub</a>
+      {" · "}
+      <a href="/guides/claude-code/setup/">Setup</a>
+      {" · "}
+      <a href="/guides/claude-code/skills/">Skills</a>
+      {" · "}
+      <a href="/guides/claude-code/plugins/">Plugins</a>
+      {" · "}
+      <a href="/guides/claude-code/mcp/">MCP servers</a>
+      {" · "}
+      <a href="/guides/claude-code/pricing/">Pricing</a>
+    </p>
+    <KeyTakeaway title="Last resort order">
+      Doctor → single install → re-auth → disable all extensions → tiny repro in a
+      fresh repo. If that works, re-add extensions one by one until it breaks —
+      that extension is the bug.
+    </KeyTakeaway>
+  </section>
+
+  <!-- 11. Related -->
+  <section id="related">
+    <h2 class="guide-h2">Related guides</h2>
+    <ClaudeCodeClusterNav current="claude-code/troubleshooting" />
+    <ul>
+      <li>
+        <a href="/guides/claude-code/">Claude Code Guide Hub</a> — full cluster
+        index
+      </li>
+      <li>
+        <a href="/guides/claude-code/setup/">Install &amp; setup</a> — clean first
+        install path
+      </li>
+      <li>
+        <a href="/guides/claude-code/skills/">Skills</a>
+        {" · "}
+        <a href="/guides/claude-code/plugins/">Plugins</a>
+        {" · "}
+        <a href="/guides/claude-code/mcp/">Best MCP servers</a>
+      </li>
+      <li>
+        <a href="/guides/claude-code/pricing/">Pricing</a> — limits that feel like
+        outages
+      </li>
+      <li>
+        <a href="/tools/claude-code/">Claude Code tool page</a>
+      </li>
+    </ul>
+    <p class="text-sm text-ink-soft">
+      Data updated: August 2026. Re-check official docs when error text or CLI
+      commands do not match this page.
+    </p>
+  </section>
+
+  <RelatedComparisons slug={slug} categories={["Coding"]} />
+</GuideLayout>
