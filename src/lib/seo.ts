@@ -1,4 +1,9 @@
-import { site } from "../data/site";
+import { SITE_ORIGIN, site } from "../data/site";
+
+export { SITE_ORIGIN };
+
+/** Indexable contact path — query strings are never part of the canonical. */
+export const CONTACT_PATH = "/contact/";
 
 /** Open Graph / document type for social previews */
 export type SeoOgType = "website" | "article" | "profile";
@@ -38,37 +43,63 @@ export function cleanUrlPath(urlOrPath: string): string {
 }
 
 /**
- * Resolve site origin from Astro.site or config fallback.
+ * Trailing-slash paths to match `trailingSlash: 'always'`.
+ * File-like paths (robots.txt, sitemap.xml) are left unchanged.
  */
-export function getSiteOrigin(astroSite?: URL | undefined): string {
-  if (astroSite) return astroSite.origin;
-  return site.url.replace(/\/$/, "");
+export function normalizeCanonicalPath(pathname: string): string {
+  const cleaned = cleanUrlPath(pathname).trim() || "/";
+  const path = cleaned.startsWith("/") ? cleaned : `/${cleaned}`;
+  if (path === "/") return "/";
+  if (/\.[a-z0-9]+$/i.test(path)) return path;
+  return path.endsWith("/") ? path : `${path}/`;
 }
 
 /**
- * Build absolute canonical URL with no query parameters.
+ * Canonical origin for tags, schema, and absolute URLs.
+ * Always `SITE_ORIGIN` — never `Astro.url` / request host, which can be http.
+ */
+export function getSiteOrigin(_astroSite?: URL | undefined): string {
+  return SITE_ORIGIN;
+}
+
+/**
+ * Build an https://www.zoeticai.com canonical with no query or hash.
+ * Absolute overrides keep their path only; host and protocol are replaced.
  */
 export function buildCanonical(
   pathname: string,
   options?: {
     override?: string;
+    /** Ignored — canonicals always use SITE_ORIGIN. */
     origin?: string;
   },
 ): string {
-  const origin = (options?.origin ?? site.url).replace(/\/$/, "");
+  const origin = SITE_ORIGIN;
+  let path: string;
 
   if (options?.override) {
     const cleaned = cleanUrlPath(options.override);
     if (/^https?:\/\//i.test(cleaned)) {
-      const u = new URL(cleaned);
-      return `${u.origin}${u.pathname}`;
+      path = new URL(cleaned).pathname;
+    } else {
+      path = cleaned.startsWith("/") ? cleaned : `/${cleaned}`;
     }
-    const path = cleaned.startsWith("/") ? cleaned : `/${cleaned}`;
-    return new URL(path, `${origin}/`).href;
+  } else {
+    path = cleanUrlPath(pathname || "/");
   }
 
-  const path = cleanUrlPath(pathname || "/");
-  return new URL(path.startsWith("/") ? path : `/${path}`, `${origin}/`).href;
+  const href = new URL(normalizeCanonicalPath(path), `${origin}/`).href;
+  return href.replace(/^http:\/\//i, "https://");
+}
+
+/**
+ * Contact href that keeps subject prefill without an indexable query URL.
+ * Hash fragments are not distinct pages; `/contact/?subject=` is.
+ */
+export function contactHref(subject?: string): string {
+  const trimmed = subject?.trim();
+  if (!trimmed) return CONTACT_PATH;
+  return `${CONTACT_PATH}#${new URLSearchParams({ subject: trimmed }).toString()}`;
 }
 
 /**
@@ -76,11 +107,26 @@ export function buildCanonical(
  */
 export function buildImageUrl(
   image: string | undefined,
-  origin: string,
+  _origin: string = SITE_ORIGIN,
 ): string {
   const path = image ?? site.defaultOgImage;
-  if (/^https?:\/\//i.test(path)) return path;
-  return new URL(path.startsWith("/") ? path : `/${path}`, `${origin}/`).href;
+  if (/^https?:\/\//i.test(path)) {
+    const u = new URL(path);
+    if (u.hostname === "www.zoeticai.com" || u.hostname === "zoeticai.com") {
+      u.protocol = "https:";
+      u.hostname = "www.zoeticai.com";
+      return u.href;
+    }
+    if (u.protocol === "http:") {
+      u.protocol = "https:";
+      return u.href;
+    }
+    return path;
+  }
+  return new URL(
+    path.startsWith("/") ? path : `/${path}`,
+    `${SITE_ORIGIN}/`,
+  ).href;
 }
 
 /**

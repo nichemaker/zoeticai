@@ -30,7 +30,7 @@ const {
   titleAbsolute = false,
 } = Astro.props;
 
-const origin = getSiteOrigin(Astro.site);
+const origin = getSiteOrigin();
 const documentTitle = buildDocumentTitle(title, titleAbsolute);
 const canonical = buildCanonical(Astro.url.pathname, {
   override: canonicalOverride,

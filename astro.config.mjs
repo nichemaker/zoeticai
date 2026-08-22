@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import { SITE_ORIGIN } from './src/data/site.ts';
 import {
   getSitemapMeta,
   shouldIncludeInSitemap,
@@ -9,7 +10,7 @@ import {
 
 // Canonical origin — must match live host, site.url, sitemap, and robots.
 export default defineConfig({
-  site: 'https://www.zoeticai.com',
+  site: SITE_ORIGIN,
   output: 'static',
   // Matches Cloudflare assets html_handling + internal links (/tools/slug/)
   trailingSlash: 'always',

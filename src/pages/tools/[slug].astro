@@ -26,6 +26,7 @@ import {
   methodologyLink,
 } from "../../data/guides";
 import { site } from "../../data/site";
+import { contactHref } from "../../lib/seo";
 import type { Tool, ToolScores } from "../../types/tool";
 
 export const prerender = true;
@@ -925,13 +926,13 @@ const shareText = encodeURIComponent(`${tool.name} — AI agent platform on Zoet
 
               <div class="mt-5 space-y-2 border-t border-border pt-4 text-sm">
                 <a
-                  href={`/contact/?subject=${encodeURIComponent("Report incorrect info: " + tool.name)}`}
+                  href={contactHref(`Report incorrect info: ${tool.name}`)}
                   class="block font-medium text-ink-muted hover:text-accent"
                 >
                   Report incorrect information
                 </a>
                 <a
-                  href={`/contact/?subject=${encodeURIComponent("Claim listing: " + tool.name)}`}
+                  href={contactHref(`Claim listing: ${tool.name}`)}
                   class="block font-medium text-ink-muted hover:text-accent"
                 >
                   Claim this listing

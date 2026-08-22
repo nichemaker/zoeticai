@@ -1,5 +1,11 @@
 /** Shared site config for layout, nav, schema, and SEO defaults. */
 
+/**
+ * Single canonical origin for every absolute URL this site emits
+ * (canonical, og:url, JSON-LD, sitemap, robots). HTTPS + www only.
+ */
+export const SITE_ORIGIN = "https://www.zoeticai.com" as const;
+
 export const site = {
   name: "AI Directory",
   /** Brand used in long-form and About copy */
@@ -8,7 +14,7 @@ export const site = {
   description:
     "A curated directory of AI agents, tools, and platforms — browse categories, compare options, and find the right fit.",
   /** Canonical origin — keep aligned with astro.config `site` and deploy host */
-  url: "https://www.zoeticai.com",
+  url: SITE_ORIGIN,
   email: "hello@zoeticai.com",
   locale: "en_US",
   themeColor: "#6657f5",

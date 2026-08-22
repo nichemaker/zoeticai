@@ -1,6 +1,7 @@
 /**
  * Helpers for @astrojs/sitemap serialize: lastmod, changefreq, priority.
  */
+import { SITE_ORIGIN } from "../data/site";
 import { tools } from "../data/tools";
 import { latestGuides } from "../data/guides";
 import { categories } from "../data/categories";
@@ -137,6 +138,8 @@ export function getSitemapMeta(pageUrl: string): SitemapMeta {
 
 /** Pages that should not appear in the sitemap */
 export function shouldIncludeInSitemap(pageUrl: string): boolean {
+  // Sitemap locs must be the HTTPS www origin — never http:// or a preview host
+  if (!pageUrl.startsWith(SITE_ORIGIN)) return false;
   const path = pathnameOf(pageUrl);
   if (path.includes("404")) return false;
   // No query-string URLs should appear; @astrojs/sitemap uses clean paths

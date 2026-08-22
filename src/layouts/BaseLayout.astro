@@ -75,7 +75,7 @@ const {
   includeWebPageSchema = true,
 } = Astro.props;
 
-const origin = getSiteOrigin(Astro.site);
+const origin = getSiteOrigin();
 const resolvedImage = image ?? ogImage ?? site.defaultOgImage;
 const resolvedType: SeoOgType = type ?? (isArticle ? "article" : "website");
 const documentTitle = buildDocumentTitle(title, titleAbsolute);

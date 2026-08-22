@@ -198,8 +198,56 @@ const description = `Contact Zoetic AI for platform submissions, profile correct
 </BaseLayout>
 
 <script define:vars={{ contactEmail: site.email }}>
-  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
-  const status = document.querySelector<HTMLElement>("[data-contact-status]");
+  const form = document.querySelector("[data-contact-form]");
+  const status = document.querySelector("[data-contact-status]");
+  const messageEl = document.querySelector("#contact-message");
+  const topicEl = document.querySelector("#contact-topic");
+
+  function readSubjectPrefill() {
+    const querySubject = new URLSearchParams(window.location.search).get("subject");
+    if (querySubject && querySubject.trim()) return querySubject.trim();
+
+    const rawHash = window.location.hash.startsWith("#")
+      ? window.location.hash.slice(1)
+      : window.location.hash;
+    if (!rawHash) return "";
+
+    const fromParam = new URLSearchParams(rawHash).get("subject");
+    if (fromParam && fromParam.trim()) return fromParam.trim();
+
+    try {
+      return decodeURIComponent(rawHash.replace(/\+/g, " ")).trim();
+    } catch {
+      return rawHash.trim();
+    }
+  }
+
+  function applyPrefill(subject) {
+    if (!subject) return;
+    if (messageEl && !messageEl.value) messageEl.value = subject;
+    if (topicEl) {
+      const lower = subject.toLowerCase();
+      if (lower.startsWith("report incorrect")) {
+        topicEl.value = "Profile correction";
+      } else if (lower.startsWith("claim listing")) {
+        topicEl.value = "Platform submission";
+      }
+    }
+  }
+
+  const hadQuery = window.location.search.length > 1;
+  applyPrefill(readSubjectPrefill());
+
+  // Parameterized /contact/?subject=… URLs share this HTML. Keep /contact/
+  // indexable, but mark query variants noindex after render and drop the
+  // query/hash from the address bar so they do not look like extra pages.
+  if (hadQuery) {
+    const robots = document.querySelector('meta[name="robots"]');
+    if (robots) robots.setAttribute("content", "noindex, follow");
+  }
+  if (hadQuery || window.location.hash) {
+    history.replaceState(null, "", window.location.pathname);
+  }
 
   form?.addEventListener("submit", (event) => {
     event.preventDefault();
